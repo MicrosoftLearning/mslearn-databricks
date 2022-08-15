@@ -45,7 +45,7 @@ In this exercise, you'll use a script to provision a new Azure Databricks worksp
 
 7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [What is Databricks SQL?](https://docs.microsoft.com/azure/databricks/scenarios/what-is-databricks-sql) article in the Azure Databricks documentation.
 
-*To do...*
+*To do....*
 
 ## Delete Azure Databricks resources
 
