@@ -45,7 +45,15 @@ In this exercise, you'll use a script to provision a new Azure Databricks worksp
 
 7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [What is Databricks SQL?](https://docs.microsoft.com/azure/databricks/scenarios/what-is-databricks-sql) article in the Azure Databricks documentation.
 
-*To do....*
+## Create a table in a data warehouse
+
+1. In the Azure portal, browse to the **dp000-*xxxxxxx*** resource group that was created by the script you ran.
+2. Select the **databricks*xxxxxxx*** Azure Databricks Service resource.
+3. In the **Overview** page for **databricks*xxxxxxx***, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+4. If a **What's your current data project?** message is displayed, select **Finish** to close it. Then view the Azure Databricks workspace portal and note that the bar on the left side contains icons for the various tasks you can perform. The bar expands to show the names of the task categories.
+5. In the sidebar on the left, expand **[D] Data Science & Engineering** and select **[S] SQL**. to change the portal interface to reflect the SQL persona.
+
+...*more to come*...
 
 ## Delete Azure Databricks resources
 
