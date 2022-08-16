@@ -64,7 +64,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 6. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Cluster mode**: Single Node
-    - **Access mode**: Single user
+    - **Access mode** (*if prompted*): Single user
     - **Databricks runtime version**: 10.4 LTS (Scala 2.12, Spark 3.2.1)
     - **Use Photon Acceleration**: Unselected
     - **Node type**: Standard_DS3_v2
