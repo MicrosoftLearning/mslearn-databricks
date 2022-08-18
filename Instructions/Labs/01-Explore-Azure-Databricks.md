@@ -108,14 +108,12 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
     | 772 | Mountain-100 Silver, 42 | Mountain Bikes | 3399.9900 |
     | ... | ... | ... | ... |
 
-10. Under the table of results, use the **.&#953;&#10073;** (*Display as bar chart*) button to view the results as a chart, and then use the **Plot Options...** button to apply the following options:
-    - **Keys**: Category
-    - **Values**: ProductID
-    - **Aggregation**: COUNT
-    - **Grouped**: Selected
-    - **Display type**: Bar chart
+10. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
+    - **Visualization type**: Bar
+    - **X Column**: Category
+    - **Y Column**: *Add a new column and select* **ProductID**. *Apply the* **Count** *aggregation*.
 
-    The resulting chart shows the count of products in each category, like this:
+    Save the visualization and observe that it is displayed in the notebook, like this:
 
     ![A bar chart showing product counts by category](./images/databricks-chart.png)
 
