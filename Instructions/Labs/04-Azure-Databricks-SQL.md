@@ -46,7 +46,7 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 3. In the **New query** pane, enter the following SQL code:
 
     ```sql
-    CREATE DATABASE adventureworks;
+    CREATE SCHEMA adventureworks;
     ```
 4. Use the **Run All** button to run the SQL code.
 5. When the code has been successfully executed, in the **Schema browser** pane, use the **&#8635;** button to refresh the list. Then select the **default** database to reveal the list of databases and select **adventureworks**. The database has been created, but contains no tables.
