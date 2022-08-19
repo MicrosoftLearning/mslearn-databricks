@@ -71,7 +71,7 @@ $stop = 0
 $tried_regions = New-Object Collections.Generic.List[string]
 while ($stop -ne 1){
     write-host "Trying $Region..."
-    $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard DSv2 Family vCPUs'}
+    $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard EDSv4 Family vCPUs'}
     $cores =  $quota.currentvalue
     $maxcores = $quota.limit
     write-host "$cores of $maxcores cores in use."
