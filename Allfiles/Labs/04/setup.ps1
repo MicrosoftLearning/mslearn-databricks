@@ -50,8 +50,8 @@ foreach ($provider in $provider_list){
 [string]$suffix =  -join ((48..57) + (97..122) | Get-Random -Count 7 | % {[char]$_})
 Write-Host "Your randomly-generated suffix for Azure resources is $suffix"
 
-# Choose a random region
-Write-Host "Finding an available region. This may take several minutes...";
+# Choose a region
+Write-Host "Preparing to deploy. This may take several minutes...";
 $delay = 0, 30, 60, 90, 120 | Get-Random
 Start-Sleep -Seconds $delay # random delay to stagger requests from multi-student classes
 
