@@ -19,14 +19,31 @@ You'll need an [Azure subscription](https://azure.microsoft.com/free) in which y
 In this exercise, you'll need a premium-tier Azure Databricks workspace.
 
 1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
-2. Use the **+ Create a resource** button to create a new **Azure Databricks** resource with the following settings:
-    - **Subscription**: *Select your Azure subscription*.
-    - **Resource group**: *Create a new resource group with a name of your choice*.
-    - **Workspace name**: *Enter a name for your workspace*
-    - **Region**: *Choose a region*.
-    - **Pricing Tier**: Premium (+ Role-based access controls)
+2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment and creating storage if prompted. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
-3. Wait for the resource to be deployed - this typically takes around 3 minutes, but in some cases may take longer. While you are waiting, review the [What is Databricks SQL?](https://docs.microsoft.com/azure/databricks/scenarios/what-is-databricks-sql) article in the Azure Databricks documentation.
+    ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
+
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+
+3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
+
+4. In the PowerShell pane, enter the following commands to clone this repo:
+
+    ```
+    rm -r dp-000 -f
+    git clone https://github.com/MicrosoftLearning/mslearn-databricks dp-000
+    ```
+
+5. After the repo has been cloned, enter the following commands to change to the folder for this lab and run the **setup.ps1** script it contains:
+
+    ```
+    cd dp-000/Allfiles/Labs/04
+    ./setup.ps1
+    ```
+
+6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [What is Databricks SQL?](https://docs.microsoft.com/azure/databricks/scenarios/what-is-databricks-sql) article in the Azure Databricks documentation.
 
 ## View and start a SQL Warehouse
 
@@ -37,7 +54,9 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 5. In the **Get Started** pane, select **Review SQL Warehouses** (or alternatively, in the sidebar, select **SQL Warehouses**).
 6. Observe that the workspace already includes a SQL Warehouse named **Starter Warehouse**. If the current status is **Stopped**, use the **Start** button to start it (which may take a minute or two).
 
-    **Note**: If the SQL Warehouse fails to launch, you may have insufficient quota in your subscription for the region where the Azure Databricks workspace is deployed. In this case, you may need to delete your workspace and create a new one in another region.
+> **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
+>
+> `./setup.ps1 eastus`
 
 ## Create a database
 

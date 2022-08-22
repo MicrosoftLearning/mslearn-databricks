@@ -56,15 +56,21 @@ $delay = 0, 30, 60, 90, 120 | Get-Random
 Start-Sleep -Seconds $delay # random delay to stagger requests from multi-student classes
 
 # Get a list of locations for Azure Databricks
-$hot_regions = "australiaeast", "northeurope", "uksouth"
 $locations = Get-AzLocation | Where-Object {
     $_.Providers -contains "Microsoft.Databricks" -and
-    $_.Providers -contains "Microsoft.Compute" -and
-    $_.Location -notin $hot_regions
+    $_.Providers -contains "Microsoft.Compute"
 }
 $max_index = $locations.Count - 1
 $rand = (0..$max_index) | Get-Random
-$Region = $locations.Get($rand).Location
+
+# Start with preferred region if specified, otherwise choose one at random
+if ($args.count -gt 0 -And $args[0] -in $locations)
+{
+    $Region = $args[0]
+}
+else {
+    $Region = $locations.Get($rand).Location
+}
 
 # Try to create an Azure Databricks workspace in a region that has capacity
 $stop = 0
