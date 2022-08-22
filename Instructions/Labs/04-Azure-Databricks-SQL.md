@@ -52,7 +52,9 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 3. If a **What's your current data project?** message is displayed, select **Finish** to close it. Then view the Azure Databricks workspace portal and note that the bar on the left side contains icons for the various tasks you can perform. The bar expands to show the names of the task categories.
 4. In the sidebar on the left, expand **[D] Data Science & Engineering** and select **[S] SQL**. to change the portal interface to reflect the SQL persona (this persona is only available in *premium-tier* workspaces).
 5. In the **Get Started** pane, select **Review SQL Warehouses** (or alternatively, in the sidebar, select **SQL Warehouses**).
-6. Observe that the workspace already includes a SQL Warehouse named **Starter Warehouse**. If the current status is **Stopped**, use the **Start** button to start it (which may take a minute or two).
+6. Observe that the workspace already includes a SQL Warehouse named **Starter Warehouse**.
+7. In the **Actions** (**&#8285;**) menu for the SQL Warehouse, select **Edit**. Then set the **Cluster size** property to **2X-Small** and save your changes.
+8. Use the **Start** button to start the SQL Warehouse (which may take a minute or two).
 
 > **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
 >
