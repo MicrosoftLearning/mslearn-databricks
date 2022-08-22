@@ -54,7 +54,7 @@ You can create notebooks in your Azure Databricks workspace to run code written 
 2. In the **Overview** page for **databricks*xxxxxxx***, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 3. If a **What's your current data project?** message is displayed, select **Finish** to close it. Then view the Azure Databricks workspace portal and note that the sidebar on the left side contains icons for the various tasks you can perform. The sidebar expands to show the names of the task categories.
 4. Expand the sidebar and select the **Workspace** tab. Then select the **Users** folder and in the **&#9662;** menu for the **&#8962; *your_user_name*** folder, select **Import**.
-5. In the **Import Notebooks** dialog box, select **URL** and import the notebook from `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/Allfiles/Labs/05/Databricks-Factory.dbc`.
+5. In the **Import Notebooks** dialog box, select **URL** and import the notebook from `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/Allfiles/Labs/05/Process-Data.dbc`.
 6. Select **&#8962; Home** and then open the **Process Data** notebook you just imported.
 
     **Note**: If a tip is displayed, use the **Got it** button to close it. This applies to any future tips that may be displayed as you navigate the workspace interface for the first time.
@@ -127,7 +127,7 @@ Now that you have created a linked service, you can use it in a pipeline to run 
 2. In the **Pipeline run** pane, select **OK** to run the pipeline.
 3. In the navigation pane on the left, select **Monitor** and observe the **Process Data with Databricks** pipeline on the **Pipeline runs** tab. It may take a while to run as it dynamically creates a Spark cluster and runs the notebook. You can use the **&#8635; Refresh** button on the **Pipeline runs** page to refresh the status.
 
-    > **Note**: If your pipeline fails, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned ti=o ceate a job cluster. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
+    > **Note**: If your pipeline fails, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned to create a job cluster. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
     >
     > `./setup.ps1 eastus`
 
