@@ -113,7 +113,6 @@ while ($stop -ne 1){
         $stop = 1
     }
 }
-}
 
 
 write-host "Script completed at $(Get-Date)"
