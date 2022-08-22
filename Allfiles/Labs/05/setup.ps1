@@ -111,6 +111,7 @@ while ($stop -ne 1){
         $userName = ((az ad signed-in-user show) | ConvertFrom-JSON).UserPrincipalName
         New-AzRoleAssignment -SignInName $userName -RoleDefinitionName "Owner" -Scope "/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Databricks/workspaces/$dbworkspace";
         $dataFactoryName = "adf$suffix"
+        Write-Host "Creating $dataFactoryName Azure Data Factory in $resourceGroupName resource group..."
         Set-AzDataFactoryV2 -ResourceGroupName $resourceGroupName -Location $Region -Name $dataFactoryName | Out-Null
         $stop = 1
     }
