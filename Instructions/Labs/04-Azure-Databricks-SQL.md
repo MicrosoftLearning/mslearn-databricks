@@ -49,8 +49,8 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 
 1. When the Azure Databricks workspace resource has been deployed, go to it in the Azure portal.
 2. In the **Overview** page for your Azure Databricks workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
-3. If a **What's your current data project?** message is displayed, select **Finish** to close it. Then view the Azure Databricks workspace portal and note that the bar on the left side contains icons for the various tasks you can perform. The bar expands to show the names of the task categories.
-4. In the sidebar on the left, expand **[D] Data Science & Engineering** and select **[S] SQL**. to change the portal interface to reflect the SQL persona (this persona is only available in *premium-tier* workspaces).
+3. If a **What's your current data project?** message is displayed, select **Finish** to close it. Then view the Azure Databricks workspace portal and note that the sidebar on the left side contains icons for the various tasks you can perform. The sidebar expands to show the names of the task categories.
+4. In the sidebar, expand **[D] Data Science & Engineering** and select **[S] SQL**. to change the portal interface to reflect the SQL persona (this persona is only available in *premium-tier* workspaces).
 5. In the **Get Started** pane, select **Review SQL Warehouses** (or alternatively, in the sidebar, select **SQL Warehouses**).
 6. Observe that the workspace already includes a SQL Warehouse named **Starter Warehouse**.
 7. In the **Actions** (**&#8285;**) menu for the SQL Warehouse, select **Edit**. Then set the **Cluster size** property to **2X-Small** and save your changes.
