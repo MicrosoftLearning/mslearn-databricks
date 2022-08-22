@@ -64,7 +64,7 @@ $max_index = $locations.Count - 1
 $rand = (0..$max_index) | Get-Random
 
 # Start with preferred region if specified, otherwise choose one at random
-if ($args.count -gt 0 -And $args[0] -in $locations)
+if ($args.count -gt 0 -And $args[0] -in $locations.Location)
 {
     $Region = $args[0]
 }
