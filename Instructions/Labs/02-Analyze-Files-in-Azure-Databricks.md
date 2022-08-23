@@ -1,10 +1,10 @@
 ---
 lab:
-    title: 'Analyze Files in Azure Databricks'
-    module: 'Get Started with Azure Databricks'
+    title: 'Use Spark in Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
-# Analyze Files in Azure Databricks
+# Use Spark in Azure Databricks
 
 Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform. Azure Databricks is built on Apache Spark, and offers a highly scalable solution for data engineering and analysis tasks that involve working with data in files. One of the benefits of Spark is support for a wide range of programming languages, including Java, Scala, Python, and SQL; making Spark a very flexible solution for data processing workloads including data cleansing and manipulation, statistical analysis and machine learning, and data analytics and visualization.
 

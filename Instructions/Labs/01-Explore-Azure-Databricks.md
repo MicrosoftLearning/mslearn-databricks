@@ -1,7 +1,7 @@
 ---
 lab:
     title: 'Explore Azure Databricks'
-    module: 'Get Started with Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Explore Azure Databricks

@@ -1,7 +1,7 @@
 ---
 lab:
     title: 'Use Delta Lake in Azure Databricks'
-    module: 'Get Started with Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Use Delta Lake in Azure Databricks

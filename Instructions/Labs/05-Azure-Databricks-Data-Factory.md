@@ -1,7 +1,7 @@
 ---
 lab:
     title: 'Automate an Azure Databricks Notebook with Azure Data Factory'
-    module: 'Get Started with Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Automate an Azure Databricks Notebook with Azure Data Factory

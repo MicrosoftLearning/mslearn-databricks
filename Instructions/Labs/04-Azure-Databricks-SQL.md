@@ -1,7 +1,7 @@
 ---
 lab:
     title: 'Use a SQL Warehouse in Azure Databricks'
-    module: 'Get Started with Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Use a SQL Warehouse in Azure Databricks
