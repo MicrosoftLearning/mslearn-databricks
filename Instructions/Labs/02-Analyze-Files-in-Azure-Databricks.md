@@ -1,10 +1,10 @@
 ---
 lab:
-    title: 'Analyze Files in Azure Databricks'
-    module: 'Get Started with Azure Databricks'
+    title: 'Use Spark in Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
-# Analyze Files in Azure Databricks
+# Use Spark in Azure Databricks
 
 Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform. Azure Databricks is built on Apache Spark, and offers a highly scalable solution for data engineering and analysis tasks that involve working with data in files. One of the benefits of Spark is support for a wide range of programming languages, including Java, Scala, Python, and SQL; making Spark a very flexible solution for data processing workloads including data cleansing and manipulation, statistical analysis and machine learning, and data analytics and visualization.
 
@@ -70,9 +70,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 7. Wait for the cluster to be created. It may take a minute or two.
 
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
->
-> `./setup.ps1 eastus`
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./setup.ps1 eastus`
 
 ## Explore data using a notebook
 

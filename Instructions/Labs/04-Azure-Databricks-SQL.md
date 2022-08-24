@@ -1,7 +1,7 @@
 ---
 lab:
     title: 'Use a SQL Warehouse in Azure Databricks'
-    module: 'Get Started with Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Use a SQL Warehouse in Azure Databricks
@@ -56,9 +56,7 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 7. In the **Actions** (**&#8285;**) menu for the SQL Warehouse, select **Edit**. Then set the **Cluster size** property to **2X-Small** and save your changes.
 8. Use the **Start** button to start the SQL Warehouse (which may take a minute or two).
 
-> **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
->
-> `./setup.ps1 eastus`
+> **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./setup.ps1 eastus`
 
 ## Create a database
 

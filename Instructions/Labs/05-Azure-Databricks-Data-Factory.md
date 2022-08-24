@@ -1,7 +1,7 @@
 ---
 lab:
     title: 'Automate an Azure Databricks Notebook with Azure Data Factory'
-    module: 'Get Started with Azure Databricks'
+    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Automate an Azure Databricks Notebook with Azure Data Factory
@@ -127,9 +127,7 @@ Now that you have created a linked service, you can use it in a pipeline to run 
 2. In the **Pipeline run** pane, select **OK** to run the pipeline.
 3. In the navigation pane on the left, select **Monitor** and observe the **Process Data with Databricks** pipeline on the **Pipeline runs** tab. It may take a while to run as it dynamically creates a Spark cluster and runs the notebook. You can use the **&#8635; Refresh** button on the **Pipeline runs** page to refresh the status.
 
-    > **Note**: If your pipeline fails, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned to create a job cluster. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this:
-    >
-    > `./setup.ps1 eastus`
+    > **Note**: If your pipeline fails, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned to create a job cluster. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./setup.ps1 eastus`
 
 4. When the run succeeds, select its name to view the run details. Then, on the **Process Data with Databricks** page, in the **Activity Runs** section, select the **Process Data** activity and use its ***output*** icon to view the output JSON from the activity, which should resemble this:
     ```json
