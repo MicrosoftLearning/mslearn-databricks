@@ -78,16 +78,14 @@ $tried_regions = New-Object Collections.Generic.List[string]
 while ($stop -ne 1){
     write-host "Trying $Region..."
     # Check that the required SKU is available
-    $skuOK = 0
+    $skuOK = 1
     $skus = Get-AzComputeResourceSku $Region | Where-Object {$_.ResourceType -eq "VirtualMachines" -and $_.Name -eq "standard_ds3_v2"}
     if ($skus.length -gt 0)
     {
         $r = $skus.Restrictions
-        if ($null -eq $r)
+        if ($r -ne $null)
         {
-            $skuOK = 1
-        }
-        else {
+            $skuOK = 0
             Write-Host $r[0].ReasonCode
         }
     }
