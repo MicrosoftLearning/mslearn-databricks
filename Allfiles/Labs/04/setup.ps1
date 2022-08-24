@@ -104,7 +104,7 @@ while ($stop -ne 1){
         Write-Host "$Region has insufficient capacity."
         $tried_regions.Add($Region)
         $locations = $locations | Where-Object {$_.Location -notin $tried_regions}
-        if ($locations.length -gt 0){
+        if ($locations.Count -ne 1){
             $rand = (0..$($locations.Count - 1)) | Get-Random
             $Region = $locations.Get($rand).Location
             $stop = 0
