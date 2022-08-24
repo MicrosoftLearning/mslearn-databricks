@@ -77,26 +77,29 @@ $stop = 0
 $tried_regions = New-Object Collections.Generic.List[string]
 while ($stop -ne 1){
     write-host "Trying $Region..."
-     # Check that the required SKU is available
-     $skuOK = 0
-     $skus = Get-AzComputeResourceSku $Region | Where-Object {$_.ResourceType -eq "VirtualMachines" -and $_.Name -eq "standard_ds3_v2"}
-     if ($skus.length -gt 0)
-     {
-         $r = $skus.Restrictions
-         if ($null -eq $r)
-         {
-             $skuOK = 1
-         }
-         else {
-             Write-Host $r[0].ReasonCode
-         }
-     }
+    # Check that the required SKU is available
+    $skuOK = 1
+    $skus = Get-AzComputeResourceSku $Region | Where-Object {$_.ResourceType -eq "VirtualMachines" -and $_.Name -eq "standard_ds3_v2"}
+    if ($skus.length -gt 0)
+    {
+        $r = $skus.Restrictions
+        if ($r -ne $null)
+        {
+            $skuOK = 0
+            Write-Host $r[0].ReasonCode
+        }
+    }
     # Get the available quota
-    $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard DSv2 Family vCPUs'}
-    $cores =  $quota.currentvalue
-    $maxcores = $quota.limit
-    write-host "$cores of $maxcores cores in use."
-    if ($quota.limit - $quota.currentvalue -lt 8 -or $skuOK -eq 0)
+    $available_quota = 0
+    if ($skuOK -eq 1)
+    {
+        $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard DSv2 Family vCPUs'}
+        $cores =  $quota.currentvalue
+        $maxcores = $quota.limit
+        write-host "$cores of $maxcores cores in use."
+        $available_quota = $quota.limit - $quota.currentvalue
+    }
+    if (($available_quota -lt 8) -or ($skuOK -eq 0))
     {
         Write-Host "$Region has insufficient capacity."
         $tried_regions.Add($Region)

@@ -90,11 +90,16 @@ while ($stop -ne 1){
         }
     }
     # Get the available quota
-    $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard EDSv4 Family vCPUs'}
-    $cores =  $quota.currentvalue
-    $maxcores = $quota.limit
-    write-host "$cores of $maxcores cores in use."
-    if (($quota.limit - $quota.currentvalue -lt 8) -or ($skuOK -eq 0))
+    $available_quota = 0
+    if ($skuOK -eq 1)
+    {
+        $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard DSv2 Family vCPUs'}
+        $cores =  $quota.currentvalue
+        $maxcores = $quota.limit
+        write-host "$cores of $maxcores cores in use."
+        $available_quota = $quota.limit - $quota.currentvalue
+    }
+    if (($available_quota -lt 8) -or ($skuOK -eq 0))
     {
         Write-Host "$Region has insufficient capacity."
         $tried_regions.Add($Region)
