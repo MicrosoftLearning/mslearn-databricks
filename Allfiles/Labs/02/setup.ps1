@@ -77,11 +77,14 @@ $stop = 0
 $tried_regions = New-Object Collections.Generic.List[string]
 while ($stop -ne 1){
     write-host "Trying $Region..."
+    # Check that the required SKU is available
+    $skus = az vm list-skus -l $Region --size standard_ds3_v2
+    # Get the available quota
     $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard DSv2 Family vCPUs'}
     $cores =  $quota.currentvalue
     $maxcores = $quota.limit
     write-host "$cores of $maxcores cores in use."
-    if ($quota.limit - $quota.currentvalue -lt 8)
+    if ($quota.limit - $quota.currentvalue -lt 8 -or $skus -eq "[]")
     {
         Write-Host "$Region has insufficient capacity."
         $tried_regions.Add($Region)
