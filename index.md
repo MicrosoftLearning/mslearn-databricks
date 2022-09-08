@@ -6,7 +6,7 @@ layout: home
 
 # Content Directory
 
-Hyperlinks to each of the lab exercises and demos are listed below.
+Links to the hands-on exercises are listed below.
 
 ## Labs
 
