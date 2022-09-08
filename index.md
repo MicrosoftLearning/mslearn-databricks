@@ -4,9 +4,11 @@ permalink: index.html
 layout: home
 ---
 
-# Content Directory
+# Azure Databricks Exercises
 
-Links to the hands-on exercises are listed below.
+These hands-on exercises are designed to support training content on [Microsoft Learn](https://docs.microsoft.com/training/).
+
+You'll need an Azure subscription in which you have administrative access to complete these exercises.
 
 {% assign labs = site.pages | where_exp:"page", "page.url contains '/Instructions/Labs'" %}
 | Exercise |
