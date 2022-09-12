@@ -43,7 +43,7 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [What is Databricks SQL?](https://docs.microsoft.com/azure/databricks/scenarios/what-is-databricks-sql) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [What is Databricks SQL?](https://docs.microsoft.com/azure/databricks/scenarios/what-is-azure-databricks-sqla) article in the Azure Databricks documentation.
 
 ## View and start a SQL Warehouse
 
@@ -56,7 +56,7 @@ In this exercise, you'll need a premium-tier Azure Databricks workspace.
 7. In the **Actions** (**&#8285;**) menu for the SQL Warehouse, select **Edit**. Then set the **Cluster size** property to **2X-Small** and save your changes.
 8. Use the **Start** button to start the SQL Warehouse (which may take a minute or two).
 
-> **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./setup.ps1 eastus`
+> **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try requesting for a quota increase as detailed in the error message when the warehouse fails to start. Alternatively, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./setup.ps1 eastus`
 
 ## Create a database
 
