@@ -121,7 +121,7 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
 
 ## Create and query a database table
 
-While many data analysis are comfortable using languages like Python or Scala to work with data in files, a lot of data analytics solutions are built on relational databases; in which data is stored in tables and manipulated using SQL.
+While many data analysts are comfortable using languages like Python or Scala to work with data in files, a lot of data analytics solutions are built on relational databases; in which data is stored in tables and manipulated using SQL.
 
 1. In the **Explore products** notebook, under the chart output from the previously run code cell, use the **+** icon to add a new cell.
 2. Enter and run the following code in the new cell:
