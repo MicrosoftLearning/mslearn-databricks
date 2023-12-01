@@ -45,7 +45,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 In addition to your Azure Databricks workspace, you will need to provision an Azure Data Factory resource in your subscription.
 
 1. In the Azure portal, close the cloud shell pane and browse to the ***msl-*xxxxxxx*** resource group created by the setup script (or the resource group containing your existing Azure Databricks workspace).
-1. In the toolbar, select **+ Create** and search for `Azure Data Factory`. Then create a new **Data Factory** resource with the following settings:
+1. In the toolbar, select **+ Create** and search for `Data Factory`. Then create a new **Data Factory** resource with the following settings:
     - **Subscription**: *Your subscription*
     - **Resource group**: msl-*xxxxxxx* (or the resource group containing your existing Azure Databricks workspace)
     - **Name**: *A unique name, for example **adf-xxxxxxx***
@@ -90,7 +90,7 @@ You can create notebooks in your Azure Databricks workspace to run code written 
     dbutils.fs.put(path, data, True)
     ```
 
-1. Save the notebook without running it. You'll use Azure data Factory to run the notebook as part of a pipeline.
+1. In the sidebar on the left, select **Workspace** and ensure your **Process Data** notebooks is listed. You'll use Azure data Factory to run the notebook as part of a pipeline.
 
     > **Note**: The notebook could contain practically any data processing logic you need. This simple example is designed to show the key principles.
 
@@ -145,8 +145,8 @@ Now that you have created a linked service, you can use it in a pipeline to run 
     - **Azure Databricks**:
         - **Databricks linked service**: *Select the **AzureDatabricks** linked service you created previously*
     - **Settings**:
-        - **Notebook path**: *Browse to the **Users/your_user_name** folder and select the **Process-Data** notebook*
-        - **Base parameters**: *Add a new parameter named **folder** with the value **product_data***
+        - **Notebook path**: *Browse to the **Users/your_user_name** folder and select the **Process Data** notebook*
+        - **Base parameters**: *Add a new parameter named `folder` with the value `product_data`*
 6. Use the **Validate** button above the pipeline designer surface to validate the pipeline. Then use the **Publish all** button to publish (save) it.
 
 ### Run the pipeline

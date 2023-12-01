@@ -62,11 +62,11 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 3. In the **New query** pane, enter the following SQL code:
 
     ```sql
-    CREATE SCHEMA adventureworks;
+    CREATE DATABASE retail_db;
     ```
 
 4. Use the **&#9658;Run (1000)** button to run the SQL code.
-5. When the code has been successfully executed, in the **Schema browser** pane, use the refresh button at the bottom of the pane to refresh the list. Then expand **hive_metastore** and **adventureworks**, and observe that the database has been created, but contains no tables.
+5. When the code has been successfully executed, in the **Schema browser** pane, use the refresh button at the bottom of the pane to refresh the list. Then expand **hive_metastore** and **retail_db**, and observe that the database has been created, but contains no tables.
 
 You can use the **default** database for your tables, but when building an analytical data store its best to create custom databases for specific data.
 
@@ -74,7 +74,7 @@ You can use the **default** database for your tables, but when building an analy
 
 1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file to your local computer, saving it as **products.csv**.
 1. In the Azure Databricks workspace portal, in the sidebar, select **(+) New** and then select **File Upload** and upload the **products.csv** file you downloaded to your computer.
-1. In the **Upload data** page, select the **adventureworks** schema and set the table name to **products**. Then select **Create table** on the bottom left corner of the page.
+1. In the **Upload data** page, select the **retail_db** schema and set the table name to **products**. Then select **Create table** on the bottom left corner of the page.
 1. When the table has been created, review its details.
 
 The ability to create a table by importing data from a file makes it easy to populate a database. You can also use Spark SQL to create tables using code. The tables themselves are metadata definitions in the hive metastore, and the data they contain is stored in Delta format in Databricks File System (DBFS) storage.
@@ -82,12 +82,12 @@ The ability to create a table by importing data from a file makes it easy to pop
 ## Create a query
 
 1. In the sidebar, select **(+) New** and then select **Query**.
-2. In the **Schema browser** pane, expand **hive_metastore** and **adventureworks**, and verify that the **products** table is listed.
+2. In the **Schema browser** pane, expand **hive_metastore** and **retail_db**, and verify that the **products** table is listed.
 3. In the **New query** pane, enter the following SQL code:
 
     ```sql
     SELECT ProductID, ProductName, Category
-    FROM adventureworks.products; 
+    FROM retail_db.products; 
     ```
 
 4. Use the **&#9658;Run (1000)** button to run the SQL code.
@@ -99,8 +99,8 @@ Saving a query makes it easy to retrieve the same data again at a later time.
 ## Create a dashboard
 
 1. In the sidebar, select **(+) New** and then select **Dashboard**.
-2. In the **New dashboard** dialog box, enter the name **Adventure Works Products** and select **Save**.
-3. In the **Adventure Works Products** dashboard, in the **Add** drop-down list, select **Visualization**.
+2. In the **New dashboard** dialog box, enter the name **Retail Dashboard** and select **Save**.
+3. In the **Retail Dashboard** dashboard, in the **Add** drop-down list, select **Visualization**.
 4. In the **Add visualization widget** dialog box, select the **Products and Categories** query. Then select **Create new visualization**, set the title to **Products Per Category**, and select **Create visualization**.
 5. In the visualization editor, set the following properties:
     - **Visualization type**: bar
