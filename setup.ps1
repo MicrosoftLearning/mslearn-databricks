@@ -121,7 +121,7 @@ while ($stop -ne 1){
     else {
         Write-Host "Creating $resourceGroupName resource group ..."
         New-AzResourceGroup -Name $resourceGroupName -Location $Region | Out-Null
-        $dbworkspace = "databricks$suffix"
+        $dbworkspace = "databricks-$suffix"
         Write-Host "Creating $dbworkspace Azure Databricks workspace in $resourceGroupName resource group..."
         New-AzDatabricksWorkspace -Name $dbworkspace -ResourceGroupName $resourceGroupName -Location $Region -Sku premium | Out-Null
         # Make the current user an owner of the databricks workspace
