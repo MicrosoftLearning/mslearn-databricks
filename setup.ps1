@@ -86,7 +86,7 @@ while ($stop -ne 1){
     if ($skus.length -gt 0)
     {
         $r = $skus.Restrictions
-        if ($null -ne $r)
+        if ($r -ne $null)
         {
             $skuOK = 0
             Write-Host $r[0].ReasonCode
