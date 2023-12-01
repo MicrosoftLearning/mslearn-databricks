@@ -6,7 +6,7 @@ layout: home
 
 # Azure Databricks Exercises
 
-These hands-on exercises are designed to support training content on [Microsoft Learn](https://docs.microsoft.com/training/paths/data-engineer-azure-databricks/).
+These exercises are designed to support training content on [Microsoft Learn](https://docs.microsoft.com/training/paths/data-engineer-azure-databricks/).
 
 You'll need an Azure subscription in which you have administrative access to complete these exercises.
 

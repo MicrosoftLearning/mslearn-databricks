@@ -1,22 +1,19 @@
 ---
 lab:
     title: 'Automate an Azure Databricks Notebook with Azure Data Factory'
-    module: 'Data Engineering with Azure Databricks'
 ---
 
 # Automate an Azure Databricks Notebook with Azure Data Factory
 
 You can use notebooks in Azure Databricks to perform data engineering tasks, such as processing data files and loading data into tables. When you need to orchestrate these tasks as part of a data engineering pipeline, you can use Azure Data Factory.
 
-This lab will take approximately **40** minutes to complete.
+This exercise should take approximately **40** minutes to complete.
 
-## Before you start
+## Provision an Azure Databricks workspace
 
-You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
-## Provision Azure resources
-
-In this exercise, you'll use a script to provision a new Azure Databricks workspace and an Azure Data Factory resource in your Azure subscription.
+This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try creating an Azure Databricks workspace interactively in the Azure portal.
 
 1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
 2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment and creating storage if prompted. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
@@ -30,41 +27,72 @@ In this exercise, you'll use a script to provision a new Azure Databricks worksp
 4. In the PowerShell pane, enter the following commands to clone this repo:
 
     ```
-    rm -r dp-000 -f
-    git clone https://github.com/MicrosoftLearning/mslearn-databricks dp-000
+    rm -r mslearn-databricks -f
+    git clone https://github.com/MicrosoftLearning/mslearn-databricks
     ```
 
-5. After the repo has been cloned, enter the following commands to change to the folder for this lab and run the **setup.ps1** script it contains:
+5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
     ```
-    cd dp-000/Allfiles/Labs/05
-    ./setup.ps1
+    ./mslearn-databricks/setup.ps1
     ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
-
 7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review [What is Azure Data Factory?](https://docs.microsoft.com/azure/data-factory/introduction).
-8. When the script has completed, close the cloud shell pane and browse to the **dp000-*xxxxxxx*** resource group that was created by the script to verify that it contains an Azure Databricks workspace and an Azure Data Factory (V2) resource (you may need to refresh the resource group view).
 
-## Import a notebook
+## Create an Azure Data Factory resource
 
-You can create notebooks in your Azure Databricks workspace to run code written in a range of programming languages. In this exercise, you'll import an existing notebook that contains some Python code.
+In addition to your Azure Databricks workspace, you will need to provision an Azure Data Factory resource in your subscription.
 
-1. In the Azure portal, in the **dp000-*xxxxxxx*** resource group, select the **databricks*xxxxxxx*** Azure Databricks Service resource.
-2. In the **Overview** page for **databricks*xxxxxxx***, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
-3. If a **What's your current data project?** message is displayed, select **Finish** to close it. Then view the Azure Databricks workspace portal and note that the sidebar on the left side contains icons for the various tasks you can perform. The sidebar expands to show the names of the task categories.
-4. Expand the sidebar and select the **Workspace** tab. Then select the **Users** folder and in the **&#9662;** menu for the **&#8962; *your_user_name*** folder, select **Import**.
-5. In the **Import Notebooks** dialog box, select **URL** and import the notebook from `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/Allfiles/Labs/05/Process-Data.dbc`
-6. Select **&#8962; Home** and then open the **Process Data** notebook you just imported.
+1. In the Azure portal, close the cloud shell pane and browse to the ***msl-*xxxxxxx*** resource group created by the setup script (or the resource group containing your existing Azure Databricks workspace).
+1. In the toolbar, select **+ Create** and search for `Azure Data Factory`. Then create a new **Data Factory** resource with the following settings:
+    - **Subscription**: *Your subscription*
+    - **Resource group**: msl-*xxxxxxx* (or the resource group containing your existing Azure Databricks workspace)
+    - **Name**: *A unique name, for example **adf-xxxxxxx***
+    - **Region**: *The same region as your Azure databricks workspace (or any other available region if this one is not listed)*
+    - **Version**: V2
+1. When the new resource is created, verify that the resource group contains both the Azure Databricks workspace and Azure Data Factory resources.
 
-    **Note**: If a tip is displayed, use the **Got it** button to close it. This applies to any future tips that may be displayed as you navigate the workspace interface for the first time.
+## Create a notebook
 
-7. Review the contents of the notebook, which include some Python code cells to:
-    - Retrieve a parameter named **folder** if it is has been passed (otherwise use a default value of *data*).
-    - Download data from GitHub and save it in the specified folder in the Databricks File System (DBFS).
-    - Exit the notebook, returning the path where the data was saved as an output
+You can create notebooks in your Azure Databricks workspace to run code written in a range of programming languages. In this exercise, you'll create a simple notebook that ingests data from a file and saves it in a folder in Databricks File System (DBFS).
 
-    > **Tip**: The notebook could contain practically any data processing logic you need. This simple example is designed to show the key principles.
+1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
+1. Select your Azure Databricks Service resource (named **databricks*xxxxxxx*** if you used the setup script to create it).
+1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+
+    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
+
+1. View the Azure Databricks workspace portal and note that the sidebar on the left side contains icons for the various tasks you can perform.
+1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to **Process Data**.
+1. In the first cell of the notebook, enter (but don't run) the following code to set up a variable for the folder where this notebook will save data.
+
+    ```python
+    # Use dbutils.widget define a "folder" variable with a default value
+    dbutils.widgets.text("folder", "data")
+    
+    # Now get the parameter value (if no value was passed, the default set above will be used)
+    folder = dbutils.widgets.get("folder")
+    ```
+
+1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter (but don't run) the following code to download data and save it to the folder:
+
+    ```python
+    import urllib3
+    
+    # Download product data from GitHub
+    response = urllib3.PoolManager().request('GET', 'https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv')
+    data = response.data.decode("utf-8")
+    
+    # Save the product data to the specified folder
+    path = "dbfs:/{0}/products.csv".format(folder)
+    dbutils.fs.put(path, data, True)
+    ```
+
+1. Save the notebook without running it. You'll use Azure data Factory to run the notebook as part of a pipeline.
+
+    > **Note**: The notebook could contain practically any data processing logic you need. This simple example is designed to show the key principles.
 
 ## Enable Azure Databricks integration with Azure Data Factory
 
@@ -72,14 +100,15 @@ To use Azure Databricks from an Azure Data Factory pipeline, you need to create 
 
 ### Generate an access token
 
-1. In the Azure Databricks portal, at the bottom of the sidebar, select **Settings** and then select **User Settings**.
-2. In the **User Settings** page, on the **Access tokens** tab, select **Generate new token** and generate a new token with the comment *Data Factory* and a blank lifetime (so the token doesn't expire). Be careful to *copy the token when it is displayed <u>before</u> selecting **Done***.
-3. Paste the copied token to a text file so you have it handy for later in this exercise.
+1. In the Azure Databricks portal, at on the top right menu bar, select the username and then select **User Settings** from the drop-down.
+1. In the **User Settings** page, select **Developer**. Then next to **Access tokens** select **Manage**.
+1. Select **Generate new token** and generate a new token with the comment *Data Factory* and a blank lifetime (so the token doesn't expire). Be careful to **copy the token when it is displayed <u>before</u> selecting *Done***.
+1. Paste the copied token to a text file so you have it handy for later in this exercise.
 
 ### Create a linked service in Azure Data Factory
 
-1. Return to the Azure portal, and in the **dp000-*xxxxxxx*** resource group, select the **adf*xxxxxxx*** Azure Data Factory resource.
-2. On the **Overview** page, select the link to **Open Azure Data Factory Studio**. Sign in if prompted.
+1. Return to the Azure portal, and in the **dp203-*xxxxxxx*** resource group, select the **adf*xxxxxxx*** Azure Data Factory resource.
+2. On the **Overview** page, select the **Launch studio** to open the Azure Data Factory Studio. Sign in if prompted.
 3. In Azure Data Factory Studio, use the **>>** icon to expand the navigation pane on the left. Then select the **Manage** page.
 4. On the **Manage** page, in the **Linked services** tab, select **+ New** to add a new linked service.
 5. In the **New linked service** pane, select the **Compute** tab at the top. Then select **Azure Databricks**.
@@ -94,7 +123,7 @@ To use Azure Databricks from an Azure Data Factory pipeline, you need to create 
     - **Databrick Workspace URL**: *Automatically set to your Databricks workspace URL*
     - **Authentication type**: Access token
     - **Access token**: *Paste your access token*
-    - **Cluster version**: 10.4 LTS (Scala 2.12, Spark 3.2.1)
+    - **Cluster version**: 13.3 LTS (Spark 3.4.1, Scala 2.12)
     - **Cluster node type**: Standard_DS3_v2
     - **Python version**: 3
     - **Worker options**: Fixed
@@ -116,7 +145,7 @@ Now that you have created a linked service, you can use it in a pipeline to run 
     - **Azure Databricks**:
         - **Databricks linked service**: *Select the **AzureDatabricks** linked service you created previously*
     - **Settings**:
-        - **Notebook path**: *Browse to the **Users/your_user_name** folder and select the **Process Data** notebook*
+        - **Notebook path**: *Browse to the **Users/your_user_name** folder and select the **Process-Data** notebook*
         - **Base parameters**: *Add a new parameter named **folder** with the value **product_data***
 6. Use the **Validate** button above the pipeline designer surface to validate the pipeline. Then use the **Publish all** button to publish (save) it.
 
@@ -153,14 +182,6 @@ Now that you have created a linked service, you can use it in a pipeline to run 
 
 5. Note the **runOutput** value, which is the *path* variable to which the notebook saved the data.
 
-## Delete Azure Databricks resources
+## Delete Azure resources
 
-Now you've finished exploring Azure Data Factory integration with Azure Databricks, you must delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
-
-1. Close the Azure Databricks workspace and Azure Data Factory studio browser tabs and return to the Azure portal.
-2. On the Azure portal, on the **Home** page, select **Resource groups**.
-3. Select the **dp000-*xxxxxxx*** resource group containing your Azure Databricks and Azure Data Factory workspace (not the managed resource group).
-4. At the top of the **Overview** page for your resource group, select **Delete resource group**.
-5. Enter the resource group name to confirm you want to delete it, and select **Delete**.
-
-    After a few minutes, your resource group and the managed workspace resource group associated with it will be deleted.
+If you've finished exploring Azure Data Factory integration with Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
