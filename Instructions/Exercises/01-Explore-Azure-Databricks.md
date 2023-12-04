@@ -133,7 +133,8 @@ While many data analysis are comfortable using languages like Python or Scala to
 4. Run the new cell, which contains SQL code to return the name and price of products in the *Touring Bikes* category.
 5. In the sidebar, select the **Catalog** link, and verify that the **products** table has been created in the default database schema (which is unsurprisingly named **default**). It's possible to use Spark code to create custom database schemas and a schema of relational tables that data analysts can use to explore data and generate analytical reports.
 
-## Delete Azure resources
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
-

@@ -82,7 +82,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
     wget -O /dbfs/delta_lab/products.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the top-right of the following cell to run it. Then Wait for the Spark job run by the code to complete.
+1. Use the **&#9656; Run Cell** menu option at the top-right of the following cell to run it. Then wait for the Spark job run by the code to complete.
 1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the file and view the first 10 rows.
 
     ```python
@@ -355,6 +355,8 @@ Delta lake supports *streaming* data. Delta tables can be a *sink* or a *source*
     deltastream.stop()
     ```
 
-## Delete Azure resources
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

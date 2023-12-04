@@ -117,6 +117,8 @@ Saving a query makes it easy to retrieve the same data again at a later time.
 
 Dashboards are a great way to share data tables and visualizations with business users. You can schedule the dashboards to be refreshed periodically, and emailed to subscribers.
 
-## Delete Azure resources
+## Clean up
+
+In Azure Databricks portal, on the **SQL Warehouses** page, select your SQL Warehouse and select **&#9632; Stop** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

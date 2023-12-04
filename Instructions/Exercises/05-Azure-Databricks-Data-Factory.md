@@ -182,6 +182,6 @@ Now that you have created a linked service, you can use it in a pipeline to run 
 
 5. Note the **runOutput** value, which is the *path* variable to which the notebook saved the data.
 
-## Delete Azure resources
+## Clean up
 
-If you've finished exploring Azure Data Factory integration with Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

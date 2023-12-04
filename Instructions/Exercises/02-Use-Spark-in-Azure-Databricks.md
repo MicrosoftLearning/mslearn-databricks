@@ -89,7 +89,7 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
     wget -O /dbfs/spark_lab/2021.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2021.csv
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the top-right of the following cell to run it. Then Wait for the Spark job run by the code to complete.
+1. Use the **&#9656; Run Cell** menu option at the top-right of the following cell to run it. Then wait for the Spark job run by the code to complete.
 
 ### Query data in files
 
@@ -368,7 +368,8 @@ A picture is proverbially worth a thousand words, and a chart is often better th
 
 > **Note**: To learn more about plotting with seaborn, see the [seaborn documentation](https://seaborn.pydata.org/index.html).
 
-## Delete Azure resources
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
-
