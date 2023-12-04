@@ -62,7 +62,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 3. In the **New query** pane, enter the following SQL code:
 
     ```sql
-    CREATE DATABASE retail_db;
+   CREATE DATABASE retail_db;
     ```
 
 4. Use the **&#9658;Run (1000)** button to run the SQL code.
@@ -86,8 +86,8 @@ The ability to create a table by importing data from a file makes it easy to pop
 3. In the **New query** pane, enter the following SQL code:
 
     ```sql
-    SELECT ProductID, ProductName, Category
-    FROM retail_db.products; 
+   SELECT ProductID, ProductName, Category
+   FROM retail_db.products; 
     ```
 
 4. Use the **&#9658;Run (1000)** button to run the SQL code.

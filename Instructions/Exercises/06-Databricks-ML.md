@@ -109,8 +109,8 @@ Now that you've ingested the data file, you can load it into a dataframe and vie
 1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the files and display it.
 
     ```python
-    df = spark.read.format("csv").option("header", "true").load("/ml_lab/penguins.csv")
-    display(df)
+   df = spark.read.format("csv").option("header", "true").load("/ml_lab/penguins.csv")
+   display(df)
     ```
 
     The code initiates the necessary *Spark Jobs* to load the data, and the output is a *pyspark.sql.dataframe.DataFrame* object named *df*. You'll see this information displayed directly under the code, and you can use the **&#9656;** toggle to expand the **df: pyspark.sql.dataframe.DataFrame** output and see details of the columns it contains and their data types. Since this data was loaded from a text file and contained some blank values, Spark has assigned a **string** data type to all of the columns.
@@ -134,17 +134,17 @@ Now that you've ingested the data file, you can load it into a dataframe and vie
 1. Add a cell and use it to run the following cell to remove the rows with incomplete data by using the **dropna** method, and to apply appropriate data types to the data by using the **select** method with the **col** and **astype** functions.
 
     ```python
-    from pyspark.sql.types import *
-    from pyspark.sql.functions import *
-    
-    data = df.dropna().select(col("Island").astype("string"),
+   from pyspark.sql.types import *
+   from pyspark.sql.functions import *
+   
+   data = df.dropna().select(col("Island").astype("string"),
                               col("CulmenLength").astype("float"),
-                              col("CulmenDepth").astype("float"),
-                              col("FlipperLength").astype("float"),
-                              col("BodyMass").astype("float"),
-                              col("Species").astype("int")
-                              )
-    display(data)
+                             col("CulmenDepth").astype("float"),
+                             col("FlipperLength").astype("float"),
+                             col("BodyMass").astype("float"),
+                             col("Species").astype("int")
+                             )
+   display(data)
     ```
     
     Once again, you can toggle the details of the dataframe that is returned (this time named *data*) to verify that the data types have been applied, and you can review the data to verify that the rows containing incomplete data have been removed.
@@ -162,10 +162,10 @@ To ensure we can have confidence in our trained model, the typical approach is t
 1. Add and run a code cell with the following code to split the data.
 
     ```python
-    splits = data.randomSplit([0.7, 0.3])
-    train = splits[0]
-    test = splits[1]
-    print ("Training Rows:", train.count(), " Testing Rows:", test.count())
+   splits = data.randomSplit([0.7, 0.3])
+   train = splits[0]
+   test = splits[1]
+   print ("Training Rows:", train.count(), " Testing Rows:", test.count())
     ```
 
 ## Perform feature engineering
@@ -179,11 +179,11 @@ Machine learning algorithms are usually based on finding mathematical relationsh
 1. Run the following code to encode the **Island** categorical column values as numeric indexes.
 
     ```python
-    from pyspark.ml.feature import StringIndexer
+   from pyspark.ml.feature import StringIndexer
 
-    indexer = StringIndexer(inputCol="Island", outputCol="IslandIdx")
-    indexedData = indexer.fit(train).transform(train).drop("Island")
-    display(indexedData)
+   indexer = StringIndexer(inputCol="Island", outputCol="IslandIdx")
+   indexedData = indexer.fit(train).transform(train).drop("Island")
+   display(indexedData)
     ```
 
     In the results, you should see that instead of an island name, each row now has an **IslandIdx** column with an integer value representing the island on which the observation was recorded.
@@ -197,20 +197,20 @@ The code we'll use to do this is a little more involved than the categorical enc
 1. Use the following code to normalize the numeric features and see a comparison of the pre-normalized and normalized vector columns.
 
     ```python
-    from pyspark.ml.feature import VectorAssembler, MinMaxScaler
+   from pyspark.ml.feature import VectorAssembler, MinMaxScaler
 
-    # Create a vector column containing all numeric features
-    numericFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
-    numericColVector = VectorAssembler(inputCols=numericFeatures, outputCol="numericFeatures")
-    vectorizedData = numericColVector.transform(indexedData)
-    
-    # Use a MinMax scaler to normalize the numeric values in the vector
-    minMax = MinMaxScaler(inputCol = numericColVector.getOutputCol(), outputCol="normalizedFeatures")
-    scaledData = minMax.fit(vectorizedData).transform(vectorizedData)
-    
-    # Display the data with numeric feature vectors (before and after scaling)
-    compareNumerics = scaledData.select("numericFeatures", "normalizedFeatures")
-    display(compareNumerics)
+   # Create a vector column containing all numeric features
+   numericFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
+   numericColVector = VectorAssembler(inputCols=numericFeatures, outputCol="numericFeatures")
+   vectorizedData = numericColVector.transform(indexedData)
+   
+   # Use a MinMax scaler to normalize the numeric values in the vector
+   minMax = MinMaxScaler(inputCol = numericColVector.getOutputCol(), outputCol="normalizedFeatures")
+   scaledData = minMax.fit(vectorizedData).transform(vectorizedData)
+   
+   # Display the data with numeric feature vectors (before and after scaling)
+   compareNumerics = scaledData.select("numericFeatures", "normalizedFeatures")
+   display(compareNumerics)
     ```
 
     The **numericFeatures** column in the results contains a vector for each row. The vector includes four unscaled numeric values (the original measurements of the penguin). You can use the **&#9656;** toggle to see the discrete values more clearly.
@@ -224,9 +224,9 @@ Now, let's bring everything together and create a single column containing all o
 1. Run the following code:
 
     ```python
-    featVect = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="featuresVector")
-    preppedData = featVect.transform(scaledData)[col("featuresVector").alias("features"), col("Species").alias("label")]
-    display(preppedData)
+   featVect = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="featuresVector")
+   preppedData = featVect.transform(scaledData)[col("featuresVector").alias("features"), col("Species").alias("label")]
+   display(preppedData)
     ```
 
     The **features** vector contains five values (the encoded island and the normalized culmen length, culmen depth, flipper length, and body mass). The label contains a simple integer code that indicates the class of penguin species.
@@ -238,11 +238,11 @@ Now that the training data is prepared, you can use it to train a model. Models 
 1. Run the following code to train a model.
 
     ```python
-    from pyspark.ml.classification import LogisticRegression
+   from pyspark.ml.classification import LogisticRegression
 
-    lr = LogisticRegression(labelCol="label", featuresCol="features", maxIter=10, regParam=0.3)
-    model = lr.fit(preppedData)
-    print ("Model trained!")
+   lr = LogisticRegression(labelCol="label", featuresCol="features", maxIter=10, regParam=0.3)
+   model = lr.fit(preppedData)
+   print ("Model trained!")
     ```
 
     Most algorithms support parameters that give you some control over the way the model is trained. In this case, the logistic regression algorithm require you to identify the column containing the features vector and the column containing the known label; and also enables you to specify the maximum number of iterations performed to find optimal coeficients for the logistic calculation, and a regularization parameter that is used to prevent the model from *overfitting* (in other words, establishing a logistic calculation that works well with the training data, but which doesn't generalize well when applied to new data).
@@ -254,16 +254,16 @@ Now that you have a trained model, you can test it with the data you held back. 
 1. Use the following code to prepare the test data and then generate predictions:
 
     ```python
-    # Prepare the test data
-    indexedTestData = indexer.fit(test).transform(test).drop("Island")
-    vectorizedTestData = numericColVector.transform(indexedTestData)
-    scaledTestData = minMax.fit(vectorizedTestData).transform(vectorizedTestData)
-    preppedTestData = featVect.transform(scaledTestData)[col("featuresVector").alias("features"), col("Species").alias("label")]
-    
-    # Get predictions
-    prediction = model.transform(preppedTestData)
-    predicted = prediction.select("features", "probability", col("prediction").astype("Int"), col("label").alias("trueLabel"))
-    display(predicted)
+   # Prepare the test data
+   indexedTestData = indexer.fit(test).transform(test).drop("Island")
+   vectorizedTestData = numericColVector.transform(indexedTestData)
+   scaledTestData = minMax.fit(vectorizedTestData).transform(vectorizedTestData)
+   preppedTestData = featVect.transform(scaledTestData)[col("featuresVector").alias("features"), col("Species").alias("label")]
+   
+   # Get predictions
+   prediction = model.transform(preppedTestData)
+   predicted = prediction.select("features", "probability", col("prediction").astype("Int"), col("label").alias("trueLabel"))
+   display(predicted)
     ```
 
     The results include the following columns:
@@ -278,42 +278,42 @@ Now that you have a trained model, you can test it with the data you held back. 
 1. Use the following code to get evaluation metrics for a classification model based on the results from the test data:
 
     ```python
-    from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-    
-    evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction")
-    
-    # Simple accuracy
-    accuracy = evaluator.evaluate(prediction, {evaluator.metricName:"accuracy"})
-    print("Accuracy:", accuracy)
-    
-    # Individual class metrics
-    labels = [0,1,2]
-    print("\nIndividual class metrics:")
-    for label in sorted(labels):
-        print ("Class %s" % (label))
-    
-        # Precision
-        precision = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
-                                                    evaluator.metricName:"precisionByLabel"})
-        print("\tPrecision:", precision)
-    
-        # Recall
-        recall = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
-                                                 evaluator.metricName:"recallByLabel"})
-        print("\tRecall:", recall)
-    
-        # F1 score
-        f1 = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
-                                             evaluator.metricName:"fMeasureByLabel"})
-        print("\tF1 Score:", f1)
-    
-    # Weighted (overall) metrics
-    overallPrecision = evaluator.evaluate(prediction, {evaluator.metricName:"weightedPrecision"})
-    print("Overall Precision:", overallPrecision)
-    overallRecall = evaluator.evaluate(prediction, {evaluator.metricName:"weightedRecall"})
-    print("Overall Recall:", overallRecall)
-    overallF1 = evaluator.evaluate(prediction, {evaluator.metricName:"weightedFMeasure"})
-    print("Overall F1 Score:", overallF1)
+   from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+   
+   evaluator = MulticlassClassificationEvaluator(labelCol="label", predictionCol="prediction")
+   
+   # Simple accuracy
+   accuracy = evaluator.evaluate(prediction, {evaluator.metricName:"accuracy"})
+   print("Accuracy:", accuracy)
+   
+   # Individual class metrics
+   labels = [0,1,2]
+   print("\nIndividual class metrics:")
+   for label in sorted(labels):
+       print ("Class %s" % (label))
+   
+       # Precision
+       precision = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
+                                                   evaluator.metricName:"precisionByLabel"})
+       print("\tPrecision:", precision)
+   
+       # Recall
+       recall = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
+                                                evaluator.metricName:"recallByLabel"})
+       print("\tRecall:", recall)
+   
+       # F1 score
+       f1 = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
+                                            evaluator.metricName:"fMeasureByLabel"})
+       print("\tF1 Score:", f1)
+   
+   # Weighted (overall) metrics
+   overallPrecision = evaluator.evaluate(prediction, {evaluator.metricName:"weightedPrecision"})
+   print("Overall Precision:", overallPrecision)
+   overallRecall = evaluator.evaluate(prediction, {evaluator.metricName:"weightedRecall"})
+   print("Overall Recall:", overallRecall)
+   overallF1 = evaluator.evaluate(prediction, {evaluator.metricName:"weightedFMeasure"})
+   print("Overall F1 Score:", overallF1)
     ```
 
     The evaluation metrics that are calculated for multiclass classification include:
@@ -334,26 +334,26 @@ You trained your model by performing the required feature engineering steps and 
 1. Use the following code to create a pipeline that encapsulates the data preparation and model training steps:
 
     ```python
-    from pyspark.ml import Pipeline
-    from pyspark.ml.feature import StringIndexer, VectorAssembler, MinMaxScaler
-    from pyspark.ml.classification import LogisticRegression
-    
-    catFeature = "Island"
-    numFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
-    
-    # Define the feature engineering and model training algorithm steps
-    catIndexer = StringIndexer(inputCol=catFeature, outputCol=catFeature + "Idx")
-    numVector = VectorAssembler(inputCols=numFeatures, outputCol="numericFeatures")
-    numScaler = MinMaxScaler(inputCol = numVector.getOutputCol(), outputCol="normalizedFeatures")
-    featureVector = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="Features")
-    algo = LogisticRegression(labelCol="Species", featuresCol="Features", maxIter=10, regParam=0.3)
-    
-    # Chain the steps as stages in a pipeline
-    pipeline = Pipeline(stages=[catIndexer, numVector, numScaler, featureVector, algo])
-    
-    # Use the pipeline to prepare data and fit the model algorithm
-    model = pipeline.fit(train)
-    print ("Model trained!")
+   from pyspark.ml import Pipeline
+   from pyspark.ml.feature import StringIndexer, VectorAssembler, MinMaxScaler
+   from pyspark.ml.classification import LogisticRegression
+   
+   catFeature = "Island"
+   numFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
+   
+   # Define the feature engineering and model training algorithm steps
+   catIndexer = StringIndexer(inputCol=catFeature, outputCol=catFeature + "Idx")
+   numVector = VectorAssembler(inputCols=numFeatures, outputCol="numericFeatures")
+   numScaler = MinMaxScaler(inputCol = numVector.getOutputCol(), outputCol="normalizedFeatures")
+   featureVector = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="Features")
+   algo = LogisticRegression(labelCol="Species", featuresCol="Features", maxIter=10, regParam=0.3)
+   
+   # Chain the steps as stages in a pipeline
+   pipeline = Pipeline(stages=[catIndexer, numVector, numScaler, featureVector, algo])
+   
+   # Use the pipeline to prepare data and fit the model algorithm
+   model = pipeline.fit(train)
+   print ("Model trained!")
     ```
 
     Since the feature engineering steps are now encapsulated in the model trained by the pipeline, you can use the model with the test data without needing to apply each transformation (they'll be applied automatically by the model).
@@ -361,9 +361,9 @@ You trained your model by performing the required feature engineering steps and 
 1. Use the following code to apply the pipeline to the test data:
 
     ```python
-    prediction = model.transform(test)
-    predicted = prediction.select("Features", "probability", col("prediction").astype("Int"), col("Species").alias("trueLabel"))
-    display(predicted)
+   prediction = model.transform(test)
+   predicted = prediction.select("Features", "probability", col("prediction").astype("Int"), col("Species").alias("trueLabel"))
+   display(predicted)
     ```
 
 ## Try a different algorithm
@@ -373,26 +373,26 @@ So far you've trained a classification model by using the logistic regression al
 1. Run the following code to create a pipeline that uses a Decision tree algorithm:
 
     ```python
-    from pyspark.ml import Pipeline
-    from pyspark.ml.feature import StringIndexer, VectorAssembler, MinMaxScaler
-    from pyspark.ml.classification import DecisionTreeClassifier
-    
-    catFeature = "Island"
-    numFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
-    
-    # Define the feature engineering and model steps
-    catIndexer = StringIndexer(inputCol=catFeature, outputCol=catFeature + "Idx")
-    numVector = VectorAssembler(inputCols=numFeatures, outputCol="numericFeatures")
-    numScaler = MinMaxScaler(inputCol = numVector.getOutputCol(), outputCol="normalizedFeatures")
-    featureVector = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="Features")
-    algo = DecisionTreeClassifier(labelCol="Species", featuresCol="Features", maxDepth=10)
-    
-    # Chain the steps as stages in a pipeline
-    pipeline = Pipeline(stages=[catIndexer, numVector, numScaler, featureVector, algo])
-    
-    # Use the pipeline to prepare data and fit the model algorithm
-    model = pipeline.fit(train)
-    print ("Model trained!")
+   from pyspark.ml import Pipeline
+   from pyspark.ml.feature import StringIndexer, VectorAssembler, MinMaxScaler
+   from pyspark.ml.classification import DecisionTreeClassifier
+   
+   catFeature = "Island"
+   numFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
+   
+   # Define the feature engineering and model steps
+   catIndexer = StringIndexer(inputCol=catFeature, outputCol=catFeature + "Idx")
+   numVector = VectorAssembler(inputCols=numFeatures, outputCol="numericFeatures")
+   numScaler = MinMaxScaler(inputCol = numVector.getOutputCol(), outputCol="normalizedFeatures")
+   featureVector = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="Features")
+   algo = DecisionTreeClassifier(labelCol="Species", featuresCol="Features", maxDepth=10)
+   
+   # Chain the steps as stages in a pipeline
+   pipeline = Pipeline(stages=[catIndexer, numVector, numScaler, featureVector, algo])
+   
+   # Use the pipeline to prepare data and fit the model algorithm
+   model = pipeline.fit(train)
+   print ("Model trained!")
     ```
 
     This time, the pipeline includes the same feature preparation stages as before but uses a *Decision Tree* algorithm to train the model.
@@ -400,47 +400,47 @@ So far you've trained a classification model by using the logistic regression al
    1. Run the following code to use the new pipeline with the test data:
 
     ```python
-    # Get predictions
-    prediction = model.transform(test)
-    predicted = prediction.select("Features", "probability", col("prediction").astype("Int"), col("Species").alias("trueLabel"))
-    
-    # Generate evaluation metrics
-    from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-    
-    evaluator = MulticlassClassificationEvaluator(labelCol="Species", predictionCol="prediction")
-    
-    # Simple accuracy
-    accuracy = evaluator.evaluate(prediction, {evaluator.metricName:"accuracy"})
-    print("Accuracy:", accuracy)
-    
-    # Class metrics
-    labels = [0,1,2]
-    print("\nIndividual class metrics:")
-    for label in sorted(labels):
-        print ("Class %s" % (label))
-    
-        # Precision
-        precision = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
-                                                        evaluator.metricName:"precisionByLabel"})
-        print("\tPrecision:", precision)
-    
-        # Recall
-        recall = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
-                                                     evaluator.metricName:"recallByLabel"})
-        print("\tRecall:", recall)
-    
-        # F1 score
-        f1 = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
-                                                 evaluator.metricName:"fMeasureByLabel"})
-        print("\tF1 Score:", f1)
-    
-    # Weighed (overall) metrics
-    overallPrecision = evaluator.evaluate(prediction, {evaluator.metricName:"weightedPrecision"})
-    print("Overall Precision:", overallPrecision)
-    overallRecall = evaluator.evaluate(prediction, {evaluator.metricName:"weightedRecall"})
-    print("Overall Recall:", overallRecall)
-    overallF1 = evaluator.evaluate(prediction, {evaluator.metricName:"weightedFMeasure"})
-    print("Overall F1 Score:", overallF1)
+   # Get predictions
+   prediction = model.transform(test)
+   predicted = prediction.select("Features", "probability", col("prediction").astype("Int"), col("Species").alias("trueLabel"))
+   
+   # Generate evaluation metrics
+   from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+   
+   evaluator = MulticlassClassificationEvaluator(labelCol="Species", predictionCol="prediction")
+   
+   # Simple accuracy
+   accuracy = evaluator.evaluate(prediction, {evaluator.metricName:"accuracy"})
+   print("Accuracy:", accuracy)
+   
+   # Class metrics
+   labels = [0,1,2]
+   print("\nIndividual class metrics:")
+   for label in sorted(labels):
+       print ("Class %s" % (label))
+   
+       # Precision
+       precision = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
+                                                       evaluator.metricName:"precisionByLabel"})
+       print("\tPrecision:", precision)
+   
+       # Recall
+       recall = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
+                                                evaluator.metricName:"recallByLabel"})
+       print("\tRecall:", recall)
+   
+       # F1 score
+       f1 = evaluator.evaluate(prediction, {evaluator.metricLabel:label,
+                                            evaluator.metricName:"fMeasureByLabel"})
+       print("\tF1 Score:", f1)
+   
+   # Weighed (overall) metrics
+   overallPrecision = evaluator.evaluate(prediction, {evaluator.metricName:"weightedPrecision"})
+   print("Overall Precision:", overallPrecision)
+   overallRecall = evaluator.evaluate(prediction, {evaluator.metricName:"weightedRecall"})
+   print("Overall Recall:", overallRecall)
+   overallF1 = evaluator.evaluate(prediction, {evaluator.metricName:"weightedFMeasure"})
+   print("Overall F1 Score:", overallF1)
     ```
 
 ## Save the model
@@ -450,7 +450,7 @@ In reality, you'd iteratively try training the model with different algorithms (
 1. Use the following code to save the model:
 
     ```python
-    model.save("/models/penguin.model")
+   model.save("/models/penguin.model")
     ```
 
     Now, when you've been out and spotted a new penguin, you can load the saved model and use it to predict the penguin's species based on your measurements of its features. Using a model to generate predictions from new data is called *inferencing*.
@@ -458,19 +458,19 @@ In reality, you'd iteratively try training the model with different algorithms (
 1. Run the following code to load the model and use it to predict the species for a new penguin observation:
 
     ```python
-    from pyspark.ml.pipeline import PipelineModel
+   from pyspark.ml.pipeline import PipelineModel
 
-    persistedModel = PipelineModel.load("/models/penguin.model")
-    
-    newData = spark.createDataFrame ([{"Island": "Biscoe",
-                                      "CulmenLength": 47.6,
-                                      "CulmenDepth": 14.5,
-                                      "FlipperLength": 215,
-                                      "BodyMass": 5400}])
-    
-    
-    predictions = persistedModel.transform(newData)
-    display(predictions.select("Island", "CulmenDepth", "CulmenLength", "FlipperLength", "BodyMass", col("prediction").alias("PredictedSpecies")))
+   persistedModel = PipelineModel.load("/models/penguin.model")
+   
+   newData = spark.createDataFrame ([{"Island": "Biscoe",
+                                     "CulmenLength": 47.6,
+                                     "CulmenDepth": 14.5,
+                                     "FlipperLength": 215,
+                                     "BodyMass": 5400}])
+   
+   
+   predictions = persistedModel.transform(newData)
+   display(predictions.select("Island", "CulmenDepth", "CulmenLength", "FlipperLength", "BodyMass", col("prediction").alias("PredictedSpecies")))
     ```
 
 ## Clean up

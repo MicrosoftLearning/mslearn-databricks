@@ -109,23 +109,23 @@ Network](https://lternet.edu/).
 
 
     ```python
-    from pyspark.sql.types import *
-    from pyspark.sql.functions import *
-    
-    data = spark.read.format("csv").option("header", "true").load("/hyperopt_lab/penguins.csv")
-    data = data.dropna().select(col("Island").astype("string"),
-                              col("CulmenLength").astype("float"),
-                              col("CulmenDepth").astype("float"),
-                              col("FlipperLength").astype("float"),
-                              col("BodyMass").astype("float"),
-                              col("Species").astype("int")
-                              )
-    display(data.sample(0.2))
-    
-    splits = data.randomSplit([0.7, 0.3])
-    train = splits[0]
-    test = splits[1]
-    print ("Training Rows:", train.count(), " Testing Rows:", test.count())
+   from pyspark.sql.types import *
+   from pyspark.sql.functions import *
+   
+   data = spark.read.format("csv").option("header", "true").load("/hyperopt_lab/penguins.csv")
+   data = data.dropna().select(col("Island").astype("string"),
+                             col("CulmenLength").astype("float"),
+                             col("CulmenDepth").astype("float"),
+                             col("FlipperLength").astype("float"),
+                             col("BodyMass").astype("float"),
+                             col("Species").astype("int")
+                             )
+   display(data.sample(0.2))
+   
+   splits = data.randomSplit([0.7, 0.3])
+   train = splits[0]
+   test = splits[1]
+   print ("Training Rows:", train.count(), " Testing Rows:", test.count())
     ```
 
 ## Optimize hyperparameter values for training a model
@@ -143,34 +143,34 @@ The first step in using Hyperopt is to create a function that:
 1. Add a new cell and use the following code to create a function that uses the penguin data to rain a classification model that predicts the species of a penguin based on its location and measurements:
 
     ```python
-    from hyperopt import STATUS_OK
-    import mlflow
-    from pyspark.ml import Pipeline
-    from pyspark.ml.feature import StringIndexer, VectorAssembler, MinMaxScaler
-    from pyspark.ml.classification import DecisionTreeClassifier
-    from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-    
-    def objective(params):
-        # Train a model using the provided hyperparameter value
-        catFeature = "Island"
-        numFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
-        catIndexer = StringIndexer(inputCol=catFeature, outputCol=catFeature + "Idx")
-        numVector = VectorAssembler(inputCols=numFeatures, outputCol="numericFeatures")
-        numScaler = MinMaxScaler(inputCol = numVector.getOutputCol(), outputCol="normalizedFeatures")
-        featureVector = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="Features")
-        mlAlgo = DecisionTreeClassifier(labelCol="Species",     
-                                        featuresCol="Features",
-                                        maxDepth=params['MaxDepth'], maxBins=params['MaxBins'])
-        pipeline = Pipeline(stages=[catIndexer, numVector, numScaler, featureVector, mlAlgo])
-        model = pipeline.fit(train)
-        
-        # Evaluate the model to get the target metric
-        prediction = model.transform(test)
-        eval = MulticlassClassificationEvaluator(labelCol="Species", predictionCol="prediction", metricName="accuracy")
-        accuracy = eval.evaluate(prediction)
-        
-        # Hyperopt tries to minimize the objective function, so you must return the negative accuracy.
-        return {'loss': -accuracy, 'status': STATUS_OK}
+   from hyperopt import STATUS_OK
+   import mlflow
+   from pyspark.ml import Pipeline
+   from pyspark.ml.feature import StringIndexer, VectorAssembler, MinMaxScaler
+   from pyspark.ml.classification import DecisionTreeClassifier
+   from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+   
+   def objective(params):
+       # Train a model using the provided hyperparameter value
+       catFeature = "Island"
+       numFeatures = ["CulmenLength", "CulmenDepth", "FlipperLength", "BodyMass"]
+       catIndexer = StringIndexer(inputCol=catFeature, outputCol=catFeature + "Idx")
+       numVector = VectorAssembler(inputCols=numFeatures, outputCol="numericFeatures")
+       numScaler = MinMaxScaler(inputCol = numVector.getOutputCol(), outputCol="normalizedFeatures")
+       featureVector = VectorAssembler(inputCols=["IslandIdx", "normalizedFeatures"], outputCol="Features")
+       mlAlgo = DecisionTreeClassifier(labelCol="Species",    
+                                       featuresCol="Features",
+                                       maxDepth=params['MaxDepth'], maxBins=params['MaxBins'])
+       pipeline = Pipeline(stages=[catIndexer, numVector, numScaler, featureVector, mlAlgo])
+       model = pipeline.fit(train)
+       
+       # Evaluate the model to get the target metric
+       prediction = model.transform(test)
+       eval = MulticlassClassificationEvaluator(labelCol="Species", predictionCol="prediction", metricName="accuracy")
+       accuracy = eval.evaluate(prediction)
+       
+       # Hyperopt tries to minimize the objective function, so you must return the negative accuracy.
+       return {'loss': -accuracy, 'status': STATUS_OK}
     ```
 
 1. Add a new cell and use the following code to:
@@ -179,25 +179,25 @@ The first step in using Hyperopt is to create a function that:
     - Use the **hyperopt.fmin** function to call your training function repeatedly and try to minimize the loss.
 
     ```python
-    from hyperopt import fmin, tpe, hp
-    
-    # Define a search space for two hyperparameters (maxDepth and maxBins)
-    search_space = {
-        'MaxDepth': hp.randint('MaxDepth', 10),
-        'MaxBins': hp.choice('MaxBins', [10, 20, 30])
-    }
-    
-    # Specify an algorithm for the hyperparameter optimization process
-    algo=tpe.suggest
-    
-    # Call the training function iteratively to find the optimal hyperparameter values
-    argmin = fmin(
-      fn=objective,
-      space=search_space,
-      algo=algo,
-      max_evals=6)
-    
-    print("Best param values: ", argmin)
+   from hyperopt import fmin, tpe, hp
+   
+   # Define a search space for two hyperparameters (maxDepth and maxBins)
+   search_space = {
+       'MaxDepth': hp.randint('MaxDepth', 10),
+       'MaxBins': hp.choice('MaxBins', [10, 20, 30])
+   }
+   
+   # Specify an algorithm for the hyperparameter optimization process
+   algo=tpe.suggest
+   
+   # Call the training function iteratively to find the optimal hyperparameter values
+   argmin = fmin(
+     fn=objective,
+     space=search_space,
+     algo=algo,
+     max_evals=6)
+   
+   print("Best param values: ", argmin)
     ```
 
 1. Observe as the code iteratively runs the training function 6 times (based on the **max_evals** setting). Each run is recorded by MLflow, and you can use the the **&#9656;** toggle to expand the **MLflow run** output under the code cell and select the **experiment** hyperlink to view them. Each run is assigned a random name, and you can view each of them in the MLflow run viewer to see details of parameters and metrics that were recorded.
@@ -210,24 +210,24 @@ In addition to using MLflow experiment runs to log details of each iteration, yo
 1. Add a new cell and use the following code to view details of each run recorded by the **Trials** class:
 
     ```python
-    from hyperopt import Trials
-    
-    # Create a Trials object to track each run
-    trial_runs = Trials()
-    
-    argmin = fmin(
-      fn=objective,
-      space=search_space,
-      algo=algo,
-      max_evals=3,
-      trials=trial_runs)
-    
-    print("Best param values: ", argmin)
-    
-    # Get details from each trial run
-    print ("trials:")
-    for trial in trial_runs.trials:
-        print ("\n", trial)
+   from hyperopt import Trials
+   
+   # Create a Trials object to track each run
+   trial_runs = Trials()
+   
+   argmin = fmin(
+     fn=objective,
+     space=search_space,
+     algo=algo,
+     max_evals=3,
+     trials=trial_runs)
+   
+   print("Best param values: ", argmin)
+   
+   # Get details from each trial run
+   print ("trials:")
+   for trial in trial_runs.trials:
+       print ("\n", trial)
     ```
 
 ## Clean up

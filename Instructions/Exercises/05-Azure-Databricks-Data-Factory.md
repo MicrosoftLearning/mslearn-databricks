@@ -69,25 +69,25 @@ You can create notebooks in your Azure Databricks workspace to run code written 
 1. In the first cell of the notebook, enter (but don't run) the following code to set up a variable for the folder where this notebook will save data.
 
     ```python
-    # Use dbutils.widget define a "folder" variable with a default value
-    dbutils.widgets.text("folder", "data")
-    
-    # Now get the parameter value (if no value was passed, the default set above will be used)
-    folder = dbutils.widgets.get("folder")
+   # Use dbutils.widget define a "folder" variable with a default value
+   dbutils.widgets.text("folder", "data")
+   
+   # Now get the parameter value (if no value was passed, the default set above will be used)
+   folder = dbutils.widgets.get("folder")
     ```
 
 1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter (but don't run) the following code to download data and save it to the folder:
 
     ```python
-    import urllib3
-    
-    # Download product data from GitHub
-    response = urllib3.PoolManager().request('GET', 'https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv')
-    data = response.data.decode("utf-8")
-    
-    # Save the product data to the specified folder
-    path = "dbfs:/{0}/products.csv".format(folder)
-    dbutils.fs.put(path, data, True)
+   import urllib3
+   
+   # Download product data from GitHub
+   response = urllib3.PoolManager().request('GET', 'https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv')
+   data = response.data.decode("utf-8")
+   
+   # Save the product data to the specified folder
+   path = "dbfs:/{0}/products.csv".format(folder)
+   dbutils.fs.put(path, data, True)
     ```
 
 1. In the sidebar on the left, select **Workspace** and ensure your **Process Data** notebooks is listed. You'll use Azure data Factory to run the notebook as part of a pipeline.

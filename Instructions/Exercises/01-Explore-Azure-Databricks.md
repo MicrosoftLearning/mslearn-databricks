@@ -89,7 +89,7 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
 1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter the following code:
 
     ```python
-    display(df1)
+   display(df1)
     ```
 
 1. Use the **&#9656; Run Cell** menu option at the top-right of the new cell to run it. This code displays the contents of the dataframe, which should look similar to this:
@@ -117,17 +117,17 @@ While many data analysis are comfortable using languages like Python or Scala to
 2. Enter and run the following code in the new cell:
 
     ```python
-    df1.write.saveAsTable("products")
+   df1.write.saveAsTable("products")
     ```
 
 3. When the cell has completed, add a new cell under it with the following code:
 
     ```sql
-    %sql
+   %sql
 
-    SELECT ProductName, ListPrice
-    FROM products
-    WHERE Category = 'Touring Bikes';
+   SELECT ProductName, ListPrice
+   FROM products
+   WHERE Category = 'Touring Bikes';
     ```
 
 4. Run the new cell, which contains SQL code to return the name and price of products in the *Touring Bikes* category.
