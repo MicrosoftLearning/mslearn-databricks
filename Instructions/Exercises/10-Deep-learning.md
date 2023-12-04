@@ -169,9 +169,9 @@ PyTorch is a framework for creating machine learning models, including deep neur
 
 PyTorch makes use of *data loaders* to load training and validation data in batches. We've already loaded the data into numpy arrays, but we need to wrap those in PyTorch datasets (in which the data is converted to PyTorch *tensor* objects) and create loaders to read batches from those datasets.
 
-Add a cell and run the following code to prepare data loaders:
+1. Add a cell and run the following code to prepare data loaders:
 
-   ```python
+    ```python
    # Create a dataset and loader for the training data and labels
    train_x = torch.Tensor(x_train).float()
    train_y = torch.Tensor(y_train).long()
@@ -186,7 +186,7 @@ Add a cell and run the following code to prepare data loaders:
    test_loader = td.DataLoader(test_ds, batch_size=20,
                                 shuffle=False, num_workers=1)
    print('Ready to load data')
-   ```
+    ```
 
 ## Define a neural network
 
