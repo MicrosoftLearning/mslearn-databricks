@@ -1,0 +1,244 @@
+{
+    "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/cloud-shell-storage-westus/providers/Microsoft.Storage/storageAccounts/cs410032003231fbe9c",
+    "name": "cs410032003231fbe9c",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "westus",
+    "tags": {
+        "ms-resource-usage": "azure-cloud-shell"
+    },
+    "properties": {
+        "keyCreationTime": {
+            "key1": "2023-12-05T15:23:32.6365799Z",
+            "key2": "2023-12-05T15:23:32.6365799Z"
+        },
+        "privateEndpointConnections": [],
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "networkAcls": {
+            "bypass": "AzureServices",
+            "virtualNetworkRules": [],
+            "ipRules": [],
+            "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+            "services": {
+                "file": {
+                    "keyType": "Account",
+                    "enabled": true,
+                    "lastEnabledTime": "2023-12-05T15:23:32.7459774Z"
+                },
+                "blob": {
+                    "keyType": "Account",
+                    "enabled": true,
+                    "lastEnabledTime": "2023-12-05T15:23:32.7459774Z"
+                }
+            },
+            "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot",
+        "provisioningState": "Succeeded",
+        "creationTime": "2023-12-05T15:23:32.5740796Z",
+        "primaryEndpoints": {
+            "dfs": "https://cs410032003231fbe9c.dfs.core.windows.net/",
+            "web": "https://cs410032003231fbe9c.z22.web.core.windows.net/",
+            "blob": "https://cs410032003231fbe9c.blob.core.windows.net/",
+            "queue": "https://cs410032003231fbe9c.queue.core.windows.net/",
+            "table": "https://cs410032003231fbe9c.table.core.windows.net/",
+            "file": "https://cs410032003231fbe9c.file.core.windows.net/"
+        },
+        "primaryLocation": "westus",
+        "statusOfPrimary": "available"
+    }
+}
+
+{
+    "value": [
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Storage/storageAccounts/dbstorage467bmhnxcp24g",
+            "name": "dbstorage467bmhnxcp24g",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_GRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "location": "eastus",
+            "tags": {
+                "application": "databricks",
+                "databricks-environment": "true"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Compute/virtualMachines/798fce41b44d422aa1b3715e463b0f83",
+            "name": "798fce41b44d422aa1b3715e463b0f83",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "eastus",
+            "tags": {
+                "ClusterId": "1205-153240-vfbw9ye5",
+                "ClusterName": "User1-36118584's Cluster",
+                "Creator": "user1-36118584@lodsuatmca.onmicrosoft.com",
+                "DatabricksEnvironment": "workerenv-1292806271933879",
+                "ResourceClass": "SingleNode",
+                "Vendor": "Databricks",
+                "databricks-instance-name": "798fce41b44d422aa1b3715e463b0f83"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Network/networkInterfaces/798fce41b44d422aa1b3715e463b0f83-publicNIC",
+            "name": "798fce41b44d422aa1b3715e463b0f83-publicNIC",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "eastus",
+            "tags": {
+                "ClusterId": "1205-153240-vfbw9ye5",
+                "ClusterName": "User1-36118584's Cluster",
+                "Creator": "user1-36118584@lodsuatmca.onmicrosoft.com",
+                "DatabricksEnvironment": "workerenv-1292806271933879",
+                "ResourceClass": "SingleNode",
+                "Vendor": "Databricks",
+                "databricks-instance-name": "798fce41b44d422aa1b3715e463b0f83",
+                "management_service": "instance_manager_service"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Network/virtualNetworks/workers-vnet",
+            "name": "workers-vnet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "eastus",
+            "tags": {
+                "application": "databricks",
+                "databricks-environment": "true"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.ManagedIdentity/userAssignedIdentities/dbmanagedidentity",
+            "name": "dbmanagedidentity",
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+            "location": "eastus",
+            "tags": {
+                "application": "databricks",
+                "databricks-environment": "true"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/DATABRICKS-RG-DATABRICKS-CZDK2X6-DRYL0KO31S5HM/providers/Microsoft.Compute/disks/798fce41b44d422aa1b3715e463b0f83-containerRootVolume",
+            "name": "798fce41b44d422aa1b3715e463b0f83-containerRootVolume",
+            "type": "Microsoft.Compute/disks",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "location": "eastus",
+            "tags": {
+                "ClusterId": "1205-153240-vfbw9ye5",
+                "ClusterName": "User1-36118584's Cluster",
+                "databricks-instance-name": "798fce41b44d422aa1b3715e463b0f83",
+                "Creator": "user1-36118584@lodsuatmca.onmicrosoft.com",
+                "Vendor": "Databricks",
+                "DatabricksEnvironment": "workerenv-1292806271933879",
+                "ResourceClass": "SingleNode"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Network/networkSecurityGroups/workers-sg",
+            "name": "workers-sg",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "location": "eastus",
+            "tags": {
+                "application": "databricks",
+                "databricks-environment": "true"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Network/networkInterfaces/798fce41b44d422aa1b3715e463b0f83-privateNIC",
+            "name": "798fce41b44d422aa1b3715e463b0f83-privateNIC",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "eastus",
+            "tags": {
+                "ClusterId": "1205-153240-vfbw9ye5",
+                "ClusterName": "User1-36118584's Cluster",
+                "Creator": "user1-36118584@lodsuatmca.onmicrosoft.com",
+                "DatabricksEnvironment": "workerenv-1292806271933879",
+                "ResourceClass": "SingleNode",
+                "Vendor": "Databricks",
+                "databricks-instance-name": "798fce41b44d422aa1b3715e463b0f83",
+                "management_service": "instance_manager_service"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/databricks-rg-databricks-czdk2x6-dryl0ko31s5hm/providers/Microsoft.Network/publicIPAddresses/798fce41b44d422aa1b3715e463b0f83-publicIP",
+            "name": "798fce41b44d422aa1b3715e463b0f83-publicIP",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "sku": {
+                "name": "Basic"
+            },
+            "location": "eastus",
+            "tags": {
+                "ClusterId": "1205-153240-vfbw9ye5",
+                "ClusterName": "User1-36118584's Cluster",
+                "Creator": "user1-36118584@lodsuatmca.onmicrosoft.com",
+                "DatabricksEnvironment": "workerenv-1292806271933879",
+                "ResourceClass": "SingleNode",
+                "Vendor": "Databricks",
+                "databricks-instance-name": "798fce41b44d422aa1b3715e463b0f83",
+                "management_service": "instance_manager_service"
+            }
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/DATABRICKS-RG-DATABRICKS-CZDK2X6-DRYL0KO31S5HM/providers/Microsoft.Compute/disks/798fce41b44d422aa1b3715e463b0f83-0-scratchVolume",
+            "name": "798fce41b44d422aa1b3715e463b0f83-0-scratchVolume",
+            "type": "Microsoft.Compute/disks",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "location": "eastus",
+            "tags": {
+                "ClusterId": "1205-153240-vfbw9ye5",
+                "ClusterName": "User1-36118584's Cluster",
+                "databricks-instance-name": "798fce41b44d422aa1b3715e463b0f83",
+                "Creator": "user1-36118584@lodsuatmca.onmicrosoft.com",
+                "Vendor": "Databricks",
+                "DatabricksEnvironment": "workerenv-1292806271933879",
+                "ResourceClass": "SingleNode"
+            }
+        }
+    ]
+}
+
+{
+    "value": [
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/msl-czdk2x6/providers/Microsoft.DataFactory/factories/adf-czdk2x6",
+            "name": "adf-czdk2x6",
+            "type": "Microsoft.DataFactory/factories",
+            "location": "eastus",
+            "tags": {}
+        },
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/msl-czdk2x6/providers/Microsoft.Databricks/workspaces/databricks-czdk2x6",
+            "name": "databricks-czdk2x6",
+            "type": "Microsoft.Databricks/workspaces",
+            "sku": {
+                "name": "premium"
+            },
+            "location": "eastus"
+        }
+    ]
+}
+
+{
+    "value": [
+        {
+            "id": "/subscriptions/9916f0b6-6939-456c-b5b5-02d731b054d3/resourceGroups/NetworkWatcherRG/providers/Microsoft.Network/networkWatchers/NetworkWatcher_eastus",
+            "name": "NetworkWatcher_eastus",
+            "type": "Microsoft.Network/networkWatchers",
+            "location": "eastus"
+        }
+    ]
+}
