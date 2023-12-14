@@ -196,7 +196,7 @@ Now we're ready to define our neural network. In this case, we'll create a netwo
 - A hidden layer that receives ten inputs from the input layer and sends ten outputs to the next layer.
 - An output layer that generates a vector of probabilities for each of the three possible penguin species.
 
-As we train the network by passing data through it, the **forward** function will apply *RELU* activation functions to the first two layers (to constrain the results to positive numbers) and a *Softmax* function to the final output layer (to generate a probability distribution for the three classes)
+As we train the network by passing data through it, the **forward** function will apply *RELU* activation functions to the first two layers (to constrain the results to positive numbers) and return a final output layer that uses a *log_softmax* function to return a value that represents a probability score for each of the three possible classes.
 
 1. Run the following code to define the neural network:
 
@@ -215,7 +215,7 @@ As we train the network by passing data through it, the **forward** function wil
        def forward(self, x):
            fc1_output = torch.relu(self.fc1(x))
            fc2_output = torch.relu(self.fc2(fc1_output))
-           y = torch.softmax(self.fc3(fc2_output).float(), dim=0)
+           y = F.log_softmax(self.fc3(fc2_output).float(), dim=1)
            return y
    
    # Create a model instance from the network
