@@ -107,7 +107,7 @@ To use Azure Databricks from an Azure Data Factory pipeline, you need to create 
 
 ### Create a linked service in Azure Data Factory
 
-1. Return to the Azure portal, and in the **dp203-*xxxxxxx*** resource group, select the **adf*xxxxxxx*** Azure Data Factory resource.
+1. Return to the Azure portal, and in the **msl-*xxxxxxx*** resource group, select the **adf*xxxxxxx*** Azure Data Factory resource.
 2. On the **Overview** page, select the **Launch studio** to open the Azure Data Factory Studio. Sign in if prompted.
 3. In Azure Data Factory Studio, use the **>>** icon to expand the navigation pane on the left. Then select the **Manage** page.
 4. On the **Manage** page, in the **Linked services** tab, select **+ New** to add a new linked service.
@@ -158,6 +158,7 @@ Now that you have created a linked service, you can use it in a pipeline to run 
     > **Note**: If your pipeline fails, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned to create a job cluster. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./setup.ps1 eastus`
 
 4. When the run succeeds, select its name to view the run details. Then, on the **Process Data with Databricks** page, in the **Activity Runs** section, select the **Process Data** activity and use its ***output*** icon to view the output JSON from the activity, which should resemble this:
+
     ```json
     {
         "runPageUrl": "https://adb-..../run/...",
