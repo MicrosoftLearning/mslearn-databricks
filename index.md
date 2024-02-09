@@ -8,8 +8,8 @@ layout: home
 
 These exercises are designed to support the following training content on Microsoft Learn:
 
-- [Data engineering with Azure Databricks](https://learn.microsoft.com/training/paths/data-engineer-azure-databricks/)
-- [Machine learning with Azure Databricks](https://learn.microsoft.com/training/paths/build-operate-machine-learning-solutions-azure-databricks/)
+- [Implement a Data Analytics Solution with Azure Databricks](https://learn.microsoft.com/training/paths/data-engineer-azure-databricks/)
+- [Implement a Machine Learning solution with Azure Databricks](https://learn.microsoft.com/training/paths/build-operate-machine-learning-solutions-azure-databricks/)
 
 You'll need an Azure subscription in which you have administrative access to complete these exercises.
 
