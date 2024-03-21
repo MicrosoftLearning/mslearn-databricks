@@ -69,37 +69,24 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
-## Use Spark to analyze a data file
+## Use Spark to analyze data
 
 As in many Spark environments, Databricks supports the use of notebooks to combine notes and interactive code cells that you can use to explore data.
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**.
-1. Change the default notebook name (**Untitled Notebook *[date]***) to **Explore products** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
-1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file from `https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv` to your local computer, saving it as **products.csv**. Then, in the **Explore products** notebook, on the **File** menu, select **Upload data to DBFS**.
-1. In the **Upload Data** dialog box, note the **DBFS Target Directory** to where the file will be uploaded. Then select the **Files** area, and upload the **products.csv** file you downloaded to your computer. When the file has been uploaded, select **Next**
-1. In the **Access files from notebooks** pane, select the sample PySpark code and copy it to the clipboard. You will use it to load the data from the file into a DataFrame. Then select **Done**.
-1. In the **Explore products** notebook, in the empty code cell, paste the code you copied; which should look similar to this:
+1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file from `https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv` to your local computer, saving it as **products.csv**.
+1. 1. In the sidebar, in the **(+) New** link menu, select **File upload**.
+1. Upload the **products.csv** file you downloaded to your computer.
+1. In the **Create or modify table from file upload** page, ensure that your cluster is selected at the top right of the page. Then choose the **hive_metastore** catalog and its default schema to create a new table named **products**.
+1. In the **catalog Explorer** page when the **products** page has been created, in the **Create** button menu, select **Notebook** to create a notebook.
+1. In the notebook, ensure that the notebook is connected to your cluster and then review the code that has been automatically been added to the first cell; which should look similar to this:
 
     ```python
-    df1 = spark.read.format("csv").option("header", "true").load("dbfs:/FileStore/shared_uploads/user@outlook.com/products.csv")
+    %sql
+    SELECT * FROM `hive_metastore`.`default`.`products`;
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the top-right of the cell to run it, starting and attaching the cluster if prompted.
-1. Wait for the Spark job run by the code to complete. The code has created a *dataframe* object named **df1** from the data in the file you uploaded.
-1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter the following code:
-
-    ```python
-   display(df1)
-    ```
-
-1. Use the **&#9656; Run Cell** menu option at the top-right of the new cell to run it. This code displays the contents of the dataframe, which should look similar to this:
-
-    | ProductID | ProductName | Category | ListPrice |
-    | -- | -- | -- | -- |
-    | 771 | Mountain-100 Silver, 38 | Mountain Bikes | 3399.9900 |
-    | 772 | Mountain-100 Silver, 42 | Mountain Bikes | 3399.9900 |
-    | ... | ... | ... | ... |
-
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it, starting and attaching the cluster if prompted.
+1. Wait for the Spark job run by the code to complete. The code retrieves data from the table that was created based on the file you uploaded.
 1. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
     - **Visualization type**: Bar
     - **X Column**: Category
@@ -109,29 +96,20 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
 
     ![A bar chart showing product counts by category](./images/databricks-chart.png)
 
-## Create and query a table
+## Analyze data with a dataframe
 
-While many data analysis are comfortable using languages like Python or Scala to work with data in files, a lot of data analytics solutions are built on relational databases; in which data is stored in tables and manipulated using SQL.
+While most data analysis are comfortable using SQL code as used in the previous example, some data analysts and data scientists can use native Spark objects such as a *dataframe* in programming languages such as *PySpark* (A Spark-optimized version of Python) to work efficiently with data.
 
-1. In the **Explore products** notebook, under the chart output from the previously run code cell, use the **+** icon to add a new cell.
-2. Enter and run the following code in the new cell:
+1. In the notebook, under the chart output from the previously run code cell, use the **+** icon to add a new cell.
+1. Enter and run the following code in the new cell:
 
     ```python
-   df1.write.saveAsTable("products")
+    df = spark.sql("SELECT * FROM products")
+    df = df.filter("Category == 'Road Bikes'")
+    display(df)
     ```
 
-3. When the cell has completed, add a new cell under it with the following code:
-
-    ```sql
-   %sql
-
-   SELECT ProductName, ListPrice
-   FROM products
-   WHERE Category = 'Touring Bikes';
-    ```
-
-4. Run the new cell, which contains SQL code to return the name and price of products in the *Touring Bikes* category.
-5. In the sidebar, select the **Catalog** link, and verify that the **products** table has been created in the default database schema (which is unsurprisingly named **default**). It's possible to use Spark code to create custom database schemas and a schema of relational tables that data analysts can use to explore data and generate analytical reports.
+1. Run the new cell, which returns products in the *Road Bikes* category.
 
 ## Clean up
 

@@ -78,7 +78,7 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
 
 ### Ingest data
 
-1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the Databricks file system (DBFS) used by your cluster.
+1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
     ```python
     %sh
@@ -89,7 +89,7 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
     wget -O /dbfs/spark_lab/2021.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2021.csv
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the top-right of the following cell to run it. Then wait for the Spark job run by the code to complete.
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
 ### Query data in files
 

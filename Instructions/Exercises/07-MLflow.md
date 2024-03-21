@@ -91,7 +91,7 @@ and the [Palmer Station, Antarctica LTER](https://pal.lternet.edu/), a
 member of the [Long Term Ecological Research
 Network](https://lternet.edu/).
 
-1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download the penguin data from GitHub into the Databricks file system (DBFS) used by your cluster.
+1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download the penguin data from GitHub into the file system used by your cluster.
 
     ```bash
     %sh
@@ -100,7 +100,7 @@ Network](https://lternet.edu/).
     wget -O /dbfs/mlflow_lab/penguins.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/penguins.csv
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the top-right of the following cell to run it. Then wait for the Spark job run by the code to complete.
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
 1. Now prepare the data for machine learning. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to:
     - Remove any incomplete rows
