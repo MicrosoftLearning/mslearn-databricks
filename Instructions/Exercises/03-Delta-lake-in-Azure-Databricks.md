@@ -139,7 +139,7 @@ The data has been loaded into a dataframe. Let's persist it into a delta table.
 
 Data modifications are logged, enabling you to use the *time-travel* capabilities of Delta Lake to view previous versions of the data. 
 
-1. In  anew code cell, use the following code to view the original version of the product data:
+1. In a new code cell, use the following code to view the original version of the product data:
 
     ```python
    new_df = spark.read.format("delta").option("versionAsOf", 0).load(delta_table_path)
@@ -156,8 +156,8 @@ Data modifications are logged, enabling you to use the *time-travel* capabilitie
 
 So far you've worked with delta tables by loading data from the folder containing the parquet files on which the table is based. You can define *catalog tables* that encapsulate the data and provide a named table entity that you can reference in SQL code. Spark supports two kinds of catalog tables for delta lake:
 
-- *External* tables that are defined by the path to the parquet files containing the table data.
-- *Managed* tables, that are defined in the Hive metastore for the Spark cluster.
+- *External* tables that are defined by the path to the files containing the table data.
+- *Managed* tables, that are defined in the metastore.
 
 ### Create an external table
 
@@ -188,7 +188,7 @@ So far you've worked with delta tables by loading data from the folder containin
    spark.sql("DESCRIBE EXTENDED AdventureWorks.ProductsManaged").show(truncate=False)
     ```
 
-    You did not specify a path for the parquet files used by the table - this is managed for you in the Hive metastore, and shown in the **Location** property in the table description (in the **dbfs:/user/hive/warehouse/** path).
+    You did not specify a path for the parquet files used by the table - this is managed for you in the Hive metastore, and shown in the **Location** property in the table description.
 
 1. Use the following code to query the managed table, noting that the syntax is just the same as for a managed table:
 
