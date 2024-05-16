@@ -74,7 +74,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 As in many Spark environments, Databricks supports the use of notebooks to combine notes and interactive code cells that you can use to explore data.
 
 1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file from `https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv` to your local computer, saving it as **products.csv**.
-1. 1. In the sidebar, in the **(+) New** link menu, select **File upload**.
+1. In the sidebar, in the **(+) New** link menu, select **File upload**.
 1. Upload the **products.csv** file you downloaded to your computer.
 1. In the **Create or modify table from file upload** page, ensure that your cluster is selected at the top right of the page. Then choose the **hive_metastore** catalog and its default schema to create a new table named **products**.
 1. In the **catalog Explorer** page when the **products** page has been created, in the **Create** button menu, select **Notebook** to create a notebook.
