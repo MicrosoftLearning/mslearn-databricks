@@ -1,4 +1,9 @@
-# Exercise 01 - Real-time Ingestion and Processing with Spark Structured Streaming and Delta Lake with Azure Databricks
+---
+lab:
+    title: 'Real-time Ingestion and Processing with Spark Structured Streaming and Delta Lake with Azure Databricks'
+---
+
+# Real-time Ingestion and Processing with Spark Structured Streaming and Delta Lake with Azure Databricks
 
 ## Objective
 In this lab, you will learn how to use Azure Databricks to set up a real-time data ingestion pipeline using Spark Structured Streaming and Delta Lake. By the end of this lab, you will be able to:

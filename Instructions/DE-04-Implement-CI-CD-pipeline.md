@@ -1,4 +1,9 @@
-# Exercise 04 - Implement CI/CD Pipelines with Azure Databricks and Azure DevOps or Azure Databricks and GitHub
+---
+lab:
+    title: 'Implement CI/CD Pipelines with Azure Databricks and Azure DevOps or Azure Databricks and GitHub'
+---
+
+# Implement CI/CD Pipelines with Azure Databricks and Azure DevOps or Azure Databricks and GitHub
 
 ## Objective:
 To implement Continuous Integration (CI) and Continuous Deployment (CD) pipelines using Azure DevOps and GitHub, integrating with Azure Databricks to automate the deployment of data engineering solutions.

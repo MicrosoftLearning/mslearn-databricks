@@ -1,4 +1,9 @@
-# Exercise 02 - Explore data with Azure Databricks
+---
+lab:
+    title: 'Explore data with Azure Databricks'
+---
+
+# Explore data with Azure Databricks
 ## Objective
 Learn to load, explore, and perform analysis on a sample retail dataset using Azure Databricks.
 

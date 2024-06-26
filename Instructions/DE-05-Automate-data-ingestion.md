@@ -1,4 +1,9 @@
-# Exercise 05 - Automating Data Ingestion and Processing using Azure Databricks
+---
+lab:
+    title: 'Automating Data Ingestion and Processing using Azure Databricks'
+---
+
+# Automating Data Ingestion and Processing using Azure Databricks
 
 ## Objective
 In this lab, you will learn how to automate data ingestion and processing using Azure Databricks and Automation Jobs. By the end of this lab, you will be able to:

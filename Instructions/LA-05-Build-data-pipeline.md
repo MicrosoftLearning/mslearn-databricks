@@ -1,4 +1,9 @@
-# Exercise 05 - Create a data pipeline with Delta Live tables
+---
+lab:
+    title: 'Create a data pipeline with Delta Live tables'
+---
+
+# Create a data pipeline with Delta Live tables
 
 ## Objective
 Learn to set up data pipeline using Delta Live Tables in Azure Databricks to ingest, transform, and aggregate COVID-19 time-series data to provide insights into trends over time across different regions.

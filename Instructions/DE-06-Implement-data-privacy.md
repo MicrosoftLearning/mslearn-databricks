@@ -1,4 +1,9 @@
-# Exercise 06 - Implementing Data Privacy and Governance using Microsoft Purview and Unity Catalog with Azure Databricks
+---
+lab:
+    title: 'Implementing Data Privacy and Governance using Microsoft Purview and Unity Catalog with Azure Databricks'
+---
+
+# Implementing Data Privacy and Governance using Microsoft Purview and Unity Catalog with Azure Databricks
 
 ## Objective
 The objective of this lab is to demonstrate how to implement data privacy and governance using Microsoft Purview and Unity Catalog in Azure Databricks. By the end of this lab, you will be able to:

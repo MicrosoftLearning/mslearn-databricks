@@ -1,136 +1,117 @@
-# Exercise 01 - Real-time Ingestion and Processing with Spark Structured Streaming and Delta Lake with Azure Databricks
+---
+lab:
+    title: 'Optimize Data Pipelines for Better Performance in Azure Databricks'
+---
 
-## Objective
-In this lab, you will learn how to use Azure Databricks to set up a real-time data ingestion pipeline using Spark Structured Streaming and Delta Lake. By the end of this lab, you will be able to:
+# Optimize Data Pipelines for Better Performance in Azure Databricks
 
-1. Set up Azure Databricks and create a cluster.
-2. Ingest streaming data using Spark Structured Streaming.
-3. Process and store streaming data using Delta Lake.
-4. Query real-time data.
+## Objective:
+By the end of this lab, you will understand how to optimize data pipelines in Azure Databricks to improve performance. You will learn techniques for optimizing data ingestion, transformation, and storage.
 
-## Pre-requisites
-- An active Azure subscription.
-- Basic understanding of Apache Spark and Delta Lake.
-- Basic knowledge of Azure Databricks.
+## Sample Dataset:
+For this lab, we will use a public dataset of New York City Taxi Trips, which contains detailed records of trips including pickup and dropoff times, locations, passenger counts, and fare amounts.
 
-## Sample Dataset
-For this lab, we'll use a sample dataset that simulates real-time data from a device monitoring system. The dataset includes fields such as device_id, timestamp, temperature, and humidity.
+## Prerequisites:
+- An Azure account with access to Databricks
+- Basic knowledge of Spark and Databricks
 
-## Step-by-Step Instructions
-### Step 1: Set up Azure Databricks
-
-1. Create an Azure Databricks Workspace
+## Step-by-Step Instructions:
+### Step 1: Setting up Azure Databricks
+1. Create an Azure Databricks Workspace:
 
 - Go to the Azure portal.
-- Click on "Create a resource".
-- Search for "Azure Databricks" and select it.
-- Click "Create" and fill in the required details.
-- Click "Review + create" and then "Create".
-- Create a Databricks Cluster
+- Search for "Databricks" and select "Azure Databricks".
+- Click "Create" and follow the prompts to set up a new workspace.
 
-2. In the Azure Databricks workspace, navigate to the "Clusters" tab.
+2. Create a Databricks Cluster:
 
-- Click on "Create Cluster".
-- Provide a name for the cluster and select the cluster mode and specifications.
-- Click "Create Cluster".
+- In your Databricks workspace, navigate to "Clusters".
+- Click "Create Cluster" and configure the cluster settings (e.g., cluster name, cluster mode, and instance type).
+- Click "Create Cluster" to launch the cluster.
 
-### Step 2: Prepare the Streaming Data Source
-1. Simulate a Streaming Data Source
+### Step 2: Importing the Dataset
+1. Upload the Dataset to Databricks:
 
-- Create a directory in DBFS to store the sample data
-```sh
-    dbutils.fs.mkdirs("/mnt/device_data")
-```
+- In your Databricks workspace, go to "Data" > "Add Data".
+- Click "Upload File" and select the yellow_tripdata_2023-01.parquet file.
+- Follow the prompts to upload the file to DBFS (Databricks File System).
 
-2. Upload a sample CSV file to 'mnt\device_data' directory. Use the following sample data and save it as 'device_data.csv'.
-
-```sql
-device_id,timestamp,temperature,humidity
-1,2024-06-24 00:00:00,22.5,45
-2,2024-06-24 00:00:01,23.0,44
-3,2024-06-24 00:00:02,21.5,50
-```
-
-3. Upload this file using the Azure Databricks User Interface under the "Data" tab.
-
-### Step 3: Ingest Streaming Data with Spark Structured Streaming
-
-1. Create a Notebook in Azure Databricks
-
-- Navigate to the "Workspace" tab and create a new notebook.
-- Name the notebook "RealTimeIngestion".
-
-2. Read the Streaming data
+2. Load the Dataset into a DataFrame
 ```python
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType
-
-schema = StructType([
-    StructField("device_id", StringType(), True),
-    StructField("timestamp", TimestampType(), True),
-    StructField("temperature", DoubleType(), True),
-    StructField("humidity", DoubleType(), True)
-])
-
-raw_data = (spark.readStream
-            .format("csv")
-            .schema(schema)
-            .option("header", "true")
-            .load("/mnt/device_data"))
+# Load the dataset into a DataFrame
+df = spark.read.parquet("/FileStore/tables/yellow_tripdata_2022-01.parquet")
 ```
 
-### Step 4: Process and Store Data with Delta Lake
-1. Write Streaming Data to Delta Lake
-
-- Add the following code to the notebook to write the streaming data into a Delta table.
-```python
-delta_table_path = "/mnt/delta/device_data"
-
-query = (raw_data.writeStream
-         .format("delta")
-         .outputMode("append")
-         .option("checkpointLocation", "/mnt/checkpoints/device_data")
-         .start(delta_table_path))
-```
-
-2. Wait for the Streaming query to start
-- Use the following code to ensure the streaming query is running.
+### Step 3: Data Ingestion Optimization
+1. Optimize Data Ingestion with Auto Loader:
+- Auto Loader incrementally and efficiently processes new files as they arrive in a cloud storage container.
 
 ```python
-    query.awaitTermination()
-```
-### Step 5 - Query Real-time Data
+df = (spark.readStream
+        .format("cloudFiles")
+        .option("cloudFiles.format", "parquet")
+        .load("/mnt/data/nyc_taxi_trips/"))
 
-1. Create a Delta Table
-- Use the following code to create a Delta table.
+df.writeStream.format("delta").option("checkpointLocation", "/mnt/data/nyc_taxi_trips/checkpoints").start("/mnt/delta/nyc_taxi_trips")
+```
+
+### Step 4: Data Transformation Optimization
+
+1. Use Delta Lake for Better Performance:
+- Delta Lake provides ACID transactions, scalable metadata handling, and unifies streaming and batch data processing.
 
 ```python
-spark.sql(f"""
-CREATE TABLE device_data_delta
-USING DELTA
-LOCATION '{delta_table_path}'
-""")
+    df.write.format("delta").mode("overwrite").save("/mnt/delta/nyc_taxi_trips")
 ```
 
-2. Query the Real-Time data.
+2. Optimize Data Skew with Salting:
+- Data skew can lead to uneven task distribution. Salting helps distribute data more evenly across partitions.
+
 ```python
-    display(spark.sql("SELECT * FROM device_data_delta"))
+from pyspark.sql.functions import lit, rand
+
+# Add a salt column
+df_salted = df.withColumn("salt", (rand() * 100).cast("int"))
+
+# Repartition based on the salted column
+df_salted.repartition("salt").write.format("delta").mode("overwrite").save("/mnt/delta/nyc_taxi_trips_salted")
 ```
 
-### Step 6 - Monitoring and Management
-1. Monitor the Streaming Query
-- In the Azure Databricks, navigate to the "Streaming" tabl to monitor the progress of the streaming query.
+### Step 5 - Storage Optimization
 
-2. Manage Delta Lake Tables
-- Use the Delta Lake Commands to manage the tables for optimizing and vaccumming.
+1. Optimize Delta Table:
+- Use Delta Lake's optimization commands to improve read performance.
 
-```Python
-# Optimize the table
-spark.sql("OPTIMIZE device_data_delta")
+```python
+from delta.tables import DeltaTable
 
-# Remove old data
-spark.sql("VACUUM device_data_delta RETAIN 0 HOURS")
-
+delta_table = DeltaTable.forPath(spark, "/mnt/delta/nyc_taxi_trips")
+delta_table.optimize().executeCompaction()
 ```
 
-## Conclusion
-In this lab, we have successfully set up a real-time data ingestion pipeline using Spark Structured Streaming and Delta Lake on Azure Databricks. We have learned how to ingest, process, and query real-time data using Databricks UI. This pipeline can be extended to handle more complex transformations and larger datasets as needed.s
+2. Z-Order Clustering
+- Z-Order clustering co-locates related information in the same set of files, improving query performance.
+
+```python
+    delta_table.optimize().executeZOrderBy("pickup_datetime")
+```
+
+### Step 6 - Monitoring and Managing Pipelines
+
+1. Monitor Job Performance
+- Use Databricks' job monitoring tools to analyze and optimize the performance of your data pipelines.
+
+```python
+    # Example of starting a job and monitoring
+    dbutils.notebook.run("/path/to/notebook", timeout_seconds=3600)
+```
+
+2. Tune Spark Configurations
+- Adjust Spark configurations based on the workload and cluster capabilities for optimal performance.
+
+```python
+    spark.conf.set("spark.sql.shuffle.partitions", 200)
+    spark.conf.set("spark.databricks.io.cache.enabled", "true")
+```
+
+By following these steps, you have learned how to optimize data pipelines in Azure Databricks for better performance. The techniques covered include data ingestion optimization, transformation optimization, and storage optimization using Delta Lake, Auto Loader, and Spark configurations.

@@ -1,4 +1,9 @@
-# Exercise 06 - Deploy workloads with Azure Databricks Workflows
+---
+lab:
+    title: 'Deploy workloads with Azure Databricks Workflows'
+---
+
+# Deploy workloads with Azure Databricks Workflows
 
 ## Objective
 To develop proficiency in designing, implementing, and automating a data pipeline using Azure Databricks
