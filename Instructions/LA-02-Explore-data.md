@@ -133,60 +133,6 @@ In this exercise, you'll create a *single-node* cluster to minimize the compute 
    df.printSchema()
     ```
 
-## Filter a dataframe
-
-1. Add a new code cell and use it to run the following code, which will:
-    - Filter the columns of the sales orders dataframe to include only the customer name and email address.
-    - Count the total number of order records
-    - Count the number of distinct customers
-    - Display the distinct customers
-
-    ```python
-   customers = df['CustomerName', 'Email']
-   print(customers.count())
-   print(customers.distinct().count())
-   display(customers.distinct())
-    ```
-
-    Observe the following details:
-
-    - When you perform an operation on a dataframe, the result is a new dataframe (in this case, a new customers dataframe is created by selecting a specific subset of columns from the df dataframe)
-    - Dataframes provide functions such as count and distinct that can be used to summarize and filter the data they contain.
-    - The `dataframe['Field1', 'Field2', ...]` syntax is a shorthand way of defining a subset of column. You can also use **select** method, so the first line of the code above could be written as `customers = df.select("CustomerName", "Email")`
-
-1. Now let's apply a filter to include only the customers who have placed an order for a specific product by running the following code in a new code cell:
-
-    ```python
-   customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
-   print(customers.count())
-   print(customers.distinct().count())
-   display(customers.distinct())
-    ```
-
-    Note that you can “chain” multiple functions together so that the output of one function becomes the input for the next - in this case, the dataframe created by the select method is the source dataframe for the where method that is used to apply filtering criteria.
-
-## Aggregate and group data in a dataframe
-
-1. Run the following code in a new code cell to aggregate and group the order data:
-
-    ```python
-   productSales = df.select("Item", "Quantity").groupBy("Item").sum()
-   display(productSales)
-    ```
-
-    Note that the results show the sum of order quantities grouped by product. The **groupBy** method groups the rows by *Item*, and the subsequent **sum** aggregate function is applied to all of the remaining numeric columns (in this case, *Quantity*)
-
-1. In a new code cell, let's try another aggregation:
-
-    ```python
-   yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
-   display(yearlySales)
-    ```
-
-    This time the results show the number of sales orders per year. Note that the select method includes a SQL **year** function to extract the year component of the *OrderDate* field, and then an **alias** method is used to assign a columm name to the extracted year value. The data is then grouped by the derived *Year* column and the **count** of rows in each group is calculated before finally the **orderBy** method is used to sort the resulting dataframe.
-
-> **Note**: To learn more about working with Dataframes in Azure Databricks, see [Introduction to DataFrames - Python](https://docs.microsoft.com/azure/databricks/spark/latest/dataframes-datasets/introduction-to-dataframes-python) in the Azure Databricks documentation.
-
 ## Query data using Spark SQL
 
 1. Add a new code cell and use it to run the following code:
@@ -200,28 +146,6 @@ In this exercise, you'll create a *single-node* cluster to minimize the compute 
    The native methods of the dataframe object you used previously enable you to query and analyze data quite effectively. However, many data analysts are more comfortable working with SQL syntax. Spark SQL is a SQL language API in Spark that you can use to run SQL statements, or even persist data in relational tables.
 
    The code you just ran creates a relational *view* of the data in a dataframe, and then uses the **spark.sql** library to embed Spark SQL syntax within your Python code and query the view and return the results as a dataframe.
-
-## Run SQL code in a cell
-
-1. While it’s useful to be able to embed SQL statements into a cell containing PySpark code, data analysts often just want to work directly in SQL. Add a new code cell and use it to run the following code.
-
-    ```sql
-   %sql
-    
-   SELECT YEAR(OrderDate) AS OrderYear,
-          SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
-   FROM salesorders
-   GROUP BY YEAR(OrderDate)
-   ORDER BY OrderYear;
-    ```
-
-    Observe that:
-    
-    - The ``%sql` line at the beginning of the cell (called a magic) indicates that the Spark SQL language runtime should be used to run the code in this cell instead of PySpark.
-    - The SQL code references the **salesorder** view that you created previously.
-    - The output from the SQL query is automatically displayed as the result under the cell.
-    
-> **Note**: For more information about Spark SQL and dataframes, see the [Spark SQL documentation](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
 
 ## View results as a visualization
 
