@@ -65,7 +65,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 1. Wait for the cluster to be created. It may take a minute or two.
 
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
+    > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
 ## Create a notebook and ingest data
 
@@ -261,6 +261,22 @@ So far you've worked with delta tables by loading data from the folder containin
     ```
 
     Because the table is based on the existing delta files, which include the logged history of changes, it reflects the modifications you previously made to the products data.
+
+## Optimize table layout
+
+The physical storage of table data and associated index data can be reorganized in order to reduce storage space and improve I/O efficiency when accessing the table. This is particularly useful after substantial insert, update, or delete operations on a table.
+
+1. In a new code cell, use the following code to optimize the layout and clean up old versions of data files in the delta table:
+
+     ```python
+    spark.sql("OPTIMIZE Products")
+    spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
+    spark.sql("VACUUM Products RETAIN 24 HOURS")
+     ```
+
+    Delta Lake has a safety check to prevent you from running a dangerous VACUUM command. In Databricks Runtime, if you are certain that there are no operations being performed on this table that take longer than the retention interval you plan to specify, you can turn off this safety check by setting the Spark configuration property `spark.databricks.delta.retentionDurationCheck.enabled` to `false`.
+
+    > **Note**: If you run VACUUM on a delta table, you lose the ability to time travel back to a version older than the specified data retention period.
 
 ## Use delta tables for streaming data
 
