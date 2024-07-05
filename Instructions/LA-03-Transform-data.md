@@ -74,6 +74,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 ## Create a notebook
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+
 2. Change the default notebook name (**Untitled Notebook *[date]***) to **Transform data with Spark** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 ## Ingest data
