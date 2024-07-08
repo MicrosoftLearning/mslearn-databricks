@@ -27,16 +27,16 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 4. In the PowerShell pane, enter the following commands to clone this repo:
 
-    ```powershell
+     ```powershell
     rm -r mslearn-databricks -f
     git clone https://github.com/MicrosoftLearning/mslearn-databricks
-    ```
+     ```
 
 5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
-    ```powershell
+     ```powershell
     ./mslearn-databricks/setup.ps1
-    ```
+     ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
@@ -72,59 +72,112 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
-## Create a notebook
+## Create a notebook and ingest data
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
 2. Change the default notebook name (**Untitled Notebook *[date]***) to **Create a pipeline with Delta Live tables** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
-3. Set the default language for this notebook to **SQL**.
+3. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+
+     ```python
+    %sh
+    rm -r /dbfs/delta_lab
+    mkdir /dbfs/delta_lab
+    wget -O /dbfs/delta_lab/covid_data.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/covid_data.csv
+     ```
+
+4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
 ## Create Delta Live Tables Pipeline using SQL
 
-1. In the first cell of the notebook, enter the following code, which creates a table using a COVID sample dataset.
+Create a new SQL notebook and start defining the Delta Live Tables using SQL scripts. Ensure you have enabled the DLT SQL UI.
 
-```sql
-CREATE TABLE raw_covid_data
-USING csv
-OPTIONS (path '/databricks-datasets/COVID/CSSEGISandData/csse_covid_19_data/csse_covid_19_daily_reports_us/03-06-2021.csv', header 'true', inferSchema 'true')
-```
+1. Put the following code in the first cell without running it. All cells will be executed after the pipeline is created. This code defines a Delta Live Table that will be populated by the raw data previously downloaded:
 
-2. Add a new code cell and use it to run the following code, which defines a Delta Live Table that will be populated by the initial table:
+     ```sql
+    CREATE OR REFRESH LIVE TABLE raw_covid_data
+    COMMENT "COVID sample dataset. This data was ingested from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University."
+    AS
+    SELECT
+      Last_Update,
+      Country_Region,
+      Confirmed,
+      Deaths,
+      Recovered
+    FROM read_files('dbfs:/delta_lab/covid_data.csv', format => 'csv', header => true)
+     ```
 
-```sql
-CREATE LIVE TABLE processed_covid_data
-COMMENT "Formatted and filtered data for analysis."
-AS
-SELECT
-    DATE_FORMAT(Last_Update, 'MM/dd/yyyy') as Report_Date,
-    Country_Region,
-    Confirmed,
-    Deaths,
-    Recovered
-FROM raw_covid_data
-WHERE Country_Region = 'US';
-```
+2. Add a new cell and use the following code to query, filter, and format the data from the previous table before analysis.
 
-3. After running the code, you'll be prompted to populate the table by either running an existing pipeline or creating a new one. Select **Create pipeline**.
+     ```sql
+    CREATE OR REFRESH LIVE TABLE processed_covid_data(
+      CONSTRAINT valid_country_region EXPECT (Country_Region IS NOT NULL) ON VIOLATION FAIL UPDATE
+    )
+    COMMENT "Formatted and filtered data for analysis."
+    AS
+    SELECT
+        DATE_FORMAT(Last_Update, 'MM/dd/yyyy') as Report_Date,
+        Country_Region,
+        Confirmed,
+        Deaths,
+        Recovered
+    FROM live.raw_covid_data;
+     ```
 
-4. In the **Delta Live Tables** menu, give your new pipeline a name and select **Core** in the **Product edition** field. Then select **Create**.
+3. In a new code cell, put the following code that will create an enriched data view for further analysis once the pipeline is successfully executed.
 
-5. Once the pipeline is successfully executed, add a new code cell and use it to run the following code, which defines an aggregated table that will use the filtered data from the processed table:
+     ```sql
+    CREATE OR REFRESH LIVE TABLE aggregated_covid_data
+    COMMENT "Aggregated daily data for the US with total counts."
+    AS
+    SELECT
+        Report_Date,
+        sum(Confirmed) as Total_Confirmed,
+        sum(Deaths) as Total_Deaths,
+        sum(Recovered) as Total_Recovered
+    FROM live.processed_covid_data
+    GROUP BY Report_Date;
+     ```
+     
+4. Select **Delta Live Tables** in the left sidebar and then select **Create Pipeline**.
 
-```sql
-CREATE LIVE TABLE aggregated_covid_data
-COMMENT "Aggregated daily data for the US with total counts."
-AS
-SELECT
-    report_date,
-    sum(confirmed) as total_confirmed,
-    sum(deaths) as total_deaths,
-    sum(recovered) as total_recovered
-FROM processed_covid_data
-GROUP BY report_date;
-```
+5. In the **Create pipeline** page, create a new pipeline with the following settings:
+    - **Pipeline name**: Give the pipeline a name
+    - **Product edition**: Advanced
+    - **Pipeline mode**: Triggered
+    - **Source code**: Select your SQL notebook
+    - **Storage options**: Hive Metastore
+    - **Storage location**: dbfs:/pipelines/delta_lab
+
+6. Select **Create** and then **Start**.
+ 
+7. Once the pipeline is successfully executed, go back to the first notebook and verify that all 3 new tables have been created in the specified storage location with the following code:
+
+     ```sql
+    display(dbutils.fs.ls("dbfs:/pipelines/delta_lab"))
+     ```
 
 ## View results as a visualization
 
-- Create Visuals in Notebooks: Use display() on DataFrame queries to visualize data, e.g., trends over time for COVID-19 cases.
+After creating the tables, it is possible to load them into dataframes and visualize the data.
+
+1. In the first notebook, add a new code cell and run the following code to load the `aggregated_covid_data` into a dataframe:
+
+    ```python
+   df = spark.read.format("delta").load('/pipelines/delta_lab/tables/aggregated_covid_data')
+   display(df)
+    ```
+
+1. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
+    - **Visualization type**: Line
+    - **X Column**: Report_Date
+    - **Y Column**: *Add a new column and select* **Total_Confirmed**. *Apply the* **Sum** *aggregation*.
+
+1. Save the visualization and view the resulting chart in the notebook.
+
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
