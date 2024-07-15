@@ -7,7 +7,7 @@ lab:
 
 Delta Lake is an open source project to build a transactional data storage layer for Spark on top of a data lake. Delta Lake adds support for relational semantics for both batch and streaming data operations, and enables the creation of a *Lakehouse* architecture in which Apache Spark can be used to process and query data in tables that are based on underlying files in the data lake.
 
-This lab will take approximately **40** minutes to complete.
+This lab will take approximately **30** minutes to complete.
 
 ## Provision an Azure Databricks workspace
 
@@ -282,102 +282,9 @@ The physical storage of table data and associated index data can be reorganized 
     spark.sql("VACUUM Products RETAIN 24 HOURS")
      ```
 
-    Delta Lake has a safety check to prevent you from running a dangerous VACUUM command. In Databricks Runtime, if you are certain that there are no operations being performed on this table that take longer than the retention interval you plan to specify, you can turn off this safety check by setting the Spark configuration property `spark.databricks.delta.retentionDurationCheck.enabled` to `false`.
+Delta Lake has a safety check to prevent you from running a dangerous VACUUM command. In Databricks Runtime, if you are certain that there are no operations being performed on this table that take longer than the retention interval you plan to specify, you can turn off this safety check by setting the Spark configuration property `spark.databricks.delta.retentionDurationCheck.enabled` to `false`.
 
-    > **Note**: If you run VACUUM on a delta table, you lose the ability to time travel back to a version older than the specified data retention period.
-
-## Use delta tables for streaming data
-
-Delta lake supports *streaming* data. Delta tables can be a *sink* or a *source* for data streams created using the Spark Structured Streaming API. In this example, you'll use a delta table as a sink for some streaming data in a simulated internet of things (IoT) scenario. The simulated device data is in JSON format, like this:
-
-```json
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"error"}
-{"device":"Dev2","status":"ok"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}
-```
-
-1. In a new cell, run the following code to download the JSON file:
-
-    ```bash
-    %sh
-    rm -r /dbfs/device_stream
-    mkdir /dbfs/device_stream
-    wget -O /dbfs/device_stream/devices1.json https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/devices1.json
-    ```
-
-1. In a new cell, run the following code to create a stream based on the folder containing the JSON device data:
-
-    ```python
-   from pyspark.sql.types import *
-   from pyspark.sql.functions import *
-   
-   # Create a stream that reads data from the folder, using a JSON schema
-   inputPath = '/device_stream/'
-   jsonSchema = StructType([
-   StructField("device", StringType(), False),
-   StructField("status", StringType(), False)
-   ])
-   iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-   print("Source stream created...")
-    ```
-
-1. Add a new code cell and use it to perpetually write the stream of data to a delta folder:
-
-    ```python
-   # Write the stream to a delta table
-   delta_stream_table_path = '/delta/iotdevicedata'
-   checkpointpath = '/delta/checkpoint'
-   deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-   print("Streaming to delta sink...")
-    ```
-
-1. Add code to read the data, just like any other delta folder:
-
-    ```python
-   # Read the data in delta format into a dataframe
-   df = spark.read.format("delta").load(delta_stream_table_path)
-   display(df)
-    ```
-
-1. Add the following code to create a table based on the delta folder to which the streaming data is being written:
-
-    ```python
-   # create a catalog table based on the streaming sink
-   spark.sql("CREATE TABLE IotDeviceData USING DELTA LOCATION '{0}'".format(delta_stream_table_path))
-    ```
-
-1. Use the following code to query the table:
-
-    ```sql
-   %sql
-   SELECT * FROM IotDeviceData;
-    ```
-
-1. Run the following code to add some fresh device data to the stream:
-
-    ```Bash
-    %sh
-    wget -O /dbfs/device_stream/devices2.json https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/devices2.json
-    ```
-
-1. Re-run the following SQL query code to verify that the new data has been added to the stream and written to the delta folder:
-
-    ```sql
-   %sql
-   SELECT * FROM IotDeviceData;
-    ```
-
-1. Run the following code to stop the stream:
-
-    ```python
-   deltastream.stop()
-    ```
+> **Note**: If you run VACUUM on a delta table, you lose the ability to time travel back to a version older than the specified data retention period.
 
 ## Clean up
 
