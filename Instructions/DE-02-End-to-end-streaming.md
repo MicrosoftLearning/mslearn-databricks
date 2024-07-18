@@ -107,7 +107,7 @@ A pipeline is the main unit for configuring and running data processing workflow
 
 5. In the first cell of the notebook, enter the following code to read the streaming data from the source and write it to a Delta table:
 
-   ```python
+     ```python
     from pyspark.sql.functions import *
     from pyspark.sql.types import *
 
@@ -130,13 +130,13 @@ A pipeline is the main unit for configuring and running data processing workflow
              .format("delta")
              .option("checkpointLocation", "/tmp/checkpoints/iot_data")
              .start("/tmp/delta/iot_data"))
-   ```
+     ```
 
 6. In the left sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 7. In the first cell of the notebook, enter the following code to create Delta Live Tables and transform the data:
 
-   ```python
+     ```python
     import dlt
 
     @dlt.table(
@@ -157,7 +157,7 @@ A pipeline is the main unit for configuring and running data processing workflow
             .withColumn("humidity_percentage", col("humidity") * 100)
             .withColumn("event_time", current_timestamp())
         )
-   ```
+     ```
 
 8. Select **Delta Live Tables** in the left sidebar and then select your pipeline.
 
@@ -180,10 +180,10 @@ A pipeline is the main unit for configuring and running data processing workflow
 - Use SQL to query the transformed IoT data and create visualizations.
 - For example, create a line chart to visualize temperature trends over time:
 
-```sql
-SELECT event_time, temperature_fahrenheit
-FROM transformed_iot_data
-ORDER BY event_time
-```
+     ```sql
+    SELECT event_time, temperature_fahrenheit
+    FROM transformed_iot_data
+    ORDER BY event_time
+     ```
 
 You have successfully created an end-to-end streaming pipeline using Delta Live Tables in Azure Databricks. You ingested streaming data from Kafka, transformed it using Delta Live Tables, and visualized the processed data in real-time.
