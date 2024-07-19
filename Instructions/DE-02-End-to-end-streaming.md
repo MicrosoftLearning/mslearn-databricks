@@ -140,7 +140,9 @@ A pipeline is the main unit for configuring and running data processing workflow
 
 3. Select **Create**.
 
-4. Once the pipeline is created, open the link to the blank notebook under **Source code** in the right-side panel.
+4. Once the pipeline is created, open the link to the blank notebook under **Source code** in the right-side panel:
+
+    ![delta-live-table-pipeline](./images/delta-live-table-pipeline.png)
 
 5. In the first cell of the notebook, enter the following code to create Delta Live Tables and transform the data:
 
@@ -168,23 +170,34 @@ A pipeline is the main unit for configuring and running data processing workflow
         )
      ```
 
-6. Select **Start**. Monitor the pipeline to ensure it runs successfully and processes the data.
+6. Select **Start**.
 
-## Visualize the Processed Data
-1. Create a Dashboard:
-
-- In the Databricks workspace, navigate to "Dashboards."
-- Create a new dashboard.
-
-2. Add Visualizations:
-
-- Use SQL to query the transformed IoT data and create visualizations.
-- For example, create a line chart to visualize temperature trends over time:
+7. Once the pipeline is successfully executed, go back to the first notebook and verify that the new tables have been created in the specified storage location with the following code:
 
      ```sql
-    SELECT event_time, temperature_fahrenheit
-    FROM transformed_iot_data
-    ORDER BY event_time
+    display(dbutils.fs.ls("dbfs:/pipelines/device_stream/tables"))
      ```
 
-You have successfully created an end-to-end streaming pipeline using Delta Live Tables in Azure Databricks. You ingested streaming data from Kafka, transformed it using Delta Live Tables, and visualized the processed data in real-time.
+## View results as a visualization
+
+After creating the tables, it is possible to load them into dataframes and visualize the data.
+
+1. In the first notebook, add a new code cell and run the following code to load the `transformed_iot_data` into a dataframe:
+
+    ```python
+   df = spark.read.format("delta").load('/pipelines/device_stream/tables/transformed_iot_data')
+   display(df)
+    ```
+
+1. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
+    - **Visualization type**: Line
+    - **X Column**: timestamp
+    - **Y Column**: *Add a new column and select* **temperature_fahrenheit**. *Apply the* **Sum** *aggregation*.
+
+1. Save the visualization and view the resulting chart in the notebook.
+
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
