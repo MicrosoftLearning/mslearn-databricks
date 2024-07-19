@@ -87,25 +87,11 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
-## Create a Delta Live Table Pipeline
+## Use delta tables for streaming data
 
-A pipeline is the main unit for configuring and running data processing workflows with Delta Live Tables. It links data sources to target datasets through a Directed Acyclic Graph (DAG) declared in Python or SQL.
+Delta lake supports *streaming* data. Delta tables can be a *sink* or a *source* for data streams created using the Spark Structured Streaming API. In this example, you'll use a delta table as a sink for some streaming data in a simulated internet of things (IoT) scenario. In the next task, this delta table will work as a source for data transformation in real time.
 
-1. Select **Delta Live Tables** in the left sidebar and then select **Create Pipeline**.
-
-2. In the **Create pipeline** page, create a new pipeline with the following settings:
-    - **Pipeline name**: Give the pipeline a name
-    - **Product edition**: Advanced
-    - **Pipeline mode**: Triggered
-    - **Source code**: Leave it blank
-    - **Storage options**: Hive Metastore
-    - **Storage location**: dbfs:/pipelines/device_stream
-
-3. Select **Create**.
-
-4. Once the pipeline is created, open the link to the blank notebook under **Source code** in the right-side panel.
-
-5. In the first cell of the notebook, enter the following code to read the streaming data from the source and write it to a Delta table:
+1. In a new cell, run the following code to create a stream based on the folder containing the csv device data:
 
      ```python
     from pyspark.sql.functions import *
@@ -132,13 +118,36 @@ A pipeline is the main unit for configuring and running data processing workflow
              .start("/tmp/delta/iot_data"))
      ```
 
-6. In the left sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+2. Use the **&#9656; Run Cell** menu option at the left of the cell to run it.
 
-7. In the first cell of the notebook, enter the following code to create Delta Live Tables and transform the data:
+This delta table will now become the source for data transformation in real time.
+
+   > Note: The code cell above creates the source stream. Therefore, the job run will never change to a completed status. To manually stop streaming, you can run `query.stop()` in a new cell.
+   
+## Create a Delta Live Table Pipeline
+
+A pipeline is the main unit for configuring and running data processing workflows with Delta Live Tables. It links data sources to target datasets through a Directed Acyclic Graph (DAG) declared in Python or SQL.
+
+1. Select **Delta Live Tables** in the left sidebar and then select **Create Pipeline**.
+
+2. In the **Create pipeline** page, create a new pipeline with the following settings:
+    - **Pipeline name**: Give the pipeline a name
+    - **Product edition**: Advanced
+    - **Pipeline mode**: Triggered
+    - **Source code**: Leave it blank
+    - **Storage options**: Hive Metastore
+    - **Storage location**: dbfs:/pipelines/device_stream
+
+3. Select **Create**.
+
+4. Once the pipeline is created, open the link to the blank notebook under **Source code** in the right-side panel.
+
+5. In the first cell of the notebook, enter the following code to create Delta Live Tables and transform the data:
 
      ```python
     import dlt
-
+    from pyspark.sql.functions import col, current_timestamp
+     
     @dlt.table(
         name="raw_iot_data",
         comment="Raw IoT device data"
@@ -159,15 +168,7 @@ A pipeline is the main unit for configuring and running data processing workflow
         )
      ```
 
-8. Select **Delta Live Tables** in the left sidebar and then select your pipeline.
-
-9. Select **Settings** and then select **Add source code**.
-
-10. In the new field for source code, navigate to and select your data transformation notebook.
-
-11. Select **Save** in the pipeline settings pane.
-
-12. Select **Start**. Monitor the pipeline to ensure it runs successfully and processes the data.
+6. Select **Start**. Monitor the pipeline to ensure it runs successfully and processes the data.
 
 ## Visualize the Processed Data
 1. Create a Dashboard:
