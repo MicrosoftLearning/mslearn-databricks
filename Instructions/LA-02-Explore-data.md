@@ -4,82 +4,299 @@ lab:
 ---
 
 # Explore data with Azure Databricks
-## Objective
-Learn to load, explore, and perform analysis on a sample retail dataset using Azure Databricks.
 
-## Prerequisites
-- An active Azure subscription. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-us/free/).
-- Access to an Azure Databricks workspace.
-- Basic knowledge of Python and SQL.
+Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform. 
 
-## Estimated time: 120 minutes
+Azure Databricks facilitates exploratory data analysis (EDA), allowing users to quickly discover insights and drive decision-making. 
 
-## Lab Setup
+It integrates with a variety of tools and techniques for EDA, including statistical methods and visualizations, to summarize data characteristics and identify any underlying issues.
 
-### Create a Databricks Cluster
-- Log into your Azure Databricks workspace.
-- Navigate to the “Clusters” section and create a new cluster.
-- Choose the latest Databricks Runtime version and ensure Python 3 is selected.
+This exercise should take approximately **45** minutes to complete.
+
+## Provision an Azure Databricks workspace
+
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
+
+This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. 
+
+If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
+
+1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
+2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment and creating storage if prompted. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
+
+    ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
+
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+
+3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
+
+4. In the PowerShell pane, enter the following commands to clone this repo:
+
+    ```
+    rm -r mslearn-databricks -f
+    git clone https://github.com/MicrosoftLearning/mslearn-databricks
+    ```
+
+5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
+
+    ```
+    ./mslearn-databricks/setup.ps1
+    ```
+
+6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Exploratory data analysis on Azure Databricks](https://learn.microsoft.com/azure/databricks/exploratory-data-analysis/) article in the Azure Databricks documentation.
+
+## Create a cluster
+
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. 
+
+In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
+
+> **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+
+1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
+1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
+1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+
+    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
+
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Cluster mode**: Single Node
+    - **Access mode**: Single user (*with your user account selected*)
+    - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
+    - **Use Photon Acceleration**: Selected
+    - **Node type**: Standard_DS3_v2
+    - **Terminate after** *20* **minutes of inactivity**
+
+1. Wait for the cluster to be created. It may take a minute or two.
+
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
     
-### Create a Notebook
-- In the workspace, create a new notebook.
-- Set Python as the default language for the notebook.
+## Create a Notebook
 
-#### Step 1: Loading the Data
-- Navigate to "Data" in the sidebar, click "Add Data", and upload the [Retail data by day](../../Allfiles/Labs/02/retail-data/by-day/*.csv).
+1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+   
+1. Change the default notebook name (**Untitled Notebook *[date]***) to **Explore data with Spark** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
-##### Read the Dataset
+## Ingest data
 
-```python
-retail_df = spark.read.format("csv").option("header", "true").option("inferSchema", "true").load("/FileStore/tables/retail-data/by-day/*.csv")
+1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
-# Display the Data
-display(retail_df)
-```
+    ```python
+    %sh
+    rm -r /dbfs/spark_lab
+    mkdir /dbfs/spark_lab
+    wget -O /dbfs/spark_lab/2019.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2019.csv
+    wget -O /dbfs/spark_lab/2020.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2020.csv
+    wget -O /dbfs/spark_lab/2021.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2021.csv
+    ```
 
-#### Step 2: Exploring the Data
-```python
-# Show Schema
-retail_df.printSchema()
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
-# Summary Statistics
-display(retail_df.describe())
+## Query data in files
 
-# Exploring Specific Columns
-display(retail_df.select("InvoiceNo", "Description"))
+1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the files and view the first 100 rows.
 
-# Count Distinct Values
-print(retail_df.select("StockCode").distinct().count())
-```
-#### Step 3: Basic Data Manipulations
+    ```python
+   df = spark.read.load('spark_lab/*.csv', format='csv')
+   display(df.limit(100))
+    ```
 
-```python
-# Add a Revenue Column
-from pyspark.sql.functions import col
-retail_df = retail_df.withColumn("Revenue", col("Quantity") * col("UnitPrice"))
+1. View the output and note that the data in the file relates to sales orders, but doesn't include the column headers or information about the data types. To make more sense of the data, you can define a *schema* for the dataframe.
 
-# Filter Data (High Revenue Transactions)
-high_revenue_df = retail_df.filter(col("Revenue") > 500)
-display(high_revenue_df)
+1. Add a new code cell and use it to run the following code, which defines a schema for the data:
 
-# Group and Aggregate (Total Revenue by Country)
-from pyspark.sql.functions import sum
-revenue_by_country = retail_df.groupBy("Country").agg(sum("Revenue").alias("TotalRevenue"))
-display(revenue_by_country.orderBy("TotalRevenue", ascending=False))
-```
+    ```python
+   from pyspark.sql.types import *
+   from pyspark.sql.functions import *
+   orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+   ])
+   df = spark.read.load('/spark_lab/*.csv', format='csv', schema=orderSchema)
+   display(df.limit(100))
+    ```
 
-#### Step 4: Visualizations
+1. Observe that this time, the dataframe includes column headers. Then add a new code cell and use it to run the following code to display details of the dataframe schema, and verify that the correct data types have been applied:
 
-```python
-# Visualizing Total Revenue by Country
-display(revenue_by_country)
-```
+    ```python
+   df.printSchema()
+    ```
 
-#### Step 5: Clean Up Resources
+## Query data using Spark SQL
 
-- Terminate the Cluster:
-    1. Go back to the "Clusters" page, select your cluster, and click "Terminate" to stop the cluster.
-- Optional: Delete the Databricks Service:
-    2. To avoid incurring further charges, consider deleting the Databricks workspace if this lab is not part of a larger project or learning path.
+1. Add a new code cell and use it to run the following code:
 
-This lab provides a practical introduction to data processing and analysis using Azure Databricks with a focus on a retail dataset, ideal for understanding business analytics and data engineering in a cloud environment
+    ```python
+   df.createOrReplaceTempView("salesorders")
+   spark_df = spark.sql("SELECT * FROM salesorders")
+   display(spark_df)
+    ```
+
+   The native methods of the dataframe object you used previously enable you to query and analyze data quite effectively. However, many data analysts are more comfortable working with SQL syntax. Spark SQL is a SQL language API in Spark that you can use to run SQL statements, or even persist data in relational tables.
+
+   The code you just ran creates a relational *view* of the data in a dataframe, and then uses the **spark.sql** library to embed Spark SQL syntax within your Python code and query the view and return the results as a dataframe.
+
+## View results as a visualization
+
+1. In a new code cell, run the following code to query the **salesorders** table:
+
+    ```sql
+   %sql
+    
+   SELECT * FROM salesorders
+    ```
+
+1. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
+    - **Visualization type**: Bar
+    - **X Column**: Item
+    - **Y Column**: *Add a new column and select* **Quantity**. *Apply the* **Sum** *aggregation*.
+    
+1. Save the visualization and then re-run the code cell to view the resulting chart in the notebook.
+
+## Get started with matplotlib
+
+1. In a new code cell, run the following code to retrieve some sales order data into a dataframe:
+
+    ```python
+   sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                   SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+            FROM salesorders \
+            GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+            ORDER BY OrderYear"
+   df_spark = spark.sql(sqlQuery)
+   df_spark.show()
+    ```
+
+1. Add a new code cell and use it to run the following code, which imports the **matplotlb** and uses it to create a chart:
+
+    ```python
+   from matplotlib import pyplot as plt
+    
+   # matplotlib requires a Pandas dataframe, not a Spark one
+   df_sales = df_spark.toPandas()
+   # Create a bar plot of revenue by year
+   plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+   # Display the plot
+   plt.show()
+    ```
+
+1. Review the results, which consist of a column chart with the total gross revenue for each year. Note the following features of the code used to produce this chart:
+    - The **matplotlib** library requires a Pandas dataframe, so you need to convert the Spark dataframe returned by the Spark SQL query to this format.
+    - At the core of the **matplotlib** library is the **pyplot** object. This is the foundation for most plotting functionality.
+
+1. The default settings result in a usable chart, but there’s considerable scope to customize it. Add a new code cell with the following code and run it:
+
+    ```python
+   # Clear the plot area
+   plt.clf()
+   # Create a bar plot of revenue by year
+   plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+   # Customize the chart
+   plt.title('Revenue by Year')
+   plt.xlabel('Year')
+   plt.ylabel('Revenue')
+   plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+   plt.xticks(rotation=45)
+   # Show the figure
+   plt.show()
+    ```
+
+1. A plot is technically contained with a **Figure**. In the previous examples, the figure was created implicitly for you; but you can create it explicitly. Try running the following in a new cell:
+
+    ```python
+   # Clear the plot area
+   plt.clf()
+   # Create a Figure
+   fig = plt.figure(figsize=(8,3))
+   # Create a bar plot of revenue by year
+   plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+   # Customize the chart
+   plt.title('Revenue by Year')
+   plt.xlabel('Year')
+   plt.ylabel('Revenue')
+   plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+   plt.xticks(rotation=45)
+   # Show the figure
+   plt.show()
+    ```
+
+1. A figure can contain multiple subplots, each on its own axis. Use this code to create multiple charts:
+
+    ```python
+   # Clear the plot area
+   plt.clf()
+   # Create a figure for 2 subplots (1 row, 2 columns)
+   fig, ax = plt.subplots(1, 2, figsize = (10,4))
+   # Create a bar plot of revenue by year on the first axis
+   ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+   ax[0].set_title('Revenue by Year')
+   # Create a pie chart of yearly order counts on the second axis
+   yearly_counts = df_sales['OrderYear'].value_counts()
+   ax[1].pie(yearly_counts)
+   ax[1].set_title('Orders per Year')
+   ax[1].legend(yearly_counts.keys().tolist())
+   # Add a title to the Figure
+   fig.suptitle('Sales Data')
+   # Show the figure
+   plt.show()
+    ```
+
+> **Note**: To learn more about plotting with matplotlib, see the [matplotlib documentation](https://matplotlib.org/).
+
+## Use the seaborn library
+
+1. Add a new code cell and use it to run the following code, which uses the **seaborn** library (which is built on matplotlib and abstracts some of its complexity) to create a chart:
+
+    ```python
+   import seaborn as sns
+   
+   # Clear the plot area
+   plt.clf()
+   # Create a bar chart
+   ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+   plt.show()
+    ```
+
+1. The **seaborn** library makes it simpler to create complex plots of statistical data, and enables you to control the visual theme for consistent data visualizations. Run the following code in a new cell:
+
+    ```python
+   # Clear the plot area
+   plt.clf()
+   
+   # Set the visual theme for seaborn
+   sns.set_theme(style="whitegrid")
+   
+   # Create a bar chart
+   ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+   plt.show()
+    ```
+
+1. Like matplotlib. seaborn supports multiple chart types. Run the following code to create a line chart:
+
+    ```python
+   # Clear the plot area
+   plt.clf()
+   
+   # Create a bar chart
+   ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+   plt.show()
+    ```
+
+> **Note**: To learn more about plotting with seaborn, see the [seaborn documentation](https://seaborn.pydata.org/index.html).
+
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

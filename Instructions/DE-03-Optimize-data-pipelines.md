@@ -5,63 +5,122 @@ lab:
 
 # Optimize Data Pipelines for Better Performance in Azure Databricks
 
-## Objective:
-By the end of this lab, you will understand how to optimize data pipelines in Azure Databricks to improve performance. You will learn techniques for optimizing data ingestion, transformation, and storage.
+Optimizing data pipelines in Azure Databricks can significantly enhance performance and efficiency. Utilizing Auto Loader for incremental data ingestion, coupled with the storage layer of Delta Lake, ensures reliability and ACID transactions. Implementing salting can prevent data skew, while Z-order clustering optimizes file reads by collocating related information. Azure Databricks' auto-tuning capabilities and the cost-based optimizer can further enhance performance by adjusting settings based on workload requirements.
 
-## Sample Dataset:
-For this lab, we will use a public dataset of New York City Taxi Trips, which contains detailed records of trips including pickup and dropoff times, locations, passenger counts, and fare amounts.
+This lab will take approximately **30** minutes to complete.
 
-## Prerequisites:
-- An Azure account with access to Databricks
-- Basic knowledge of Spark and Databricks
+## Provision an Azure Databricks workspace
 
-## Step-by-Step Instructions:
-### Step 1: Setting up Azure Databricks
-1. Create an Azure Databricks Workspace:
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
-- Go to the Azure portal.
-- Search for "Databricks" and select "Azure Databricks".
-- Click "Create" and follow the prompts to set up a new workspace.
+This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
-2. Create a Databricks Cluster:
+1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
 
-- In your Databricks workspace, navigate to "Clusters".
-- Click "Create Cluster" and configure the cluster settings (e.g., cluster name, cluster mode, and instance type).
-- Click "Create Cluster" to launch the cluster.
+2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment and creating storage if prompted. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
-### Step 2: Importing the Dataset
-1. Upload the Dataset to Databricks:
+    ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-- In your Databricks workspace, go to "Data" > "Add Data".
-- Click "Upload File" and select the yellow_tripdata_2023-01.parquet file.
-- Follow the prompts to upload the file to DBFS (Databricks File System).
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
-2. Load the Dataset into a DataFrame
-```python
-# Load the dataset into a DataFrame
-df = spark.read.parquet("/FileStore/tables/yellow_tripdata_2022-01.parquet")
-```
+3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
-### Step 3: Data Ingestion Optimization
-1. Optimize Data Ingestion with Auto Loader:
-- Auto Loader incrementally and efficiently processes new files as they arrive in a cloud storage container.
+4. In the PowerShell pane, enter the following commands to clone this repo:
 
-```python
-df = (spark.readStream
-        .format("cloudFiles")
-        .option("cloudFiles.format", "parquet")
-        .load("/mnt/data/nyc_taxi_trips/"))
+     ```powershell
+    rm -r mslearn-databricks -f
+    git clone https://github.com/MicrosoftLearning/mslearn-databricks
+     ```
 
-df.writeStream.format("delta").option("checkpointLocation", "/mnt/data/nyc_taxi_trips/checkpoints").start("/mnt/delta/nyc_taxi_trips")
-```
+5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
-### Step 4: Data Transformation Optimization
+     ```powershell
+    ./mslearn-databricks/setup.ps1
+     ```
+
+6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+
+## Create a cluster
+
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
+
+> **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+
+1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
+
+1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
+
+1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+
+    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
+
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+
+1. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Cluster mode**: Single Node
+    - **Access mode**: Single user (*with your user account selected*)
+    - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
+    - **Use Photon Acceleration**: Selected
+    - **Node type**: Standard_DS3_v2
+    - **Terminate after** *20* **minutes of inactivity**
+
+1. Wait for the cluster to be created. It may take a minute or two.
+
+    > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
+
+## Create a notebook and ingest data
+
+1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+
+2. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+
+     ```python
+    %sh
+    rm -r /dbfs/nyc_taxi_trips
+    mkdir /dbfs/nyc_taxi_trips
+    wget -O /dbfs/nyc_taxi_trips/yellow_tripdata_2021-01.parquet https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/yellow_tripdata_2021-01.parquet
+     ```
+
+3. In a new cell, run the following code to load the dataset into a dataframe:
+   
+     ```python
+    # Load the dataset into a DataFrame
+    df = spark.read.parquet("/nyc_taxi_trips/yellow_tripdata_2021-01.parquet")
+    display(df)
+     ```
+
+4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+
+## Optimize Data Ingestion with Auto Loader:
+
+Optimizing data ingestion is crucial for handling large datasets efficiently. Auto Loader is designed to process new data files as they arrive in cloud storage, supporting various file formats and cloud storage services. 
+
+Auto Loader provides a Structured Streaming source called `cloudFiles`. Given an input directory path on the cloud file storage, the `cloudFiles` source automatically processes new files as they arrive, with the option of also processing existing files in that directory. 
+
+1. In a new cell, run the following code to create a stream based on the folder containing the sample data:
+
+     ```python
+    df = (spark.readStream
+            .format("cloudFiles")
+            .option("cloudFiles.format", "parquet")
+            .option("cloudFiles.schemaLocation", "/nyc_taxi_trips/")
+            .load("/nyc_taxi_trips/"))
+     df.writeStream.format("delta") \
+         .option("checkpointLocation", "/nyc_taxi_trips/checkpoints") \
+         .start("/delta/nyc_taxi_trips")
+     ```
+
+## Optimize Data Transformation
 
 1. Use Delta Lake for Better Performance:
 - Delta Lake provides ACID transactions, scalable metadata handling, and unifies streaming and batch data processing.
 
 ```python
-    df.write.format("delta").mode("overwrite").save("/mnt/delta/nyc_taxi_trips")
+    df.write.format("delta").mode("overwrite").save("/delta/nyc_taxi_trips")
 ```
 
 2. Optimize Data Skew with Salting:
@@ -74,7 +133,7 @@ from pyspark.sql.functions import lit, rand
 df_salted = df.withColumn("salt", (rand() * 100).cast("int"))
 
 # Repartition based on the salted column
-df_salted.repartition("salt").write.format("delta").mode("overwrite").save("/mnt/delta/nyc_taxi_trips_salted")
+df_salted.repartition("salt").write.format("delta").mode("overwrite").save("/delta/nyc_taxi_trips_salted")
 ```
 
 ### Step 5 - Storage Optimization
@@ -85,7 +144,7 @@ df_salted.repartition("salt").write.format("delta").mode("overwrite").save("/mnt
 ```python
 from delta.tables import DeltaTable
 
-delta_table = DeltaTable.forPath(spark, "/mnt/delta/nyc_taxi_trips")
+delta_table = DeltaTable.forPath(spark, "/delta/nyc_taxi_trips")
 delta_table.optimize().executeCompaction()
 ```
 

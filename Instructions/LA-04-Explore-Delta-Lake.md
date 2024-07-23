@@ -7,7 +7,7 @@ lab:
 
 Delta Lake is an open source project to build a transactional data storage layer for Spark on top of a data lake. Delta Lake adds support for relational semantics for both batch and streaming data operations, and enables the creation of a *Lakehouse* architecture in which Apache Spark can be used to process and query data in tables that are based on underlying files in the data lake.
 
-This lab will take approximately **40** minutes to complete.
+This lab will take approximately **30** minutes to complete.
 
 ## Provision an Azure Databricks workspace
 
@@ -16,6 +16,7 @@ This lab will take approximately **40** minutes to complete.
 This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
 1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
+
 2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment and creating storage if prompted. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
@@ -38,6 +39,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
     ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+
 7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
 
 ## Create a cluster
@@ -47,12 +49,15 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 > **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
+
 1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
+
 1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
 1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
@@ -65,14 +70,16 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 1. Wait for the cluster to be created. It may take a minute or two.
 
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
+    > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
 ## Create a notebook and ingest data
 
 Now let's create a Spark notebook and import the data that we'll work with in this exercise.
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+
 1. Change the default notebook name (**Untitled Notebook *[date]***) to **Explore Delta Lake** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+
 1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
     ```python
@@ -83,6 +90,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
     ```
 
 1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+
 1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the file and view the first 10 rows.
 
     ```python
@@ -262,98 +270,21 @@ So far you've worked with delta tables by loading data from the folder containin
 
     Because the table is based on the existing delta files, which include the logged history of changes, it reflects the modifications you previously made to the products data.
 
-## Use delta tables for streaming data
+## Optimize table layout
 
-Delta lake supports *streaming* data. Delta tables can be a *sink* or a *source* for data streams created using the Spark Structured Streaming API. In this example, you'll use a delta table as a sink for some streaming data in a simulated internet of things (IoT) scenario. The simulated device data is in JSON format, like this:
+The physical storage of table data and associated index data can be reorganized in order to reduce storage space and improve I/O efficiency when accessing the table. This is particularly useful after substantial insert, update, or delete operations on a table.
 
-```json
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"error"}
-{"device":"Dev2","status":"ok"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}
-```
+1. In a new code cell, use the following code to optimize the layout and clean up old versions of data files in the delta table:
 
-1. In a new cell, run the following code to download the JSON file:
+     ```python
+    spark.sql("OPTIMIZE Products")
+    spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
+    spark.sql("VACUUM Products RETAIN 24 HOURS")
+     ```
 
-    ```bash
-    %sh
-    rm -r /dbfs/device_stream
-    mkdir /dbfs/device_stream
-    wget -O /dbfs/device_stream/devices1.json https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/devices1.json
-    ```
+Delta Lake has a safety check to prevent you from running a dangerous VACUUM command. In Databricks Runtime, if you are certain that there are no operations being performed on this table that take longer than the retention interval you plan to specify, you can turn off this safety check by setting the Spark configuration property `spark.databricks.delta.retentionDurationCheck.enabled` to `false`.
 
-1. In a new cell, run the following code to create a stream based on the folder containing the JSON device data:
-
-    ```python
-   from pyspark.sql.types import *
-   from pyspark.sql.functions import *
-   
-   # Create a stream that reads data from the folder, using a JSON schema
-   inputPath = '/device_stream/'
-   jsonSchema = StructType([
-   StructField("device", StringType(), False),
-   StructField("status", StringType(), False)
-   ])
-   iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-   print("Source stream created...")
-    ```
-
-1. Add a new code cell and use it to perpetually write the stream of data to a delta folder:
-
-    ```python
-   # Write the stream to a delta table
-   delta_stream_table_path = '/delta/iotdevicedata'
-   checkpointpath = '/delta/checkpoint'
-   deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-   print("Streaming to delta sink...")
-    ```
-
-1. Add code to read the data, just like any other delta folder:
-
-    ```python
-   # Read the data in delta format into a dataframe
-   df = spark.read.format("delta").load(delta_stream_table_path)
-   display(df)
-    ```
-
-1. Add the following code to create a table based on the delta folder to which the streaming data is being written:
-
-    ```python
-   # create a catalog table based on the streaming sink
-   spark.sql("CREATE TABLE IotDeviceData USING DELTA LOCATION '{0}'".format(delta_stream_table_path))
-    ```
-
-1. Use the following code to query the table:
-
-    ```sql
-   %sql
-   SELECT * FROM IotDeviceData;
-    ```
-
-1. Run the following code to add some fresh device data to the stream:
-
-    ```Bash
-    %sh
-    wget -O /dbfs/device_stream/devices2.json https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/devices2.json
-    ```
-
-1. Re-run the following SQL query code to verify that the new data has been added to the stream and written to the delta folder:
-
-    ```sql
-   %sql
-   SELECT * FROM IotDeviceData;
-    ```
-
-1. Run the following code to stop the stream:
-
-    ```python
-   deltastream.stop()
-    ```
+> **Note**: If you run VACUUM on a delta table, you lose the ability to time travel back to a version older than the specified data retention period.
 
 ## Clean up
 
