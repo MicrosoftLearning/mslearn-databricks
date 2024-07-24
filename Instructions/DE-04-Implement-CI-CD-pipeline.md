@@ -82,45 +82,48 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
      ```python
     %sh
-    rm -r /dbfs/sample_data
-    mkdir /dbfs/sample_data
-    wget -O /dbfs/sample_data/sample_sales.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales.csv
+    rm -r /dbfs/FileStore
+    mkdir /dbfs/FileStore
+    wget -O /dbfs/FileStore/sample_sales.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales.csv
      ```
 
 3. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
    
 ## Set up a GitHub repository and Azure DevOps project
 
+Once you connect a GitHub repository to an Azure DevOps project, you can set up CI pipelines that trigger with any changes made to your repository.
+
 1. Go to your [GitHub account](https://github.com/) and create a new repository for your project.
 
 2. Clone the repository to your local machine using `git clone`.
 
-3. Add the sample CSV file to your repository and commit the changes.
+3. Download the [CSV file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales.csv) to your local repository and commit the changes.
 
-4. Create a basic Databricks notebook:
-- Create a new notebook in your repository with some basic data processing code, such as reading the CSV file and performing some transformations.
+4. Download the [Databricks notebook](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales_notebook.dbc) that will be used to read the CSV file and perform data transformation. Commit the changes.
 
-#### Step 3: Set Up Azure DevOps
-1. Create an Azure DevOps project:
-- Go to the Azure DevOps portal and create a new project.
+5. Go to the [Azure DevOps portal](https://azure.microsoft.com/en-us/products/devops/) and create a new project.
 
-2. Connect Azure DevOps to GitHub:
-- In your Azure DevOps project, go to the "Repos" section and connect it to your GitHub repository.
+6. In your Azure DevOps project, go to the **Repos** section and select **Import** to connect it to your GitHub repository.
 
-3. Create a Service Connection:
+7. In the left-side bar, navigate to **Project settings > Service connections**.
 
-- In Azure DevOps, navigate to "Project settings" > "Service connections".
-- Create a new service connection for Azure, granting access to your Databricks workspace.
+8. Select **Create service connection**, and then select **Azure Resource Manager**.
 
-#### Step 4: Configure CI Pipeline in Azure DevOps
-1. Create a new pipeline:
+9. In the **Authentication method** pane, select **Workload Identity federation (automatic)**. Select **Next**.
 
-- In your Azure DevOps project, go to the "Pipelines" section and create a new pipeline.
-- Choose "GitHub" as the source and select your repository.
+10. In **Scope level**, select **Subscription**. Select the subscription and resource group where you have created your Databricks workspace.
 
-2. Define the CI pipeline:
+11. Give the service connection a name and check the **Grant access permission to all pipelines** option. Select **Save**.
 
-- Use the following YAML configuration for the CI pipeline:
+Now your DevOps project has access to your Databricks workspace and you can connect it to your pipelines.
+
+## Configure CI Pipeline
+
+1. In the left-side bar, navigate to **Pipelines** and select **Create pipeline**.
+
+2. Select **GitHub** as the source and select your repository.
+
+3. In the **Configure your pipeline** pane, select **Starter pipeline** and use the following YAML configuration for the CI pipeline:
 
 ```yaml
 trigger:
@@ -148,15 +151,17 @@ steps:
   displayName: 'Run Unit Tests'
 ```
 
-#### Step 5: Configure CD Pipeline in Azure DevOps
-1. Create a new release pipeline:
-- In your Azure DevOps project, go to the "Pipelines" > "Releases" section and create a new release pipeline.
+4. Select **Save and run**.
 
-2. Add an artifact:
-- Select your build pipeline as the artifact source.
+This YAML file will set up a CI pipeline that is triggered by changes to the `main` branch of your repository. The pipeline sets up a Python environment, installs the Databricks CLI, downloads the sample data from your Databricks workspace and runs Python unit tests. This is a common setup for CI workflows.
 
-3. Define the CD pipeline:
-- Add a stage and configure the tasks to deploy to Azure Databricks.
+## Configure CD Pipeline
+
+1. In the left-side bar, navigate to **Pipelines > Releases** and select **Create release**.
+
+2. Select your build pipeline as the artifact source.
+
+3. Add a stage and configure the tasks to deploy to Azure Databricks:
 
 ```yaml
 stages:
@@ -180,23 +185,29 @@ stages:
       displayName: 'Deploy Notebooks to Databricks'
 ```
 
-#### Step 6: Run the Pipelines
-1. Commit and push changes:
+Before running this pipeline, replace `/path/to/notebooks` with the path to the directory where you have your notebook in your repository and `/Workspace/Notebooks` with the file path where you want the notebook to be saved in your Databricks workspace.
 
-- Commit and push your changes to the GitHub repository.
+4. Select **Save and run**.
 
-2. Trigger the CI pipeline:
+## Run the Pipelines
 
-- The CI pipeline will automatically run when changes are pushed to the repository.
-- Verify that the CI pipeline completes successfully.
+1. In your local repository, add the following line at the end of the `sample_sales.csv` file:
 
-3. Trigger the CD pipeline:
+     ```sql
+    2024-01-01,ProductG,1,500
+     ```
 
-- Create a new release in the release pipeline and deploy the notebooks to Databricks.
-- Verify that the notebooks are deployed and executed successfully in your Databricks workspace.
+2. Commit and push your changes to the GitHub repository.
 
-### Conclusion
-You've successfully set up CI/CD pipelines using Azure DevOps and GitHub, integrating with Azure Databricks to automate the deployment of your data engineering solutions. This lab provides a foundational understanding of how to leverage these tools to streamline your development and deployment processes.
+3. The changes in the repository will trigger the CI pipeline. Verify that the CI pipeline completes successfully.
+
+4. Create a new release in the release pipeline and deploy the notebooks to Databricks. Verify that the notebooks are deployed and executed successfully in your Databricks workspace.
+
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
 
 
 
