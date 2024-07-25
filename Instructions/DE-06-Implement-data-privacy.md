@@ -121,72 +121,69 @@ Unity Catalog metastores register metadata about securable objects (such as tabl
 
 >**Note:** In the `.load` file path, replace `databricksxxxxxxx` with your catalog name.
 
-### Step 3: Set Up Microsoft Purview
+9. In the catalog explorer, navigate to the `sample_data` volume and verify that the new tables are inside it.
+    
+## Set Up Microsoft Purview
 
-1. Create a Microsoft Purview Account
+Microsoft Purview is a unified data governance service that helps organizations manage and secure their data across various environments. With features like data loss prevention, information protection, and compliance management, Microsoft Purview provides tools to understand, manage, and protect data throughout its lifecycle.
 
-- Navigate to the Azure portal.
-- Click on "Create a resource" and search for "Microsoft Purview".
-- Click "Create" and fill in the necessary details to create a Purview account.
+1. Navigate to the [Azure portal](https://portal.azure.com/).
 
-2. Connect Azure Databricks with Microsoft Purview
+2. Select **Create a resource** and search for **Microsoft Purview**.
 
-- In the Purview portal, navigate to the "Data Map" section.
-- Click "Register" to register your Azure Databricks as a data source.
-- Provide the necessary connection details and credentials.
+3. Create an **Microsoft Purview** resource with the following settings:
+    - **Subscription**: *Select your Azure subscription*
+    - **Resource group**: *Choose the same resource group as your Azure Databricks workspace*
+    - **Microsoft Purview account name**: *A unique name of your choice*
+    - **Location**: *Select the same region as your Azure Databricks workspace*
 
-### Step 4: Implement Data Privacy and Governance Policies
-1. Create Classifications in Microsoft Purview
+4. Select **Review + Create**. Wait for validation then select **Create**.
 
-- In the Purview portal, go to the "Classifications" section.
-- Create classifications such as "PII" (Personally Identifiable Information).
+5. Wait for deployment to complete. Then go to the deployed Microsoft Purview resource in the Azure portal.
 
-2. Apply Classifications to Data Assets
-- Navigate to the "Data Catalog" in Purview.
-- Locate the Databricks tables and apply the relevant classifications (e.g., classify the email and phone columns in the customers table as PII).
+6. In the Microsoft Purview Governance portal, navigate to the **Data Map** section in the sidebar.
 
-3. Set Up Data Policies in Unity Catalog
+7. In the **Data sources** pane, select **Register**.
 
-- Go to Unity Catalog in Databricks.
-- Create a data access policy to restrict access to PII data.
+8. In the **Register data source** window, search and select **Azure Databricks**. Select **Continue**.
 
-```sql
-CREATE OR REPLACE TABLE ecommerce.customers (
-  customer_id STRING,
-  name STRING,
-  email STRING,
-  phone STRING,
-  address STRING,
-  city STRING,
-  state STRING,
-  zip_code STRING,
-  country STRING
-) TBLPROPERTIES ('data_classification'='PII');
+9. Give your data source a unique name, then select your Azure Databricks workspace. Select **Register**.
 
-GRANT SELECT ON TABLE ecommerce.customers TO ROLE data_scientist;
-REVOKE SELECT (email, phone) ON TABLE ecommerce.customers FROM ROLE data_scientist;
-```
+## Implement data privacy and governance policies
 
-### Step 5: Monitor and Audit Data Access
-1. Set Up Monitoring in Microsoft Purview
+1. In the **Data Map** section of the sidebar, select **Classifications**.
 
-- In Purview, navigate to the "Insights" section.
-- Set up monitoring to track data access and usage.
+2. In the **Classifications** pane, select **+ New** and create a new classification named **PII** (Personally Identifiable Information). Select **OK**.
 
-2. Audit Data Access in Databricks
+3. Select **Data Catalog** in the sidebar and navigate to the **customers** table.
 
-- Use Databricks audit logs to monitor access to sensitive data.
-- Enable diagnostic logging in Databricks and integrate with Azure Monitor for centralized logging and alerting.
+4. Apply the PII classification to the email and phone columns.
 
-### Step 6: Validate Data Privacy and Governance
-1. Test Data Access Restrictions
+5. Go to Azure Databricks and open the previously created notebook.
+ 
+6. In a new cell, run the following code to create a data access policy to restrict access to PII data.
 
-- Attempt to query the customers table as a user with the data_scientist role.
-- Verify that access to PII columns (email and phone) is restricted.
+     ```sql
+    CREATE OR REPLACE TABLE ecommerce.customers (
+      customer_id STRING,
+      name STRING,
+      email STRING,
+      phone STRING,
+      address STRING,
+      city STRING,
+      state STRING,
+      zip_code STRING,
+      country STRING
+    ) TBLPROPERTIES ('data_classification'='PII');
 
-2. Review Audit Logs and Insights
+    GRANT SELECT ON TABLE ecommerce.customers TO ROLE data_scientist;
+    REVOKE SELECT (email, phone) ON TABLE ecommerce.customers FROM ROLE data_scientist;
+     ```
 
-- Check Purview insights for data access patterns.
-- Review Databricks audit logs to ensure compliance with data privacy policies.
+7. Attempt to query the customers table as a user with the data_scientist role. Verify that access to PII columns (email and phone) is restricted.
 
-By following these steps, you have successfully implemented data privacy and governance using Microsoft Purview and Unity Catalog with Azure Databricks. This lab has equipped you with the knowledge to manage and govern data assets, enforce data privacy policies, and monitor data usage effectively.
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
