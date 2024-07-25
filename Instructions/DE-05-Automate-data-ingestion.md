@@ -123,7 +123,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 10. Once the job run is successful, you can select it in the Runs list and verify its output.
 
-By following these steps, you have successfully set up and automated data ingestion and processing using Azure Databricks Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
+You have successfully set up and automated data ingestion and processing using Azure Databricks Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
 
 ## Clean up
 
