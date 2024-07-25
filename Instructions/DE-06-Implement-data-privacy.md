@@ -86,25 +86,40 @@ Unity Catalog metastores register metadata about securable objects (such as tabl
 
 ## Ingest sample data into Azure Databricks
 
-1. At the top of the catalog explorer, select **+** and then select **Add data**.
+1. Download the sample data files:
+   * [customers.csv](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/DE-05/customers.csv)
+   * [products.csv](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/DE-05/products.csv)
+   * [sales.csv](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/DE-05/sales.csv)
 
-- Use the Databricks interface to upload customers.csv, sales.csv, and products.csv to the DBFS (Databricks File System).
+2. In the Azure Databricks workspace, at the top of the catalog explorer, select **+** and then select **Add data**.
 
-2. Create Tables from CSV Files
+3. In the new window, select **Upload files to volume**.
 
-```python
-# Load Customer Data
-customers_df = spark.read.format("csv").option("header", "true").load("/dbfs/FileStore/customers.csv")
-customers_df.write.saveAsTable("ecommerce.customers")
+4. In the new window, navigate to your `ecommerce` schema, expand it and select **Create a volume**.
 
-# Load Sales Data
-sales_df = spark.read.format("csv").option("header", "true").load("/dbfs/FileStore/sales.csv")
-sales_df.write.saveAsTable("ecommerce.sales")
+5. Name the new volume **sample_data** and select **Create**.
 
-# Load Product Data
-products_df = spark.read.format("csv").option("header", "true").load("/dbfs/FileStore/products.csv")
-products_df.write.saveAsTable("ecommerce.products")
-```
+6. Select the new volume and upload the files `customers.csv`, `products.csv`, and `sales.csv`. Select **Upload**.
+
+7. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+
+8. In the first cell of the notebook, enter the following code to create tables from the CSV files:
+
+     ```python
+    # Load Customer Data
+    customers_df = spark.read.format("csv").option("header", "true").load("/Volumes/databricksxxxxxxx/ecommerce/sample_data/customers.csv")
+    customers_df.write.saveAsTable("ecommerce.customers")
+
+    # Load Sales Data
+    sales_df = spark.read.format("csv").option("header", "true").load("/Volumes/databricksxxxxxxx/ecommerce/sample_data/sales.csv")
+    sales_df.write.saveAsTable("ecommerce.sales")
+
+    # Load Product Data
+    products_df = spark.read.format("csv").option("header", "true").load("/Volumes/databricksxxxxxxx/ecommerce/sample_data/products.csv")
+    products_df.write.saveAsTable("ecommerce.products")
+     ```
+
+>**Note:** In the `.load` file path, replace `databricksxxxxxxx` with your catalog name.
 
 ### Step 3: Set Up Microsoft Purview
 
