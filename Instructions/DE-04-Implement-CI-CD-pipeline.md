@@ -7,7 +7,7 @@ lab:
 
 Implementing Continuous Integration (CI) and Continuous Deployment (CD) pipelines with Azure Databricks and Azure DevOps or Azure Databricks and GitHub involves setting up a series of automated steps to ensure that code changes are integrated, tested, and deployed efficiently. The process typically includes connecting to a Git repository, running jobs using Azure Pipelines to build and unit test code, and deploying the build artifacts for use in Databricks notebooks. This workflow enables a robust development cycle, allowing for continuous integration and delivery that aligns with modern DevOps practices.
 
-This lab will take approximately **30** minutes to complete.
+This lab will take approximately **40** minutes to complete.
 
 >**Note:** You need a Github account and Azure DevOps access to complete this exercise.
 
