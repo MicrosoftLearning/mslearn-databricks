@@ -5,97 +5,128 @@ lab:
 
 # Automating Data Ingestion and Processing using Azure Databricks
 
-## Objective
-In this lab, you will learn how to automate data ingestion and processing using Azure Databricks and Automation Jobs. By the end of this lab, you will be able to:
+Databricks Jobs is a powerful service that allows for the automation of data ingestion and processing workflows. It enables the orchestration of complex data pipelines, which can include tasks like ingesting raw data from various sources, transforming this data using Delta Live Tables, and persisting it to Delta Lake for further analysis. With Azure Databricks, users can schedule and run their data processing tasks automatically, ensuring that data is always up-to-date and available for decision-making processes.
 
-1. Create and configure an Azure Databricks workspace.
-2. Set up data ingestion from an external source.
-3. Automate data processing using Databricks Jobs.
-4. Schedule and monitor automated jobs.
+This lab will take approximately **20** minutes to complete.
 
-## Sample Dataset
-For this lab, we will use a sample dataset containing customer sales data. The dataset will be in CSV format with the following structure:
+## Provision an Azure Databricks workspace
 
-- customer_id: Unique identifier for each customer
-- transaction_date: Date of the transaction
-- transaction_amount: Amount of the transaction
-- product_id: Unique identifier for each product
-- product_category: Category of the product
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
-## Prerequisites
-- An active Azure subscription.
-- Basic knowledge of Databricks, Python, and SQL.
-- Azure Databricks workspace.
+This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
-## Step-by-Step Instructions
-### Step 1: Set Up Azure Databricks Workspace
-1. Create a Databricks Workspace:
+1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
 
-- Go to the Azure portal.
-- Click on "Create a resource" and search for "Azure Databricks".
-- Click on "Create" and fill in the required details (Workspace name, Subscription, Resource Group, Location, Pricing Tier).
-- Click on "Review + create" and then "Create".
+2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment and creating storage if prompted. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
-2. Launch the Workspace:
+    ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-- Once the workspace is created, click on "Launch Workspace".
-- This will take you to the Databricks web interface.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
-### Step 2: Create and Configure a Cluster
-1. Create a New Cluster:
+3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
-- In the Databricks workspace, navigate to the "Clusters" tab.
-- Click on "Create Cluster".
-- Provide a name for the cluster and select the appropriate configuration (e.g., Standard mode, Autoscaling, etc.).
--Click on "Create Cluster".
+4. In the PowerShell pane, enter the following commands to clone this repo:
 
-### Step 3: Ingest Data into Databricks
-1. Upload the Sample Dataset:
+     ```powershell
+    rm -r mslearn-databricks -f
+    git clone https://github.com/MicrosoftLearning/mslearn-databricks
+     ```
 
-- In the Databricks workspace, navigate to the "Data" tab.
-- Click on "Add Data" and then "Upload File".
-- Upload the sample CSV dataset.
+5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
-2. Load the Data into a DataFrame:
+     ```powershell
+    ./mslearn-databricks/setup.ps1
+     ```
 
-- Create a new notebook by navigating to the "Workspace" tab and clicking on "Create" > "Notebook".
-- Choose a name for your notebook and select the language (Python).
-- Attach the notebook to your cluster.
+6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-```python
-# Load the sample dataset into a DataFrame
-df = spark.read.csv('/FileStore/tables/sample_sales_data.csv', header=True, inferSchema=True)
-df.show()
-```
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
 
-### Step 4: Automate Data Processing with Azure Databricks Jobs
-1. Create a Data Processing Notebook:
+## Create a cluster
 
-- In the same or a new notebook, write the data processing logic. For example, aggregate sales data by product category:
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-```python
-from pyspark.sql.functions import col, sum
+> **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
-# Aggregate sales data by product category
-sales_by_category = df.groupBy('product_category').agg(sum('transaction_amount').alias('total_sales'))
-sales_by_category.show()
+1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
 
-```
-2. Create a Databricks Job:
+1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
 
-- Navigate to the "Jobs" tab in the Databricks workspace.
-- Click on "Create Job".
-- Provide a name for the job and specify the notebook you created as the task.
-- Configure the cluster, schedule, and other settings as required.
-- Click on "Create".
+1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
-### Step 5: Schedule and Monitor Jobs
-1. Schedule the Job:
-- In the job configuration, set up a schedule for the job (e.g., daily, weekly).
-- Configure any necessary parameters and alerts.
+    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-2. Monitor Job Runs:
-- Monitor the job runs from the "Jobs" tab.
-- Check the job run history, logs, and any alerts for successful or failed runs.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
 
-By following these steps, you have successfully set up and automated data ingestion and processing using Azure Databricks and Automation Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
+1. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Cluster mode**: Single Node
+    - **Access mode**: Single user (*with your user account selected*)
+    - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
+    - **Use Photon Acceleration**: Selected
+    - **Node type**: Standard_DS3_v2
+    - **Terminate after** *20* **minutes of inactivity**
+
+1. Wait for the cluster to be created. It may take a minute or two.
+
+    > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
+
+## Create a notebook and ingest data
+
+1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+
+2. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+
+     ```python
+    %sh
+    rm -r /dbfs/FileStore
+    mkdir /dbfs/FileStore
+    wget -O /dbfs/FileStore/sample_sales_data.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales_data.csv
+     ```
+
+3. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+
+## Automate data processing with Azure Databricks Jobs
+
+1. Create a new notebook and name it *Data processing* for easier identification later on. It will be used as the task to automate data ingestion and processing workflow in a Databricks Job.
+
+2. In the first cell of the notebook, run the following code to load the dataset into a dataframe:
+
+     ```python
+    # Load the sample dataset into a DataFrame
+    df = spark.read.csv('/FileStore/*.csv', header=True, inferSchema=True)
+    df.show()
+     ```
+     
+3. In a new cell, enter the following code to aggregate sales data by product category:
+
+     ```python
+    from pyspark.sql.functions import col, sum
+
+    # Aggregate sales data by product category
+    sales_by_category = df.groupBy('product_category').agg(sum('transaction_amount').alias('total_sales'))
+    sales_by_category.show()
+     ```
+
+4. In the sidebar, use the **(+) New** link to create a **Job**.
+
+5. Provide a name for the task and specify the notebook you created as the task's source in the **Path** field.
+
+6. Select **Create task**.
+
+7. In the right-side panel, under **Schedule**, you can select **Add trigger** and set up a schedule for running the job (e.g., daily, weekly). However, for this exercise, we will execute it manually.
+
+8. Select **Run now**.
+
+9. Select the **Runs** tab in the Job panel and monitor the job run.
+
+10. Once the job run is successful, you can select it in the Runs list and verify its output.
+
+You have successfully set up and automated data ingestion and processing using Azure Databricks Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
+
+## Clean up
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

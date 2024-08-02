@@ -104,73 +104,85 @@ Auto Loader provides a Structured Streaming source called `cloudFiles`. Given an
 1. In a new cell, run the following code to create a stream based on the folder containing the sample data:
 
      ```python
-    df = (spark.readStream
-            .format("cloudFiles")
-            .option("cloudFiles.format", "parquet")
-            .option("cloudFiles.schemaLocation", "/nyc_taxi_trips/")
-            .load("/nyc_taxi_trips/"))
+     df = (spark.readStream
+             .format("cloudFiles")
+             .option("cloudFiles.format", "parquet")
+             .option("cloudFiles.schemaLocation", "/stream_data/nyc_taxi_trips/schema")
+             .load("/nyc_taxi_trips/"))
      df.writeStream.format("delta") \
-         .option("checkpointLocation", "/nyc_taxi_trips/checkpoints") \
+         .option("checkpointLocation", "/stream_data/nyc_taxi_trips/checkpoints") \
+         .option("mergeSchema", "true") \
          .start("/delta/nyc_taxi_trips")
+     display(df)
      ```
+
+2. In a new cell, run the following code to add a new parquet file to the stream:
+
+     ```python
+    %sh
+    rm -r /dbfs/nyc_taxi_trips
+    mkdir /dbfs/nyc_taxi_trips
+    wget -O /dbfs/nyc_taxi_trips/yellow_tripdata_2021-02_edited.parquet https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/yellow_tripdata_2021-02_edited.parquet
+     ```
+   
+The new file has a new column, so the stream stops with an `UnknownFieldException` error. Before your stream throws this error, Auto Loader performs schema inference on the latest micro-batch of data and updates the schema location with the latest schema by merging new columns to the end of the schema. The data types of existing columns remain unchanged.
+
+3. Run the streaming code cell again and verify that two new columns were added to the table:
+
+   ![Delta table with new columns](./images/autoloader-new-columns.png)
+   
+> Note: The `_rescued_data` column contains any data that isn’t parsed due to type mismatch, case mismatch or column missing from schema.
+
+4. Select **Interrupt** to stop the data streaming.
+   
+The streaming data is written in Delta tables. Delta Lake provides a set of enhancements over traditional Parquet files, including ACID transactions, schema evolution, time travel, and unifies streaming and batch data processing, making it a powerful solution for managing big data workloads.
 
 ## Optimize Data Transformation
 
-1. Use Delta Lake for Better Performance:
-- Delta Lake provides ACID transactions, scalable metadata handling, and unifies streaming and batch data processing.
+Data skew is a significant challenge in distributed computing, particularly in big data processing with frameworks like Apache Spark. Salting is an effective technique to optimize data skew by adding a random component, or 'salt', to keys before partitioning. This process helps distribute data more evenly across partitions, leading to a more balanced workload and improved performance.
 
-```python
-    df.write.format("delta").mode("overwrite").save("/delta/nyc_taxi_trips")
-```
+1. In a new cell, run the following code to break a large skewed partition into smaller partitions by appending a *salt* column with random integers:
 
-2. Optimize Data Skew with Salting:
-- Data skew can lead to uneven task distribution. Salting helps distribute data more evenly across partitions.
+     ```python
+    from pyspark.sql.functions import lit, rand
 
-```python
-from pyspark.sql.functions import lit, rand
+    # Convert streaming DataFrame back to batch DataFrame
+    df = spark.read.parquet("/nyc_taxi_trips/*.parquet")
+     
+    # Add a salt column
+    df_salted = df.withColumn("salt", (rand() * 100).cast("int"))
 
-# Add a salt column
-df_salted = df.withColumn("salt", (rand() * 100).cast("int"))
+    # Repartition based on the salted column
+    df_salted.repartition("salt").write.format("delta").mode("overwrite").save("/delta/nyc_taxi_trips_salted")
 
-# Repartition based on the salted column
-df_salted.repartition("salt").write.format("delta").mode("overwrite").save("/delta/nyc_taxi_trips_salted")
-```
+    display(df_salted)
+     ```   
 
-### Step 5 - Storage Optimization
+## Optimize Storage
 
-1. Optimize Delta Table:
-- Use Delta Lake's optimization commands to improve read performance.
+Delta Lake offers a suite of optimization commands that can significantly enhance the performance and management of data storage. The `optimize` command is designed to improve query speed by organizing data more efficiently through techniques like compaction and Z-Ordering.
 
-```python
-from delta.tables import DeltaTable
+Compaction consolidates smaller files into larger ones, which can be particularly beneficial for read queries. Z-Ordering involves arranging data points so that related information is stored close together, reducing the time it takes to access this data during queries.
 
-delta_table = DeltaTable.forPath(spark, "/delta/nyc_taxi_trips")
-delta_table.optimize().executeCompaction()
-```
+1. In a new cell, run the following code to perform compaction to the Delta table:
 
-2. Z-Order Clustering
-- Z-Order clustering co-locates related information in the same set of files, improving query performance.
+     ```python
+    from delta.tables import DeltaTable
 
-```python
-    delta_table.optimize().executeZOrderBy("pickup_datetime")
-```
+    delta_table = DeltaTable.forPath(spark, "/delta/nyc_taxi_trips")
+    delta_table.optimize().executeCompaction()
+     ```
 
-### Step 6 - Monitoring and Managing Pipelines
+2. In a new cell, run the following code to perform Z-Order clustering:
 
-1. Monitor Job Performance
-- Use Databricks' job monitoring tools to analyze and optimize the performance of your data pipelines.
+     ```python
+    delta_table.optimize().executeZOrderBy("tpep_pickup_datetime")
+     ```
 
-```python
-    # Example of starting a job and monitoring
-    dbutils.notebook.run("/path/to/notebook", timeout_seconds=3600)
-```
+This technique will co-locate related information in the same set of files, improving query performance.
 
-2. Tune Spark Configurations
-- Adjust Spark configurations based on the workload and cluster capabilities for optimal performance.
+## Clean up
 
-```python
-    spark.conf.set("spark.sql.shuffle.partitions", 200)
-    spark.conf.set("spark.databricks.io.cache.enabled", "true")
-```
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
-By following these steps, you have learned how to optimize data pipelines in Azure Databricks for better performance. The techniques covered include data ingestion optimization, transformation optimization, and storage optimization using Delta Lake, Auto Loader, and Spark configurations.
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
