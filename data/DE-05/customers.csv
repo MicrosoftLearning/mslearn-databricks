@@ -1,0 +1,51 @@
+customer_id,name,email,phone,address,city,state,zip_code,country
+1,Christy Zhu,christy12@adventure-works.com,+1 505-602-0543,527 Schumm Harbors,Lake Rachael,Minnesota,22226,United States
+2,Julio Ruiz,julio1@adventure-works.com,+1 505-644-4567,010 Harvey Branch,Lonnyfurt,Nevada,89292,United States
+3,Curtis Lu,curtis9@adventure-works.com,+1 205-733-2338,1606 Kohler Ford,West Sammy,Nebraska,09992-7473,United States
+4,Ruben Prasad,ruben10@adventure-works.com,+1 505-903-3966,863 Spencer Corners,Port Ian,Arizona,25668-0190,United States
+5,Albert Alvarez,albert7@adventure-works.com,+1 318-798-5977,32013 Derek Plains,Caterinamouth,New Hampshire,46541-9137,United States
+6,Cole Watson,cole1@adventure-works.com,+1 505-609-8962,562 Kuhic Trail,Cummeratamouth,Illinois,77041-4772,United States
+7,Sydney Wright,sydney61@adventure-works.com,+1 505-644-3917,016 Casper Port,South Michel,Oklahoma,96191,United States
+8,Colin Anand,colin45@adventure-works.com,+1 419-649-9169,0887 Ivory Terrace,Lake Arielle,New Hampshire,90663,United States
+9,Rachael Martinez,rachael16@adventure-works.com,+1 234-226-2358,2786 Deckow Well,Schneidertown,Tennessee,85255-9910,United States
+10,Emma Brown,emma3@adventure-works.com,+1 505-662-3364,3642 Strosin Rapids,Kayleehaven,Pennsylvania,82500,United States
+11,Courtney Edwards,courtney1@adventure-works.com,+1 505-895-6802,530 Murazik Mission,Lake Nicolette,Rhode Island,4403,United States
+12,Edward Brown,edward26@adventure-works.com,+1 505-644-9439,3363 Marvin Extension,Rickiestad,Wisconsin,26859-9004,United States
+13,Brad Deng,brad2@adventure-works.com,+1 505-644-3610,831 Watsica Isle,Kilbackton,Georgia,38031-0156,United States
+14,Martha Xu,martha12@adventure-works.com,+1 505-646-0951,81199 Pedro Overpass,East Ivoryburgh,Colorado,63645,United States
+15,Katrina Raji,katrina20@adventure-works.com,+1 505-646-3400,655 Gleichner Court,Lake Missouriland,Tennessee,82202,United States
+16,Abigail Henderson,abigail73@adventure-works.com,+1 472-257-9712,911 Halie Prairie,East Kendall,Ohio,19064-7798,United States
+17,Melanie Sanchez,melanie47@adventure-works.com,+1 505-567-2318,32864 Rodriguez Parks,Beckerburgh,New Jersey,38115,United States
+18,Louis Xie,louis20@adventure-works.com,+1 505-250-6730,73092 Hamill Course,Weberburgh,Wisconsin,11139-6548,United States
+19,Latasha Alonso,latasha8@adventure-works.com,+1 505-848-5689,97001 Sanford Viaduct,South Aileen,South Carolina,25830,United States
+20,Warren Jai,warren42@adventure-works.com,+1 214-775-3023,4787 Samson Trafficway,Port Jovani,Texas,76277-8537,United States
+21,Jonathon Gutierrez,jonathon8@adventure-works.com,+1 505-639-0178,4541 Ullrich Plain,Kemmershire,Pennsylvania,10018,United States
+22,Lucas Hill,lucas45@adventure-works.com,+1 505-644-9850,008 Hansen Court,North Aisha,Iowa,89165,United States
+23,Sydney Rogers,sydney3@adventure-works.com,+1 208-992-8417,3282 Balistreri Station,East Bradly,Maryland,28002-6282,United States
+24,Alexandra Watson,alexandra20@adventure-works.com,+1 505-646-9882,6574 Hildegard Inlet,West Esperanzaville,Louisiana,35792,United States
+25,Kevin Gonzalez,kevin46@adventure-works.com,+1 312-624-2878,728 Landen River,Fayland,Wisconsin,14036-9918,United States
+26,Logan Gonzales,logan18@adventure-works.com,+1 472-293-5914,82500 Gustave Stream,Karamouth,Alabama,96906-0348,United States
+27,Misty Raji,misty23@adventure-works.com,+1 472-247-8787,5598 Fredy Islands,East Josefaport,New Hampshire,32745-2466,United States
+28,Albert Blanco,albert15@adventure-works.com,+1 505-570-5541,575 Ellis Vista,New Hollis,Alabama,26558-9289,United States
+29,Anne Dominguez,anne14@adventure-works.com,+1 505-633-1349,987 Lonie Groves,Braxtonmouth,Massachusetts,26210-3582,United States
+30,Bonnie Xu,bonnie10@adventure-works.com,+1 505-909-8079,36979 Kovacek Route,Brakusport,Missouri,2249,United States
+31,Kelvin Huang,kelvin25@adventure-works.com,+1 472-245-0811,8490 Zetta Expressway,Labadiemouth,Virginia,47578-1405,United States
+32,Ruben Torres,ruben35@adventure-works.com,+1 472-244-3325,95182 Bill Way,West Thomas,Indiana,61498,United States
+33,Alejandro Beck,alejandro45@adventure-works.com,+1 505-646-2099,64779 Erdman Falls,Predovicmouth,New Hampshire,38484,United States
+34,Mayra Prasad,mayra9@adventure-works.com,+1 505-622-1317,4679 Homenick Branch,Luciennefurt,Ohio,92776,United States
+35,Rosa Zheng,rosa19@adventure-works.com,+1 607-325-4511,0882 Hackett Mills,South Kiara,Louisiana,52002-6611,United States
+36,Casey Pal,casey13@adventure-works.com,+1 505-302-1484,25764 Ike Run,Ankundingberg,Tennessee,67210,United States
+37,Alyssa Garcia,alyssa16@adventure-works.com,+1 505-622-5533,731 Stevie Falls,Abernathychester,Michigan,76296,United States
+38,Richard Brooks,richard81@adventure-works.com,+1 505-410-2455,8542 Wehner Gateway,Port Sophia,Massachusetts,50436-5470,United States
+39,Patrick Cook,patrick26@adventure-works.com,+1 214-211-6673,58586 McClure Creek,Lake Gladys,Vermont,84079-4364,United States
+40,Garrett Cooper,garrett13@adventure-works.com,+1 472-230-9288,156 Boehm Rapids,Elainaville,Oregon,05717-3017,United States
+41,Jeremiah Martinez,jeremiah8@adventure-works.com,+1 505-683-6339,634 Aiden Tunnel,South Linneamouth,New Jersey,6494,United States
+42,Cory Arun,cory5@adventure-works.com,+1 505-954-3711,5773 Britney Rapids,Jaylanport,Pennsylvania,47037,United States
+43,Haley Ward,haley13@adventure-works.com,+1 505-633-2792,7093 Purdy Run,Hermanbury,Connecticut,24005-1839,United States
+44,Marco Mehta,marco14@adventure-works.com,+1 209-741-6430,9918 Coleman Lakes,Lake Rutheview,New York,16600,United States
+45,Melody Ramos,melody17@adventure-works.com,+1 505-881-2682,607 Gusikowski Islands,East Jalenberg,Montana,67309-0054,United States
+46,Lindsey Andersen,lindsey14@adventure-works.com,+1 472-284-9157,024 Considine Square,Port Randy,Massachusetts,7281,United States
+47,Tamara Lal,tamara20@adventure-works.com,+1 424-335-2748,4963 Gustave Grove,Russelmouth,Washington,14237,United States
+48,Phillip Sai,phillip6@adventure-works.com,+1 505-646-7786,38996 Casper Extensions,Noemieside,Nebraska,09725-8635,United States
+49,Luke Adams,luke46@adventure-works.com,+1 505-218-8986,863 Stanton Springs,South Nat,Texas,31871-0128,United States
+50,Stacey Lu,stacey12@adventure-works.com,+1 505-646-2068,89330 Wolff Drive,Johannafurt,Mississippi,62716,United States
