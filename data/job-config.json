@@ -1,0 +1,9 @@
+{
+  "name": "CD pipeline",
+  "existing_cluster_id": "0805-092354-zcheygy7",
+  "timeout_seconds": 1200,
+  "max_retries": 3,
+  "notebook_task": {
+    "notebook_path": "/Workspace/Users/alison_felixdearaujomaia@hotmail.com/sample_sales_notebook"
+  }
+}
