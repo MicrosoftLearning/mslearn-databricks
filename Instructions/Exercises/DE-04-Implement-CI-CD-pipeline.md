@@ -143,17 +143,22 @@ steps:
   displayName: 'Install Databricks CLI'
 
 - script: |
-    databricks fs cp dbfs:/FileStore/sample_sales.csv .
-  displayName: 'Download Sample Data from DBFS'
+    databricks configure --token <<EOF
+    <your-databricks-host>
+    <your-databricks-token>
+    EOF
+  displayName: 'Configure Databricks CLI'
 
 - script: |
-    python -m unittest discover -s tests
-  displayName: 'Run Unit Tests'
+    databricks fs cp dbfs:/FileStore/sample_sales.csv . --overwrite
+  displayName: 'Download Sample Data from DBFS'
 ```
 
-4. Select **Save and run**.
+4. Replace `<your-databricks-host>` and `<your-databricks-token>` with your actual Databricks host URL and token. This will configure the Databricks CLI before attempting to use it.
 
-This YAML file will set up a CI pipeline that is triggered by changes to the `main` branch of your repository. The pipeline sets up a Python environment, installs the Databricks CLI, downloads the sample data from your Databricks workspace and runs Python unit tests. This is a common setup for CI workflows.
+5. Select **Save and run**.
+
+This YAML file will set up a CI pipeline that is triggered by changes to the `main` branch of your repository. The pipeline sets up a Python environment, installs the Databricks CLI, and downloads the sample data from your Databricks workspace. This is a common setup for CI workflows.
 
 ## Configure CD Pipeline
 
@@ -179,6 +184,13 @@ stages:
     - script: |
         pip install databricks-cli
       displayName: 'Install Databricks CLI'
+
+    - script: |
+        databricks configure --token <<EOF
+        <your-databricks-host>
+        <your-databricks-token>
+        EOF
+      displayName: 'Configure Databricks CLI'
 
     - script: |
         databricks workspace import_dir /path/to/notebooks /Workspace/Notebooks

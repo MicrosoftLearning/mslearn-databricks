@@ -13,7 +13,7 @@ These exercises are designed to support the following training content on Micros
 
 You'll need an Azure subscription in which you have administrative access to complete these exercises.
 
-{% assign exercises = site.pages | where_exp:"page", "page.url contains '/Instructions/Exercises'" %}
+{% assign exercises = site.pages | where_exp:"page", "page.url contains '/Instructions'" %}
 {% for activity in exercises  %}
 - [{{ activity.lab.title }}]({{ site.github.url }}{{ activity.url }}) |
 {% endfor %}
