@@ -80,23 +80,6 @@ You can use the **default** database for your tables, but when building an analy
 
 The ability to create a table by importing data from a file makes it easy to populate a database. You can also use Spark SQL to create tables using code. The tables themselves are metadata definitions in the hive metastore, and the data they contain is stored in Delta format in Databricks File System (DBFS) storage.
 
-## Create a query
-
-1. In the sidebar, select **(+) New** and then select **Query**.
-2. In the **Schema browser** pane, expand **hive_metastore** and **retail_db**, and verify that the **products** table is listed.
-3. In the **New query** pane, enter the following SQL code:
-
-    ```sql
-   SELECT ProductID, ProductName, Category
-   FROM retail_db.products; 
-    ```
-
-4. Use the **&#9658;Run (1000)** button to run the SQL code.
-5. When the query has completed, review the table of results.
-6. Use the **Save** button at the top right of the query editor to save the query as **Products and Categories**.
-
-Saving a query makes it easy to retrieve the same data again at a later time.
-
 ## Create a dashboard
 
 1. In the sidebar, select **(+) New** and then select **Dashboard**.
