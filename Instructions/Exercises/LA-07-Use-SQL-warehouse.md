@@ -66,15 +66,16 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
     ```
 
 4. Use the **&#9658;Run (1000)** button to run the SQL code.
-5. When the code has been successfully executed, in the **Schema browser** pane, use the refresh button at the bottom of the pane to refresh the list. Then expand **hive_metastore** and **retail_db**, and observe that the database has been created, but contains no tables.
+5. When the code has been successfully executed, in the **Schema browser** pane, use the refresh button at the top of the pane to refresh the list. Then expand **hive_metastore** and **retail_db**, and observe that the database has been created, but contains no tables.
 
 You can use the **default** database for your tables, but when building an analytical data store its best to create custom databases for specific data.
 
 ## Create a table
 
 1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file to your local computer, saving it as **products.csv**.
-1. In the Azure Databricks workspace portal, in the sidebar, select **(+) New** and then select **File Upload** and upload the **products.csv** file you downloaded to your computer.
-1. In the **Upload data** page, select the **retail_db** schema and set the table name to **products**. Then select **Create table** on the bottom left corner of the page.
+1. In the Azure Databricks workspace portal, in the sidebar, select **(+) New** and then select **Data**.
+1. In the **Add data** page, select **Create or modify table** and upload the **products.csv** file you downloaded to your computer.
+1. In the **Create or modify table from file upload** page, select the **retail_db** schema and set the table name to **products**. Then select **Create table** on the bottom right corner of the page.
 1. When the table has been created, review its details.
 
 The ability to create a table by importing data from a file makes it easy to populate a database. You can also use Spark SQL to create tables using code. The tables themselves are metadata definitions in the hive metastore, and the data they contain is stored in Delta format in Databricks File System (DBFS) storage.
@@ -99,21 +100,24 @@ Saving a query makes it easy to retrieve the same data again at a later time.
 ## Create a dashboard
 
 1. In the sidebar, select **(+) New** and then select **Dashboard**.
-2. In the **New dashboard** dialog box, enter the name **Retail Dashboard** and select **Save**.
-3. In the **Retail Dashboard** dashboard, in the **Add** drop-down list, select **Visualization**.
-4. In the **Add visualization widget** dialog box, select the **Products and Categories** query. Then select **Create new visualization**, set the title to **Products Per Category**, and select **Create visualization**.
-5. In the visualization editor, set the following properties:
-    - **Visualization type**: bar
-    - **Horizontal chart**: selected
-    - **Y column**: Category
-    - **X columns**: Product ID : Count
-    - **Group by**: *Leave blank*
-    - **Stacking**: Disabled
-    - **Normalize values to percentage**: <u>Un</u>selected
-    - **Missing and NULL values**: Do not display in chart
+2. Select the New dashboard name and change it to **Retail Dashboard**.
+3. In the **Data** tab, select **Create from SQL** and use the following query:
 
-6. Save the visualization and view it in the dashboard.
-7. Select **Done editing** to view the dashboard as users will see it.
+    ```sql
+   SELECT ProductID, ProductName, Category
+   FROM retail_db.products; 
+    ```
+
+4. Select **Run** and then rename the Untitled dataset to **Products and Categories**.
+5. Select the **Canvas** tab and then select **Add a visualization**.
+6. In the visualization editor, set the following properties:
+    
+    - **Dataset**: Products and Categories
+    - **Visualization**: bar
+    - **X axis**: COUNT(ProductID)
+    - **Y axis**: Category
+
+7. Select **Publish** to view the dashboard as users will see it.
 
 Dashboards are a great way to share data tables and visualizations with business users. You can schedule the dashboards to be refreshed periodically, and emailed to subscribers.
 
