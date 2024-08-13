@@ -170,36 +170,6 @@ The zero-shot classification pipeline allows a model to classify text into categ
 
 2. Run the cell to see the zero-shot classification results.
 
-## Few-shot learning task
-
-Few-shot learning is a technique where a model is trained to perform a task with only a small number of examples. Using `transformers` in Azure Databricks for few-shot learning involves leveraging pre-trained models and fine-tuning them with minimal data.
-
-1. In a new code cell, enter the following code:
-   
-     ```python
-    from transformers import GPT2LMHeadModel, GPT2Tokenizer
-
-    # Load GPT-2 model and tokenizer
-    model_name = "gpt2"
-    model = GPT2LMHeadModel.from_pretrained(model_name)
-    tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-
-    # Define the prompt
-    prompt = """The following is a conversation between a user and an AI assistant about Azure Databricks:
-    User: What is Azure Databricks?
-    AI: """
-
-    # Tokenize input
-    inputs = tokenizer.encode(prompt, return_tensors="pt")
-
-    # Generate text
-    outputs = model.generate(inputs, max_length=150, num_return_sequences=1)
-    generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    print(generated_text)
-     ```
-
-2. Run the cell to see the generated conversation based on few-shot learning.
-
 ## Clean up
 
 In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
