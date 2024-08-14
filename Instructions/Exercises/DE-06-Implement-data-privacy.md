@@ -9,6 +9,10 @@ Unity Catalog offers a centralized governance solution for data and AI, simplify
 
 This lab will take approximately **30** minutes to complete.
 
+## Before you start
+
+You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
