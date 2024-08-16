@@ -115,8 +115,8 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     # Read the XML file
     raw_df = spark.read.format("xml") \
-        .option("rowTag", "doc") \
-        .load("path_to_your_xml_file.xml")
+        .option("rowTag", "page") \
+        .load("/RAG_lab/enwiki-latest-pages-articles.xml")
 
     # Show the DataFrame
     df.show(5)
@@ -130,14 +130,16 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
      ```python
     from pyspark.sql.functions import col
 
-    clean_df = raw_df.select(col("title"), col("text"))
+    clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
     clean_df = clean_df.na.drop()
     clean_df.show(5)
      ```
      
 ## Generate embeddings
 
-1. Use a pre-trained model to generate embeddings for the text.
+The Sentence Transformers library is a powerful tool for generating embeddings for text data. It allows users to easily access and utilize pre-trained models for creating embeddings that capture the semantic meaning of sentences. The users can choose the model that best fits their needs for a variety of applications such as semantic search or textual similarity tasks. 
+
+1. In a new cell, run the following code to generate embeddings for the text.
 
      ```python
     from sentence_transformers import SentenceTransformer
@@ -170,10 +172,12 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
      ```
      
 ## Implement vector search
-- Configure Vector Search
-    1. Use Databricks' vector search capabilities or integrate with a vector database like Milvus or Pinecone.
 
-    ```python
+Databricks' Mosaic AI Vector Search is a vector database solution integrated within the Azure Databricks Platform. It optimizes the storage and retrieval of embeddings utilizing the Hierarchical Navigable Small World (HNSW) algorithm. It allows for efficient nearest neighbor searches, and its hybrid keyword-similarity search capability provides more relevant results by combining vector-based and keyword-based search techniques.
+
+1. In a new cell, run the following code to configure Azure Databricks' vector search capabilities.
+
+     ```python
     from databricks.feature_store import FeatureStoreClient
 
     fs = FeatureStoreClient()
@@ -184,11 +188,10 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
         df=embedded_df,
         description="Vector embeddings for Wikipedia articles."
     )
-    ```
-- Perform Vector Search
-    1. Implement a functon to search for relevant documents based on a query vector.
+     ```
+2. In a new cell, run the following code to search for relevant documents based on a query vector.
 
-    ```python
+     ```python
     def search_vectors(query_text, top_k=5):
         query_embedding = model.encode([query_text]).tolist()
         query_df = spark.createDataFrame([(query_text, query_embedding)], ["query_text", "query_embedding"])
@@ -204,13 +207,13 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     query = "Machine learning applications"
     search_results = search_vectors(query)
     search_results.show()
-    ```
+     ```
 
-## Step 7: Generative Augmentation
-- Augment Prompts with Retrieved Data:
-    1. Combine the retrieved data with the user's query to create a rich prompt for the LLM.
+## Augment Prompts with Retrieved Data:
 
-    ```python
+1. Combine the retrieved data with the user's query to create a rich prompt for the LLM.
+
+     ```python
     def augment_prompt(query_text):
         search_results = search_vectors(query_text)
         context = " ".join(search_results.select("text").rdd.flatMap(lambda x: x).collect())
@@ -218,7 +221,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     prompt = augment_prompt("Explain the significance of the Turing test")
     print(prompt)
-    ```
+     ```
 
 - Generate Responses with LLM:
     2. Use an LLM like GPT-3 or similar models from Hugging Face to generate responses.
