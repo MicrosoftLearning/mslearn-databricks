@@ -7,7 +7,7 @@ lab:
 
 Retrieval Augmented Generation (RAG) is a cutting-edge approach in AI that enhances large language models by integrating external knowledge sources. Azure Databricks offers a robust platform for developing RAG applications, allowing for the transformation of unstructured data into a format suitable for retrieval and response generation. This process involves a series of steps including understanding the user's query, retrieving relevant data, and generating a response using a language model. The framework provided by Azure Databricks supports rapid iteration and deployment of RAG applications, ensuring high-quality, domain-specific responses that can include up-to-date information and proprietary knowledge.
 
-This lab will take approximately **30** minutes to complete.
+This lab will take approximately **40** minutes to complete.
 
 ## Before you start
 
@@ -86,7 +86,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 4. Select **Install**.
 
-5. Repeat the steps above to install `sentence-transformers==3.0.1` as well.
+5. Repeat the steps above to install `databricks-vectorsearch==0.40`as well.
    
 ## Create a notebook and ingest data
 
@@ -119,95 +119,74 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
         .load("/RAG_lab/enwiki-latest-pages-articles.xml")
 
     # Show the DataFrame
-    df.show(5)
+    raw_df.show(5)
 
     # Print the schema of the DataFrame
-    df.printSchema()
+    raw_df.printSchema()
      ```
 
-5. In a new cell, run the following code to clean and preprocess the data to extract relevant text fields:
+5. In a new cell, run the following code, replacing `<catalog_name>` with your Unity catalog's name (the catalog with your workspace's name plus a unique suffix), to clean and preprocess the data to extract the relevant text fields:
 
      ```python
     from pyspark.sql.functions import col
 
     clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
     clean_df = clean_df.na.drop()
+    clean_df.write.format("delta").mode("overwrite").saveAsTable("<catalog_name>.default.wiki_pages")
     clean_df.show(5)
      ```
-     
-## Generate embeddings
 
-The Sentence Transformers library is a powerful tool for generating embeddings for text data. It allows users to easily access and utilize pre-trained models for creating embeddings that capture the semantic meaning of sentences. The users can choose the model that best fits their needs for a variety of applications such as semantic search or textual similarity tasks. 
+If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your default Unity catalog.
 
-1. In a new cell, run the following code to generate embeddings for the text.
-
-     ```python
-    from sentence_transformers import SentenceTransformer
-
-    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-
-    def embed_text(text):
-        return model.encode(text).tolist()
-
-    # Apply the embedding function to the dataset
-    from pyspark.sql.functions import udf
-    from pyspark.sql.types import ArrayType, FloatType
-
-    embed_udf = udf(embed_text, ArrayType(FloatType()))
-    embedded_df = clean_df.withColumn("embeddings", embed_udf(col("text")))
-    embedded_df.show(5)
-     ```
-
-2. Save the embedded data into a Delta table for efficient retrieval.
-
-     ```python
-    embedded_df.write.format("delta").mode("overwrite").save("/mnt/delta/wiki_embeddings")
-     ```
-
-3. Create a Delta table
-
-     ```python
-    CREATE TABLE IF NOT EXISTS wiki_embeddings
-     LOCATION '/mnt/delta/wiki_embeddings'
-     ```
-     
-## Implement vector search
+## Generate embeddings and implement vector search
 
 Databricks' Mosaic AI Vector Search is a vector database solution integrated within the Azure Databricks Platform. It optimizes the storage and retrieval of embeddings utilizing the Hierarchical Navigable Small World (HNSW) algorithm. It allows for efficient nearest neighbor searches, and its hybrid keyword-similarity search capability provides more relevant results by combining vector-based and keyword-based search techniques.
 
-1. In a new cell, run the following code to configure Azure Databricks' vector search capabilities.
+1. In a new cell, run the following SQL query to enable the Change Data Feed feature in the source table before creating a delta sync index.
 
      ```python
-    from databricks.feature_store import FeatureStoreClient
+    %sql
+    ALTER TABLE <catalog_name>.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
+     ```
 
-    fs = FeatureStoreClient()
+2. In a new cell, run the following code to create the vector search index.
 
-    fs.create_table(
-        name="wiki_embeddings_vector_store",
-        primary_keys=["title"],
-        df=embedded_df,
-        description="Vector embeddings for Wikipedia articles."
+     ```python
+    from databricks.vector_search.client import VectorSearchClient
+
+    client = VectorSearchClient()
+
+    client.create_endpoint(
+        name="vector_search_endpoint",
+        endpoint_type="STANDARD"
+    )
+
+    index = client.create_delta_sync_index(
+      endpoint_name="vector_search_endpoint",
+      source_table_name="<catalog_name>.default.wiki_pages",
+      index_name="<catalog_name>.default.wiki_index",
+      pipeline_type="TRIGGERED",
+      primary_key="title",
+      embedding_source_column="text",
+      embedding_model_endpoint_name="databricks-gte-large-en"
+     )
+     ```
+     
+If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, you will see the index created in your default Unity catalog.
+
+> **Note:** Before running the next code cell, verify that the index was successfully created. To do that, right-click the index in the Catalog pane and select **Open in Catalog Explorer**. Wait until the index status is **Online**.
+
+3. In a new cell, run the following code to search for relevant documents based on a query vector.
+
+     ```python
+    index.similarity_search(
+        query_text="Anthropology fields",
+        columns=["title", "text"],
+        num_results=2
     )
      ```
-2. In a new cell, run the following code to search for relevant documents based on a query vector.
 
-     ```python
-    def search_vectors(query_text, top_k=5):
-        query_embedding = model.encode([query_text]).tolist()
-        query_df = spark.createDataFrame([(query_text, query_embedding)], ["query_text", "query_embedding"])
-        
-        results = fs.search_table(
-            name="wiki_embeddings_vector_store",
-            vector_column="embeddings",
-            query=query_df,
-            top_k=top_k
-        )
-        return results
-
-    query = "Machine learning applications"
-    search_results = search_vectors(query)
-    search_results.show()
-     ```
+Verify that the output finds the corresponding Wiki page related to the query prompt.
 
 ## Augment Prompts with Retrieved Data:
 
@@ -215,7 +194,6 @@ Databricks' Mosaic AI Vector Search is a vector database solution integrated wit
 
      ```python
     def augment_prompt(query_text):
-        search_results = search_vectors(query_text)
         context = " ".join(search_results.select("text").rdd.flatMap(lambda x: x).collect())
         return f"Query: {query_text}\nContext: {context}"
 
@@ -238,15 +216,6 @@ Databricks' Mosaic AI Vector Search is a vector database solution integrated wit
 
     print(response)
     ```
-
-## Step 8: Evaluation and Optimization
-- Evaluate the Quality of Generated Responses:
-    1. Assess the relevance, coherence, and accuracy of the generated responses.
-    2. Collect user feedback and iterate on the prompt augmentation process.
-
-- Optimize the RAG Workflow:
-    1. Experiment with different embedding models, chunk sizes, and retrieval parameters to optimize performance.
-    2. Monitor the system's performance and make adjustments to improve accuracy and efficiency.
 
 ## Clean up
 
