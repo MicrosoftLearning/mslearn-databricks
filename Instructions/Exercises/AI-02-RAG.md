@@ -179,30 +179,47 @@ If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, 
 3. In a new cell, run the following code to search for relevant documents based on a query vector.
 
      ```python
-    index.similarity_search(
+    results_dict=index.similarity_search(
         query_text="Anthropology fields",
         columns=["title", "text"],
-        num_results=2
+        num_results=1
     )
+
+    display(results_dict)
      ```
 
 Verify that the output finds the corresponding Wiki page related to the query prompt.
 
 ## Augment Prompts with Retrieved Data:
 
-1. Combine the retrieved data with the user's query to create a rich prompt for the LLM.
+Now we can enchance the capabilities of large language models by providing them with additional context from external data sources. By doing so, the models can generate more accurate and contextually relevant responses.
+
+1. In a new code cell, run the following code to combine the retrieved data with the user's query to create a rich prompt for the LLM.
 
      ```python
+    # Convert the dictionary to a DataFrame
+    results = spark.createDataFrame([results_dict['result']['data_array'][0]])
+
+    from transformers import pipeline
+
+    # Load the summarization model
+    summarizer = pipeline("summarization")
+
+    # Extract the string values from the DataFrame column
+    text_data = results.select("_2").rdd.flatMap(lambda x: x).collect()
+
+    # Pass the extracted text data to the summarizer function
+    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=False)
+
     def augment_prompt(query_text):
-        context = " ".join(search_results.select("text").rdd.flatMap(lambda x: x).collect())
+        context = " ".join(summary.select("text").rdd.flatMap(lambda x: x).collect())
         return f"Query: {query_text}\nContext: {context}"
 
     prompt = augment_prompt("Explain the significance of the Turing test")
     print(prompt)
      ```
 
-- Generate Responses with LLM:
-    2. Use an LLM like GPT-3 or similar models from Hugging Face to generate responses.
+3. Use an LLM like GPT-3 or similar models from Hugging Face to generate responses.
 
     ```python
     from transformers import GPT2LMHeadModel, GPT2Tokenizer
