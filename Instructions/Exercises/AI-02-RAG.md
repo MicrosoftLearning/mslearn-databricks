@@ -194,7 +194,7 @@ Verify that the output finds the corresponding Wiki page related to the query pr
 
 Now we can enchance the capabilities of large language models by providing them with additional context from external data sources. By doing so, the models can generate more accurate and contextually relevant responses.
 
-1. In a new code cell, run the following code to combine the retrieved data with the user's query to create a rich prompt for the LLM.
+1. In a new cell, run the following code to combine the retrieved data with the user's query to create a rich prompt for the LLM.
 
      ```python
     # Convert the dictionary to a DataFrame
@@ -209,30 +209,39 @@ Now we can enchance the capabilities of large language models by providing them 
     text_data = results.select("_2").rdd.flatMap(lambda x: x).collect()
 
     # Pass the extracted text data to the summarizer function
-    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=False)
+    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=True)
 
     def augment_prompt(query_text):
-        context = " ".join(summary.select("text").rdd.flatMap(lambda x: x).collect())
+        context = " ".join([item['summary_text'] for item in summary])
         return f"Query: {query_text}\nContext: {context}"
 
-    prompt = augment_prompt("Explain the significance of the Turing test")
+    prompt = augment_prompt("Explain the significance of Anthropology")
     print(prompt)
      ```
 
-3. Use an LLM like GPT-3 or similar models from Hugging Face to generate responses.
+3. In a new cell, run the following code to use an LLM to generate responses.
 
-    ```python
+     ```python
     from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
     tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
     model = GPT2LMHeadModel.from_pretrained("gpt2")
 
     inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model.generate(inputs["input_ids"], max_length=500, num_return_sequences=1)
+    outputs = model.generate(
+        inputs["input_ids"], 
+        max_length=300, 
+        num_return_sequences=1, 
+        repetition_penalty=2.0, 
+        top_k=50, 
+        top_p=0.95, 
+        temperature=0.7,
+        do_sample=True
+    )
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     print(response)
-    ```
+     ```
 
 ## Clean up
 
