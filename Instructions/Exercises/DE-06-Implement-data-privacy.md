@@ -1,13 +1,17 @@
 ---
 lab:
-    title: 'Implementing Data Privacy and Governance using Microsoft Purview and Unity Catalog with Azure Databricks'
+    title: 'Implementing Data Privacy and Governance using Unity Catalog with Azure Databricks'
 ---
 
-# Implementing Data Privacy and Governance using Microsoft Purview and Unity Catalog with Azure Databricks
+# Implementing Data Privacy and Governance using Unity Catalog with Azure Databricks
 
-Microsoft Purview allows for comprehensive data governance across your entire data estate, integrating seamlessly with Azure Databricks to manage Lakehouse data and bring metadata into the Data Map. Unity Catalog enhances this by providing centralized data management and governance, simplifying security and compliance across Databricks workspaces.
+Unity Catalog offers a centralized governance solution for data and AI, simplifying security by providing a single place to administer and audit data access. It supports fine-grained access control lists (ACLs) and dynamic data masking, which are essential for protecting sensitive information. 
 
 This lab will take approximately **30** minutes to complete.
+
+## Before you start
+
+You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
 
 ## Provision an Azure Databricks workspace
 
@@ -121,66 +125,42 @@ Unity Catalog metastores register metadata about securable objects (such as tabl
 
 >**Note:** In the `.load` file path, replace `databricksxxxxxxx` with your catalog name.
 
-9. In the catalog explorer, navigate to the `sample_data` volume and verify that the new tables are inside it.
+9. In the catalog explorer, navigate to the `ecommerce` schema and verify that the new tables are inside it.
     
-## Set Up Microsoft Purview
+## Set up ACLs and dynamic data masking
 
-Microsoft Purview is a unified data governance service that helps organizations manage and secure their data across various environments. With features like data loss prevention, information protection, and compliance management, Microsoft Purview provides tools to understand, manage, and protect data throughout its lifecycle.
+Access control lists (ACLs) are a fundamental aspect of data security in Azure Databricks, allowing you to configure permissions for various workspace objects. With the Unity Catalog, you can centralize the governance and auditing of data access, providing a fine-grained security model that is essential for managing data and AI assets. 
 
-1. Navigate to the [Azure portal](https://portal.azure.com/).
-
-2. Select **Create a resource** and search for **Microsoft Purview**.
-
-3. Create an **Microsoft Purview** resource with the following settings:
-    - **Subscription**: *Select your Azure subscription*
-    - **Resource group**: *Choose the same resource group as your Azure Databricks workspace*
-    - **Microsoft Purview account name**: *A unique name of your choice*
-    - **Location**: *Select the same region as your Azure Databricks workspace*
-
-4. Select **Review + Create**. Wait for validation then select **Create**.
-
-5. Wait for deployment to complete. Then go to the deployed Microsoft Purview resource in the Azure portal.
-
-6. In the Microsoft Purview Governance portal, navigate to the **Data Map** section in the sidebar.
-
-7. In the **Data sources** pane, select **Register**.
-
-8. In the **Register data source** window, search and select **Azure Databricks**. Select **Continue**.
-
-9. Give your data source a unique name, then select your Azure Databricks workspace. Select **Register**.
-
-## Implement data privacy and governance policies
-
-1. In the **Data Map** section of the sidebar, select **Classifications**.
-
-2. In the **Classifications** pane, select **+ New** and create a new classification named **PII** (Personally Identifiable Information). Select **OK**.
-
-3. Select **Data Catalog** in the sidebar and navigate to the **customers** table.
-
-4. Apply the PII classification to the email and phone columns.
-
-5. Go to Azure Databricks and open the previously created notebook.
- 
-6. In a new cell, run the following code to create a data access policy to restrict access to PII data.
+1. In a new cell, run the following code to create a secure view of the `customers` table to restrict access to PII (Personally Identifiable Information) data.
 
      ```sql
-    CREATE OR REPLACE TABLE ecommerce.customers (
-      customer_id STRING,
-      name STRING,
-      email STRING,
-      phone STRING,
-      address STRING,
-      city STRING,
-      state STRING,
-      zip_code STRING,
-      country STRING
-    ) TBLPROPERTIES ('data_classification'='PII');
-
-    GRANT SELECT ON TABLE ecommerce.customers TO ROLE data_scientist;
-    REVOKE SELECT (email, phone) ON TABLE ecommerce.customers FROM ROLE data_scientist;
+    CREATE VIEW ecommerce.customers_secure_view AS
+    SELECT 
+        customer_id, 
+        name, 
+        address,
+        city,
+        state,
+        zip_code,
+        country, 
+        CASE 
+            WHEN current_user() = 'admin_user@example.com' THEN email
+            ELSE NULL 
+        END AS email, 
+        CASE 
+            WHEN current_user() = 'admin_user@example.com' THEN phone 
+            ELSE NULL 
+        END AS phone
+    FROM ecommerce.customers;
      ```
 
-7. Attempt to query the customers table as a user with the data_scientist role. Verify that access to PII columns (email and phone) is restricted.
+2. Query the secure view:
+
+     ```sql
+    SELECT * FROM ecommerce.customers_secure_view
+     ```
+
+Verify that access to PII columns (email and phone) is restricted as you are not accessing the data as `admin_user@example.com`.
 
 ## Clean up
 
