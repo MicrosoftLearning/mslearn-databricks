@@ -39,6 +39,10 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 3. Wait for deployment to complete. Then go to the deployed Azure OpenAI resource in the Azure portal.
 
+4. In the left pane, under **Resource Management**, select **Keys and Endpoint**.
+
+5. Copy one of the available keys as you will use it in this exercise.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
@@ -62,10 +66,10 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
     git clone https://github.com/MicrosoftLearning/mslearn-databricks
      ```
 
-5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
+5. After the repo has been cloned, enter the following command and replace `region` with the same region where you created your OpenAI resource. This command will run the **setup.ps1** script, which provisions an Azure Databricks workspace in the specified region:
 
      ```powershell
-    ./mslearn-databricks/setup.ps1
+    ./mslearn-databricks/setup.ps1 region
      ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
