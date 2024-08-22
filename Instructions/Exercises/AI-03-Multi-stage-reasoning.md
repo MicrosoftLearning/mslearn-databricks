@@ -43,13 +43,14 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 5. Copy the endpoint and one of the available keys as you will use it later in this exercise.
 
-## Deploy a model
+## Deploy the required models
 
 Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
 
 > **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
 1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+   
 1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo-16k** model with the following settings:
     - **Deployment name**: *gpt-35-turbo-16k*
     - **Model**: gpt-35-turbo-16k *(if the 16k model isn't available, choose gpt-35-turbo and name your deployment accordingly)*
@@ -69,7 +70,15 @@ Azure provides a web-based portal named **Azure AI Studio**, that you can use to
     - **Enable dynamic quota**: Disabled
 
 > \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
-    
+
+1. Go back to the **Deployments** page and create a new deployment of the **dall-e-3** model with the following settings:
+    - **Deployment name**: *dall-e-3*
+    - **Model version**: *Use default version*
+    - **Deployment type**: Standard
+    - **Capacity units**: 1
+    - **Content filter**: Default
+    - **Enable dynamic quota**: Disabled    
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
@@ -224,15 +233,15 @@ A retriever component fetches relevant documents or data based on a query. This 
         ("human", "{input}")
     ])
 
-    qa_chain = create_stuff_documents_chain(llm, prompt)
+    chain = create_stuff_documents_chain(llm, prompt)
 
-    chain = create_retrieval_chain(retriever, qa_chain)
+    qa_chain = create_retrieval_chain(retriever, chain)
      ```
 
 1. In a new cell, run the following code to test the QA system:
 
      ```python
-    result = chain.invoke({"input": "What is Azure Databricks?"})
+    result = qa_chain.invoke({"input": "What is Azure Databricks?"})
     print(result)
      ```
 
