@@ -7,7 +7,7 @@ lab:
 
 Multi-stage reasoning is a cutting-edge approach in AI that involves breaking down complex problems into smaller, more manageable stages. LangChain, a software framework, facilitates the creation of applications that leverage large language models (LLMs). When integrated with Azure Databricks, LangChain allows for seamless data loading, model wrapping, and the development of sophisticated AI agents. This combination is particularly powerful for handling intricate tasks that require a deep understanding of context and the ability to reason across multiple steps.
 
-This lab will take approximately **40** minutes to complete.
+This lab will take approximately **30** minutes to complete.
 
 ## Before you start
 
@@ -35,7 +35,7 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
     - **Name**: *A unique name of your choice*
     - **Pricing tier**: Standard S0
 
-    > \* Azure OpenAI resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
+> \* Azure OpenAI resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
 3. Wait for deployment to complete. Then go to the deployed Azure OpenAI resource in the Azure portal.
 
@@ -71,22 +71,12 @@ Azure provides a web-based portal named **Azure AI Studio**, that you can use to
 
 > \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
-1. Go back to the **Deployments** page and create a new deployment of the **dall-e-3** model with the following settings:
-    - **Deployment name**: *dall-e-3*
-    - **Model version**: *Use default version*
-    - **Deployment type**: Standard
-    - **Capacity units**: 1
-    - **Content filter**: Default
-    - **Enable dynamic quota**: Disabled    
-
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
-If you don't already have one, provision an Azure OpenAI resource in your Azure subscription.
-
 1. Sign into the **Azure portal** at `https://portal.azure.com`.
-2. Create an **Azure OpenAI** resource with the following settings:
+2. Create an **Azure Databricks** resource with the following settings:
     - **Subscription**: *Select the same Azure subscription that you used to create your Azure OpenAI resource*
     - **Resource group**: *The same resource group where you created your Azure OpenAI resource*
     - **Region**: *The same region where you created your Azure OpenAI resource*
@@ -101,14 +91,14 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 > **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
-1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
-1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
-1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
+2. Select your Azure Databricks Service resource.
+3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
-    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
+> **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
-1. In the **New Cluster** page, create a new cluster with the following settings:
+4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+5. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
     - **Cluster mode**: Single Node
@@ -121,11 +111,11 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     - **Node type**: Standard_DS3_v2
     - **Terminate after** *20* **minutes of inactivity**
 
-1. Wait for the cluster to be created. It may take a minute or two.
+6. Wait for the cluster to be created. It may take a minute or two.
 
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
 
-## Install Required Libraries
+## Install required libraries
 
 1. In the Databricks workspace, go to the **Workspace** section.
 
@@ -143,6 +133,13 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
      ```python
     %restart_python
+     ```
+
+6. In a new cell, define the authentication parameters that will be used to initialize the OpenAI models, replacing `your_openai_endpoint` and `your_openai_api_key` with the endpoint and key copied earlier from your OpenAI resource:
+
+     ```python
+    endpoint = "your_openai_endpoint"
+    key = "your_openai_api_key"
      ```
      
 ## Create a Vector Index and Store Embeddings
@@ -162,7 +159,7 @@ A vector index is a specialized data structure that allows for efficient storage
     ids = ["1", "2", "3"]
      ```
      
-1. In a new cell, run the following code to generate embeddings using the `text-embedding-ada-002` model. Replace `your_openai_endpoint` and `your_openai_api_key` with your OpenAI endpoint and API key.
+1. In a new cell, run the following code to generate embeddings using the `text-embedding-ada-002` model:
 
      ```python
     from langchain_openai import AzureOpenAIEmbeddings
@@ -170,8 +167,8 @@ A vector index is a specialized data structure that allows for efficient storage
     embedding_function = AzureOpenAIEmbeddings(
         deployment="text-embedding-ada-002",
         model="text-embedding-ada-002",
-        azure_endpoint="your_openai_endpoint",
-        openai_api_key="your_openai_api_key",
+        azure_endpoint=endpoint,
+        openai_api_key=key,
         chunk_size=1
     )
      ```
@@ -205,7 +202,7 @@ A retriever component fetches relevant documents or data based on a query. This 
     retriever = VectorStoreRetriever(vectorstore=vector_store)
      ```
 
-1. In a new cell, run the following code to create a QA system using the retriever and the `gpt-35-turbo-16k` model. Replace `your_openai_endpoint` and `your_openai_api_key` with your OpenAI endpoint and API key.
+1. In a new cell, run the following code to create a QA system using the retriever and the `gpt-35-turbo-16k` model:
     
      ```python
     from langchain_openai import AzureChatOpenAI
@@ -216,9 +213,9 @@ A retriever component fetches relevant documents or data based on a query. This 
     llm = AzureChatOpenAI(
         deployment_name="gpt-35-turbo-16k",
         model_name="gpt-35-turbo-16k",
-        azure_endpoint="your_openai_endpoint",
+        azure_endpoint=endpoint,
         api_version="2023-03-15-preview",
-        openai_api_key="your_openai_api_key",
+        openai_api_key=key,
     )
 
     system_prompt = (
@@ -228,82 +225,53 @@ A retriever component fetches relevant documents or data based on a query. This 
         "Context: {context}"
     )
 
-    prompt = ChatPromptTemplate.from_messages([
+    prompt1 = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "{input}")
     ])
 
     chain = create_stuff_documents_chain(llm, prompt)
 
-    qa_chain = create_retrieval_chain(retriever, chain)
+    qa_chain1 = create_retrieval_chain(retriever, chain)
      ```
 
 1. In a new cell, run the following code to test the QA system:
 
      ```python
-    result = qa_chain.invoke({"input": "What is Azure Databricks?"})
+    result = qa_chain1.invoke({"input": "What is Azure Databricks?"})
     print(result)
      ```
 
-## Build an Image Generation Chain
+The result output should show you an answer based on the relevant document present in the sample dataset plus the generative text produced by the LLM.
 
-Diffusion models such as DALL-E, Imagen, and Stable Diffusion, utilize deep learning techniques to generate images from textual descriptions, combining concepts, attributes, and styles in unique ways. The technology has been integrated into various frameworks and applications, allowing for creative and practical uses. Its development has been carefully managed to ensure responsible use, with safety measures in place to prevent the creation of harmful content.
+## Combine chains into a multi-chain system
 
-- Set up the Image Generation Model
-    1. Configure the image generation capabilities using GPT-4.
+Langchain is a versatile tool that allows the combination of multiple chains into a multi-chain system, enhancing the capabilities of language models. This process involves stringing together various components that can process inputs in parallel or in sequence, ultimately synthesizing a final response.
 
-    ```python
-    from langchain.chains import SimpleChain
+1. In a new cell, run the following code to create a second chain
 
-    def generate_image(prompt):
-        # Assuming you have an endpoint or a tool to generate images from text.
-        return f"Generated image for prompt: {prompt}"
+     ```python
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.output_parsers import StrOutputParser
 
-    image_generation_chain = SimpleChain(input_variables=["prompt"], output_variables=["image"], transform=generate_image)
-    ```
+    prompt2 = ChatPromptTemplate.from_template("Create a social media post based on this summary: {summary}")
 
-- Test the Image Generation Chain
-    1. Generate an image based on a text prompt.
+    qa_chain2 = ({"summary": qa_chain1} | prompt2 | llm | StrOutputParser())
+     ```
 
-    ```python
-    prompt = "A futuristic city with flying cars"
-    image_result = image_generation_chain.run(prompt=prompt)
-    print(image_result)
-    ```
+1. In a new cell, run the following code to invoke a multi-stage chain with a given input:
 
-## Step 7: Combine Chains into a Multi-chain System
-- Combine Chains
-    1. Integrate the retriever-based QA chain and the image generation chain into a multi-chain system.
+     ```python
+    result = qa_chain2.invoke({"input": "How can we use LangChain?"})
+    print(result)
+     ```
 
-    ```python
-    from langchain.chains import MultiChain
+The first chain provides an answer to the input based on the provided sample dataset, while the second chain creates a social media post based on the first chain's output. This approach allows you to handle more complex text processing tasks by chaining multiple steps together.
 
-    multi_chain = MultiChain(
-        chains=[
-            {"name": "qa", "chain": qa_chain},
-            {"name": "image_generation", "chain": image_generation_chain}
-        ]
-    )
-    ```
+## Clean up
 
-- Run the Multi-chain System
-    1. Pass a task that involves both text retrieval and image generation.
+When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
 
-    ```python
-    multi_task_input = {
-        "qa": {"question": "Tell me about LangChain."},
-        "image_generation": {"prompt": "A conceptual diagram of LangChain in use"}
-    }
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
-    multi_task_output = multi_chain.run(multi_task_input)
-    print(multi_task_output)
-    ```
-
-## Step 8: Clean Up Resources
-- Terminate the Cluster:
-    1. Go back to the "Compute" page, select your cluster, and click "Terminate" to stop the cluster.
-
-- Optional: Delete the Databricks Service:
-    1. To avoid incurring further charges, consider deleting the Databricks workspace if this lab is not part of a larger project or learning path.
-
-This concludes the exercise on multi-stage reasoning with LangChain using Azure Databricks.
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
