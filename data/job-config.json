@@ -1,0 +1,9 @@
+{
+  "name": "CD pipeline",
+  "existing_cluster_id": "your_cluster_id",
+  "timeout_seconds": 1200,
+  "max_retries": 3,
+  "notebook_task": {
+    "notebook_path": "/Workspace/Users/your_username/your_notebook"
+  }
+}
