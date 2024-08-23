@@ -1,167 +1,277 @@
-# Exercise 03 - Multi-stage Reasoning with LangChain using Azure Databricks and GPT-4
+---
+lab:
+    title: 'Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI'
+---
 
-## Objective
-This exercise aims to guide you through building a multi-stage reasoning system using LangChain on Azure Databricks. You will learn how to create a vector index, store embeddings, build a retriever-based chain, construct an image generation chain, and finally, combine these into a multi-chain system using the GPT-4 OpenAI model.
+# Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
 
-## Requirements
-An active Azure subscription. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-us/free/).
+Multi-stage reasoning is a cutting-edge approach in AI that involves breaking down complex problems into smaller, more manageable stages. LangChain, a software framework, facilitates the creation of applications that leverage large language models (LLMs). When integrated with Azure Databricks, LangChain allows for seamless data loading, model wrapping, and the development of sophisticated AI agents. This combination is particularly powerful for handling intricate tasks that require a deep understanding of context and the ability to reason across multiple steps.
 
-## Step 1: Provision Azure Databricks
-- Login to Azure Portal:
-    1. Go to Azure Portal and sign in with your credentials.
-- Create Databricks Service:
-    1. Navigate to "Create a resource" > "Analytics" > "Azure Databricks".
-    2. Enter the necessary details like workspace name, subscription, resource group (create new or select existing), and location.
-    3. Select the pricing tier (choose standard for this lab).
-    4. Click "Review + create" and then "Create" once validation passes.
+This lab will take approximately **30** minutes to complete.
 
-## Step 2: Launch Workspace and Create a Cluster
-- Launch Databricks Workspace:
-    1. Once the deployment is complete, go to the resource and click "Launch Workspace".
-- Create a Spark Cluster:
-    1. In the Databricks workspace, click "Compute" on the sidebar, then "Create compute".
-    2. Specify the cluster name and select a runtime version of Spark.
-    3. Choose the Worker type as "Standard" and node type based on available options (choose smaller nodes for cost-efficiency).
-    4. Click "Create compute".
+## Before you start
 
-## Step 3: Install Required Libraries
+You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
 
-- Open a new notebook in your workspace.
-- Install the necessary libraries using the following commands:
+## Provision an Azure OpenAI resource
 
-```python
-%pip install langchain openai faiss-cpu
-```
+If you don't already have one, provision an Azure OpenAI resource in your Azure subscription.
 
-- Configure OpenAI API
+1. Sign into the **Azure portal** at `https://portal.azure.com`.
+2. Create an **Azure OpenAI** resource with the following settings:
+    - **Subscription**: *Select an Azure subscription that has been approved for access to the Azure OpenAI service*
+    - **Resource group**: *Choose or create a resource group*
+    - **Region**: *Make a **random** choice from any of the following regions*\*
+        - Australia East
+        - Canada East
+        - East US
+        - East US 2
+        - France Central
+        - Japan East
+        - North Central US
+        - Sweden Central
+        - Switzerland North
+        - UK South
+    - **Name**: *A unique name of your choice*
+    - **Pricing tier**: Standard S0
 
-```python
-import os
-os.environ["OPENAI_API_KEY"] = "your-openai-api-key"
-```
+> \* Azure OpenAI resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
-## Step 4: Create a Vector Index and Store Embeddings
+3. Wait for deployment to complete. Then go to the deployed Azure OpenAI resource in the Azure portal.
 
-- Load the Dataset
-    1. Load a sample dataset for which you want to generate embeddings. For this lab, we'll use a small text dataset.
+4. In the left pane, under **Resource Management**, select **Keys and Endpoint**.
 
-    ```python
-    sample_texts = [
-        "Azure Databricks is a fast, easy, and collaborative Apache Spark-based analytics platform.",
-        "LangChain is a framework designed to simplify the creation of applications using large language models.",
-        "GPT-4 is a powerful language model developed by OpenAI."
-    ]
-    ```
-- Generate Embeddings
-    1. Use the OpenAI GPT-4 model to generate embeddings for these texts.
+5. Copy the endpoint and one of the available keys as you will use it later in this exercise.
 
-    ```python
-    from langchain.embeddings.openai import OpenAIEmbeddings
+## Deploy the required models
 
-    embeddings_model = OpenAIEmbeddings()
-    embeddings = embeddings_model.embed_documents(sample_texts)
-    ``` 
+Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
 
-- Store the Embeddings using FAISS
-    1. Use FAISS to create a vector index for efficient retrieval.
+> **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-    ```python
-    import faiss
-    import numpy as np
-
-    dimension = len(embeddings[0])
-    index = faiss.IndexFlatL2(dimension)
-    index.add(np.array(embeddings))
-    ```
-
-## Step 5: Build a Retriever-based Chain
-- Define a Retriever
-    1. Create a retriever that can search the vector index for the most similar texts.
-
-    ```python
-    from langchain.chains import RetrievalQA
-    from langchain.vectorstores.faiss import FAISS
-
-    vector_store = FAISS(index, embeddings_model)
-    retriever = vector_store.as_retriever()  
-    ```
-
-- Build the RetrievalQA Chain
-    1. Create a QA system using the retriever and the GPT-4 model.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+   
+1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo-16k** model with the following settings:
+    - **Deployment name**: *gpt-35-turbo-16k*
+    - **Model**: gpt-35-turbo-16k *(if the 16k model isn't available, choose gpt-35-turbo and name your deployment accordingly)*
+    - **Model version**: *Use default version*
+    - **Deployment type**: Standard
+    - **Tokens per minute rate limit**: 5K\*
+    - **Content filter**: Default
+    - **Enable dynamic quota**: Disabled
     
-    ```python
-    from langchain.llms import OpenAI
-    from langchain.chains.question_answering import load_qa_chain
+1. Go back to the **Deployments** page and create a new deployment of the **text-embedding-ada-002** model with the following settings:
+    - **Deployment name**: *text-embedding-ada-002*
+    - **Model**: text-embedding-ada-002
+    - **Model version**: *Use default version*
+    - **Deployment type**: Standard
+    - **Tokens per minute rate limit**: 5K\*
+    - **Content filter**: Default
+    - **Enable dynamic quota**: Disabled
 
-    llm = OpenAI(model_name="gpt-4")
-    qa_chain = load_qa_chain(llm, retriever)
-    ```
+> \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
-- Test the QA System
-    1. Ask a question related to the texts you embedded
+## Provision an Azure Databricks workspace
 
-    ```python
-    result = qa_chain.run("What is Azure Databricks?")
-    print(result)
-    ```
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
-## Step 6: Build an Image Generation Chain
+1. Sign into the **Azure portal** at `https://portal.azure.com`.
+2. Create an **Azure Databricks** resource with the following settings:
+    - **Subscription**: *Select the same Azure subscription that you used to create your Azure OpenAI resource*
+    - **Resource group**: *The same resource group where you created your Azure OpenAI resource*
+    - **Region**: *The same region where you created your Azure OpenAI resource*
+    - **Name**: *A unique name of your choice*
+    - **Pricing tier**: *Premium* or *Trial*
 
-- Set up the Image Generation Model
-    1. Configure the image generation capabilities using GPT-4.
+3. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
 
-    ```python
-    from langchain.chains import SimpleChain
+## Create a cluster
 
-    def generate_image(prompt):
-        # Assuming you have an endpoint or a tool to generate images from text.
-        return f"Generated image for prompt: {prompt}"
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-    image_generation_chain = SimpleChain(input_variables=["prompt"], output_variables=["image"], transform=generate_image)
-    ```
+> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
-- Test the Image Generation Chain
-    1. Generate an image based on a text prompt.
+1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
+2. Select your Azure Databricks Service resource.
+3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
-    ```python
-    prompt = "A futuristic city with flying cars"
-    image_result = image_generation_chain.run(prompt=prompt)
-    print(image_result)
-    ```
+> **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-## Step 7: Combine Chains into a Multi-chain System
-- Combine Chains
-    1. Integrate the retriever-based QA chain and the image generation chain into a multi-chain system.
+4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+5. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Cluster mode**: Single Node
+    - **Access mode**: Single user (*with your user account selected*)
+    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
+        - *Does **not** use a GPU*
+        - *Includes Scala > **2.11***
+        - *Includes Spark > **3.4***
+    - **Use Photon Acceleration**: <u>Un</u>selected
+    - **Node type**: Standard_DS3_v2
+    - **Terminate after** *20* **minutes of inactivity**
 
-    ```python
-    from langchain.chains import MultiChain
+6. Wait for the cluster to be created. It may take a minute or two.
 
-    multi_chain = MultiChain(
-        chains=[
-            {"name": "qa", "chain": qa_chain},
-            {"name": "image_generation", "chain": image_generation_chain}
-        ]
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
+
+## Install required libraries
+
+1. In the Databricks workspace, go to the **Workspace** section.
+
+2. Select **Create** and then select **Notebook**.
+
+3. Name your notebook and select `Python` as the language.
+
+4. In the first code cell, enter and run the following code to install the necessary libraries:
+   
+     ```python
+    %pip install langchain openai langchain_openai faiss-cpu
+     ```
+
+5. After the installation is complete, restart the kernel in a new cell:
+
+     ```python
+    %restart_python
+     ```
+
+6. In a new cell, define the authentication parameters that will be used to initialize the OpenAI models, replacing `your_openai_endpoint` and `your_openai_api_key` with the endpoint and key copied earlier from your OpenAI resource:
+
+     ```python
+    endpoint = "your_openai_endpoint"
+    key = "your_openai_api_key"
+     ```
+     
+## Create a Vector Index and Store Embeddings
+
+A vector index is a specialized data structure that allows for efficient storage and retrieval of high-dimensional vector data, which is crucial for performing fast similarity searches and nearest neighbor queries. Embeddings, on the other hand, are numerical representations of objects that capture their meaning in a vector form, enabling machines to process and understand various types of data, including text and images.
+
+1. In a new cell, run the following code to load a sample dataset:
+
+     ```python
+    from langchain_core.documents import Document
+
+    documents = [
+         Document(page_content="Azure Databricks is a fast, easy, and collaborative Apache Spark-based analytics platform.", metadata={"date_created": "2024-08-22"}),
+         Document(page_content="LangChain is a framework designed to simplify the creation of applications using large language models.", metadata={"date_created": "2024-08-22"}),
+         Document(page_content="GPT-4 is a powerful language model developed by OpenAI.", metadata={"date_created": "2024-08-22"})
+    ]
+    ids = ["1", "2", "3"]
+     ```
+     
+1. In a new cell, run the following code to generate embeddings using the `text-embedding-ada-002` model:
+
+     ```python
+    from langchain_openai import AzureOpenAIEmbeddings
+     
+    embedding_function = AzureOpenAIEmbeddings(
+        deployment="text-embedding-ada-002",
+        model="text-embedding-ada-002",
+        azure_endpoint=endpoint,
+        openai_api_key=key,
+        chunk_size=1
     )
-    ```
+     ```
+     
+1. In a new cell, run the following code to create a vector index using the first text sample as a reference for the vector dimension:
 
-- Run the Multi-chain System
-    1. Pass a task that involves both text retrieval and image generation.
+     ```python
+    import faiss
+      
+    index = faiss.IndexFlatL2(len(embedding_function.embed_query("Azure Databricks is a fast, easy, and collaborative Apache Spark-based analytics platform.")))
+     ```
 
-    ```python
-    multi_task_input = {
-        "qa": {"question": "Tell me about LangChain."},
-        "image_generation": {"prompt": "A conceptual diagram of LangChain in use"}
-    }
+## Build a Retriever-based Chain
 
-    multi_task_output = multi_chain.run(multi_task_input)
-    print(multi_task_output)
-    ```
+A retriever component fetches relevant documents or data based on a query. This is particularly useful in applications that require the integration of large amounts of data for analysis, such as in retrieval-augmented generation systems.
 
-## Step 8: Clean Up Resources
-- Terminate the Cluster:
-    1. Go back to the "Compute" page, select your cluster, and click "Terminate" to stop the cluster.
+1. In a new cell, run the following code to create a retriever that can search the vector index for the most similar texts.
 
-- Optional: Delete the Databricks Service:
-    1. To avoid incurring further charges, consider deleting the Databricks workspace if this lab is not part of a larger project or learning path.
+     ```python
+    from langchain.vectorstores import FAISS
+    from langchain_core.vectorstores import VectorStoreRetriever
+    from langchain_community.docstore.in_memory import InMemoryDocstore
 
-This concludes the exercise on multi-stage reasoning with LangChain using Azure Databricks.
+    vector_store = FAISS(
+        embedding_function=embedding_function,
+        index=index,
+        docstore=InMemoryDocstore(),
+        index_to_docstore_id={}
+    )
+    vector_store.add_documents(documents=documents, ids=ids)
+    retriever = VectorStoreRetriever(vectorstore=vector_store)
+     ```
+
+1. In a new cell, run the following code to create a QA system using the retriever and the `gpt-35-turbo-16k` model:
+    
+     ```python
+    from langchain_openai import AzureChatOpenAI
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain.chains.combine_documents import create_stuff_documents_chain
+    from langchain.chains import create_retrieval_chain
+     
+    llm = AzureChatOpenAI(
+        deployment_name="gpt-35-turbo-16k",
+        model_name="gpt-35-turbo-16k",
+        azure_endpoint=endpoint,
+        api_version="2023-03-15-preview",
+        openai_api_key=key,
+    )
+
+    system_prompt = (
+        "Use the given context to answer the question. "
+        "If you don't know the answer, say you don't know. "
+        "Use three sentences maximum and keep the answer concise. "
+        "Context: {context}"
+    )
+
+    prompt1 = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "{input}")
+    ])
+
+    chain = create_stuff_documents_chain(llm, prompt)
+
+    qa_chain1 = create_retrieval_chain(retriever, chain)
+     ```
+
+1. In a new cell, run the following code to test the QA system:
+
+     ```python
+    result = qa_chain1.invoke({"input": "What is Azure Databricks?"})
+    print(result)
+     ```
+
+The result output should show you an answer based on the relevant document present in the sample dataset plus the generative text produced by the LLM.
+
+## Combine chains into a multi-chain system
+
+Langchain is a versatile tool that allows the combination of multiple chains into a multi-chain system, enhancing the capabilities of language models. This process involves stringing together various components that can process inputs in parallel or in sequence, ultimately synthesizing a final response.
+
+1. In a new cell, run the following code to create a second chain
+
+     ```python
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.output_parsers import StrOutputParser
+
+    prompt2 = ChatPromptTemplate.from_template("Create a social media post based on this summary: {summary}")
+
+    qa_chain2 = ({"summary": qa_chain1} | prompt2 | llm | StrOutputParser())
+     ```
+
+1. In a new cell, run the following code to invoke a multi-stage chain with a given input:
+
+     ```python
+    result = qa_chain2.invoke({"input": "How can we use LangChain?"})
+    print(result)
+     ```
+
+The first chain provides an answer to the input based on the provided sample dataset, while the second chain creates a social media post based on the first chain's output. This approach allows you to handle more complex text processing tasks by chaining multiple steps together.
+
+## Clean up
+
+When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
+
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
+
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
