@@ -1,43 +1,137 @@
-# Exercise 04 - Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
+---
+lab:
+    title: 'Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI'
+---
 
-## Objective
-This exercise will guide you through the process of fine-tuning a large language model (LLM) using Azure Databricks and Azure OpenAI. You will learn how to set up the environment, preprocess data, and fine-tune an LLM on custom data to achieve specific NLP tasks.
+# Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
 
-## Requirements
-An active Azure subscription. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-us/free/).
+With Azure Databricks, users can now leverage the power of LLMs for specialized tasks by fine-tuning them with their own data, enhancing domain-specific performance. To fine-tune a language model using Azure Databricks, you can utilize the Mosaic AI Model Training interface which simplifies the process of full model fine-tuning. This feature allows you to fine-tune a model with your custom data, with checkpoints saved to MLflow, ensuring you retain complete control over the fine-tuned model. Additionally, the Hugging Face Transformers library enables you to scale out NLP batch applications and fine-tune models for large-language model applications.
 
-## Step 1: Provision Azure Databricks
-- Login to Azure Portal:
-    1. Go to Azure Portal and sign in with your credentials.
-- Create Databricks Service:
-    1. Navigate to "Create a resource" > "Analytics" > "Azure Databricks".
-    2. Enter the necessary details like workspace name, subscription, resource group (create new or select existing), and location.
-    3. Select the pricing tier (choose standard for this lab).
-    4. Click "Review + create" and then "Create" once validation passes.
+This lab will take approximately **30** minutes to complete.
 
-## Step 2: Launch Workspace and Create a Cluster
-- Launch Databricks Workspace:
-    1. Once the deployment is complete, go to the resource and click "Launch Workspace".
-- Create a Spark Cluster:
-    1. In the Databricks workspace, click "Compute" on the sidebar, then "Create compute".
-    2. Specify the cluster name and select a runtime version of Spark.
-    3. Choose the Worker type as "Standard" and node type based on available options (choose smaller nodes for cost-efficiency).
-    4. Click "Create compute".
+## Before you start
 
-## Step 3: Install required libraries
-- In the "Libraries" tab of your cluster, click on "Install New."
-- Install the following Python packages:
-    1. transformers
-    2. datasets
-    3. azure-ai-openai
-- Optionally, you can also install any other necessary packages like torch.
+You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
 
-### Create new Notebook
-- Go to the "Workspace" section and click on "Create" > "Notebook."
-- Name your notebook (e.g., Fine-Tuning-GPT4) and choose Python as the default language.
-- Attach the notebook to your cluster.
+## Provision an Azure OpenAI resource
 
-## Step 4 - Preparing the Dataset
+If you don't already have one, provision an Azure OpenAI resource in your Azure subscription.
+
+1. Sign into the **Azure portal** at `https://portal.azure.com`.
+2. Create an **Azure OpenAI** resource with the following settings:
+    - **Subscription**: *Select an Azure subscription that has been approved for access to the Azure OpenAI service*
+    - **Resource group**: *Choose or create a resource group*
+    - **Region**: *Make a **random** choice from any of the following regions*\*
+        - Australia East
+        - Canada East
+        - East US
+        - East US 2
+        - France Central
+        - Japan East
+        - North Central US
+        - Sweden Central
+        - Switzerland North
+        - UK South
+    - **Name**: *A unique name of your choice*
+    - **Pricing tier**: Standard S0
+
+> \* Azure OpenAI resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
+
+3. Wait for deployment to complete. Then go to the deployed Azure OpenAI resource in the Azure portal.
+
+4. In the left pane, under **Resource Management**, select **Keys and Endpoint**.
+
+5. Copy the endpoint and one of the available keys as you will use it later in this exercise.
+
+## Deploy the required model
+
+Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
+
+> **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+   
+1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo-16k** model with the following settings:
+    - **Deployment name**: *gpt-35-turbo-16k*
+    - **Model**: gpt-35-turbo-16k *(if the 16k model isn't available, choose gpt-35-turbo and name your deployment accordingly)*
+    - **Model version**: *Use default version*
+    - **Deployment type**: Standard
+    - **Tokens per minute rate limit**: 5K\*
+    - **Content filter**: Default
+    - **Enable dynamic quota**: Disabled
+    
+> \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
+
+## Provision an Azure Databricks workspace
+
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
+
+1. Sign into the **Azure portal** at `https://portal.azure.com`.
+2. Create an **Azure Databricks** resource with the following settings:
+    - **Subscription**: *Select the same Azure subscription that you used to create your Azure OpenAI resource*
+    - **Resource group**: *The same resource group where you created your Azure OpenAI resource*
+    - **Region**: *The same region where you created your Azure OpenAI resource*
+    - **Name**: *A unique name of your choice*
+    - **Pricing tier**: *Premium* or *Trial*
+
+3. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
+
+## Create a cluster
+
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
+
+> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+
+1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
+2. Select your Azure Databricks Service resource.
+3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+
+> **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
+
+4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+5. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Cluster mode**: Single Node
+    - **Access mode**: Single user (*with your user account selected*)
+    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
+        - *Does **not** use a GPU*
+        - *Includes Scala > **2.11***
+        - *Includes Spark > **3.4***
+    - **Use Photon Acceleration**: <u>Un</u>selected
+    - **Node type**: Standard_DS3_v2
+    - **Terminate after** *20* **minutes of inactivity**
+
+6. Wait for the cluster to be created. It may take a minute or two.
+
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
+
+## Install required libraries
+
+1. In your cluster's page, select the **Libraries** tab.
+
+2. Select **Install New**.
+
+3. Select **PyPI** as the library source and install the following Python packages:
+   - `transformers==4.44.0`
+   - `datasets==2.21.0`
+   - `openai==1.42.0`
+
+## Create a new notebook and load sample dataset
+
+1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+   
+1. Name your notebook and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+
+1. In the first code cell, enter and run the following code to load a IMDB sample dataset for sentiment analysis:
+   
+     ```python
+    from datasets import load_dataset
+
+    dataset = load_dataset("imdb")
+     ```
+
+## Preprocess the dataset
 
 - Load the Dataset
     1. You can use any text dataset suitable for your fine-tuning task. For example, let's use the IMDB dataset for sentiment analysis.
