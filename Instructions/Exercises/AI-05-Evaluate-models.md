@@ -1,180 +1,200 @@
-# Exercise 05 - Evaluate Large Language Models using Azure Databricks and Azure OpenAI
+---
+lab:
+    title: 'Evaluate Large Language Models using Azure Databricks and Azure OpenAI'
+---
 
-## Objective
-In this exercise, you will learn how to evaluate large language models (LLMs) using Azure Databricks and the GPT-4 OpenAI model. This includes setting up the environment, defining evaluation metrics, and analyzing the model's performance on specific tasks.
+# Evaluate Large Language Models using Azure Databricks and Azure OpenAI
 
-## Requirements
-An active Azure subscription. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-us/free/).
+Evaluating large language models (LLMs) involves a series of steps to ensure the model's performance meets the required standards. MLflow LLM Evaluate, a feature within Azure Databricks, provides a structured approach to this process, including setting up the environment, defining evaluation metrics, and analyzing results. This evaluation is crucial as LLMs often do not have a single ground truth for comparison, making traditional evaluation methods inadequate.
 
-## Step 1: Provision Azure Databricks
-- Login to Azure Portal:
-    1. Go to Azure Portal and sign in with your credentials.
-- Create Databricks Service:
-    1. Navigate to "Create a resource" > "Analytics" > "Azure Databricks".
-    2. Enter the necessary details like workspace name, subscription, resource group (create new or select existing), and location.
-    3. Select the pricing tier (choose standard for this lab).
-    4. Click "Review + create" and then "Create" once validation passes.
+This lab will take approximately **20** minutes to complete.
 
-## Step 2: Launch Workspace and Create a Cluster
-- Launch Databricks Workspace:
-    1. Once the deployment is complete, go to the resource and click "Launch Workspace".
-- Create a Spark Cluster:
-    1. In the Databricks workspace, click "Compute" on the sidebar, then "Create compute".
-    2. Specify the cluster name and select a runtime version of Spark.
-    3. Choose the Worker type as "Standard" and node type based on available options (choose smaller nodes for cost-efficiency).
-    4. Click "Create compute".
+## Before you start
 
-## Step 3: Install required Libraries
+You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
 
-- Log in to your Azure Databricks workspace.
-- Create a new notebook and select the default cluster.
-- Run the following commands to install the necessary Python libraries:
+## Provision an Azure OpenAI resource
 
-```python
-%pip install openai
-%pip install transformers
-%pip install datasets
-```
+If you don't already have one, provision an Azure OpenAI resource in your Azure subscription.
 
-- Configure OpenAI API Key:
-    1. Add your Azure OpenAI API key to the notebook:
+1. Sign into the **Azure portal** at `https://portal.azure.com`.
+2. Create an **Azure OpenAI** resource with the following settings:
+    - **Subscription**: *Select an Azure subscription that has been approved for access to the Azure OpenAI service*
+    - **Resource group**: *Choose or create a resource group*
+    - **Region**: *Make a **random** choice from any of the following regions*\*
+        - East US 2
+        - North Central US
+        - Sweden Central
+        - Switzerland West
+    - **Name**: *A unique name of your choice*
+    - **Pricing tier**: Standard S0
 
-    ```python
-    import openai
-    openai.api_key = "your-openai-api-key"
-    ```
+> \* Azure OpenAI resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
-## Step 4: Define Evaluation Metrics
-- Define Common Evaluation Metrics:
-    1. In this step, you will define evaluation metrics such as Perplexity, BLEU score, ROUGE score, and accuracy depending on the task.
+3. Wait for deployment to complete. Then go to the deployed Azure OpenAI resource in the Azure portal.
 
-    ```python
-    from datasets import load_metric
+4. In the left pane, under **Resource Management**, select **Keys and Endpoint**.
 
-    # Example: Load BLEU metric
-    bleu_metric = load_metric("bleu")
-    rouge_metric = load_metric("rouge")
+5. Copy the endpoint and one of the available keys as you will use it later in this exercise.
 
-    def compute_bleu(predictions, references):
-        return bleu_metric.compute(predictions=predictions, references=references)
+## Deploy the required model
 
-    def compute_rouge(predictions, references):
-        return rouge_metric.compute(predictions=predictions, references=references)
-    ```
+Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
 
-- Define Task-specific Metrics:
-    1. Depending on the use case, define other relevant metrics. For example, for sentiment analysis, define accuracy:
+> **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-    ```python
-    from sklearn.metrics import accuracy_score
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+   
+1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo** model with the following settings:
+    - **Deployment name**: *gpt-35-turbo*
+    - **Model**: gpt-35-turbo
+    - **Model version**: Default
+    - **Deployment type**: Standard
+    - **Tokens per minute rate limit**: 5K\*
+    - **Content filter**: Default
+    - **Enable dynamic quota**: Disabled
+    
+> \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
-    def compute_accuracy(predictions, references):
-        return accuracy_score(references, predictions)
-    ```
+## Provision an Azure Databricks workspace
 
-## Step 5: Prepare the Dataset
-- Load a Dataset
-    1. Use the datasets library to load a pre-defined dataset. For this lab, you can use a simple dataset like the IMDB movie reviews dataset for sentiment analysis:
+> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
-    ```python
-    from datasets import load_dataset
+1. Sign into the **Azure portal** at `https://portal.azure.com`.
+2. Create an **Azure Databricks** resource with the following settings:
+    - **Subscription**: *Select the same Azure subscription that you used to create your Azure OpenAI resource*
+    - **Resource group**: *The same resource group where you created your Azure OpenAI resource*
+    - **Region**: *The same region where you created your Azure OpenAI resource*
+    - **Name**: *A unique name of your choice*
+    - **Pricing tier**: *Premium* or *Trial*
 
-    dataset = load_dataset("imdb")
-    test_data = dataset["test"]
-    ```
+3. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
 
-- Preprocess the Data
-    1. Tokenize and preprocess the dataset to be compatible with the GPT-4 model:
+## Create a cluster
 
-    ```python
-    from transformers import GPT2Tokenizer
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
-    def preprocess_function(examples):
-        return tokenizer(examples["text"], truncation=True, padding=True)
+1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
+2. Select your Azure Databricks Service resource.
+3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
-    tokenized_data = test_data.map(preprocess_function, batched=True)
-    ```
+> **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-## Step 6: Evaluate the GPT-4 Model
-- Generate Predictions:
-    1. Use the GPT-4 model to generate predictions on the test dataset
+4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+5. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Cluster mode**: Single Node
+    - **Access mode**: Single user (*with your user account selected*)
+    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
+        - *Does **not** use a GPU*
+        - *Includes Scala > **2.11***
+        - *Includes Spark > **3.4***
+    - **Use Photon Acceleration**: <u>Un</u>selected
+    - **Node type**: Standard_DS3_v2
+    - **Terminate after** *20* **minutes of inactivity**
 
-    ```python
-    def generate_predictions(input_texts):
-    predictions = []
-    for text in input_texts:
-        response = openai.Completion.create(
-            model="gpt-4",
-            prompt=text,
-            max_tokens=50
+6. Wait for the cluster to be created. It may take a minute or two.
+
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
+
+## Install required libraries
+
+1. In your cluster's page, select the **Libraries** tab.
+
+2. Select **Install New**.
+
+3. Select **PyPI** as the library source and install `openai==1.42.0`.
+
+## Create a new notebook
+
+1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+   
+1. Name your notebook and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+
+2. In the first cell of the notebook, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
+
+     ```python
+    import os
+
+    os.environ["AZURE_OPENAI_API_KEY"] = "your_openai_api_key"
+    os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
+    os.environ["AZURE_OPENAI_API_VERSION"] = "2023-03-15-preview"
+     ```
+
+## Evaluate LLM with a custom function
+
+In MLflow 2.8.0 and above, `mlflow.evaluate()` supports evaluating a Python function without requiring the model be logged to MLflow. The process involves specifying the model to evaluate, the metrics to compute, and the evaluation data, which is usually a Pandas DataFrame. 
+
+1. In a new cell, run the following code to define a sample evaluation dataframe:
+
+     ```python
+    import pandas as pd
+
+    eval_data = pd.DataFrame(
+        {
+            "inputs": [
+                "What is MLflow?",
+                "What is Spark?",
+            ],
+            "ground_truth": [
+                "MLflow is an open-source platform for managing the end-to-end machine learning (ML) lifecycle. It was developed by Databricks, a company that specializes in big data and machine learning solutions. MLflow is designed to address the challenges that data scientists and machine learning engineers face when developing, training, and deploying machine learning models.",
+                "Apache Spark is an open-source, distributed computing system designed for big data processing and analytics. It was developed in response to limitations of the Hadoop MapReduce computing model, offering improvements in speed and ease of use. Spark provides libraries for various tasks such as data ingestion, processing, and analysis through its components like Spark SQL for structured data, Spark Streaming for real-time data processing, and MLlib for machine learning tasks",
+            ],
+        }
+    )
+     ```
+
+1. In a new cell, run the following code to initialize a client for your Azure OpenAI resource and define your customized function:
+
+     ```python
+    import os
+    import pandas as pd
+    from openai import AzureOpenAI
+
+    client = AzureOpenAI(
+        azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key = os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version = os.getenv("AZURE_OPENAI_API_VERSION")
+    )
+
+    def openai_qa(inputs):
+        answers = []
+        system_prompt = "Please answer the following question in formal language."
+        for index, row in inputs.iterrows():
+            completion = client.chat.completions.create(
+                model="gpt-35-turbo",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": "{row}"},
+                ],
+            )
+            answers.append(completion.choices[0].message.content)
+
+        return answers
+
+     ```
+
+1. In a new cell, run the following code to create an experiment and evaluate the custom function with the evaluation data:
+
+     ```python
+    import mlflow
+
+    with mlflow.start_run() as run:
+        results = mlflow.evaluate(
+            openai_qa,
+            eval_data,
+            model_type="question-answering",
         )
-        predictions.append(response.choices[0].text.strip())
-    return predictions
+     ```
+Once the run has succeeded, it will generate a link to the experiment page where you can verify the model metrics. For `model_type="question-answering"`, the default metrics are **toxicity**, **ari_grade_level** and **flesch_kincaid_grade_level**.
 
-    input_texts = tokenized_data["text"]
-    predictions = generate_predictions(input_texts)
-    ```
+## Clean up
 
-- Compute Evaluation Metrics
-    1. Compute the evaluation metrics based on the predictions generated by the GPT-4 model
+When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
 
-    ```python
-    # Example: Compute BLEU and ROUGE scores
-    bleu_score = compute_bleu(predictions, tokenized_data["text"])
-    rouge_score = compute_rouge(predictions, tokenized_data["text"])
+In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
-    print("BLEU Score:", bleu_score)
-    print("ROUGE Score:", rouge_score)
-    ```
-
-    2. If you are evaluating for a specific task like sentiment analysis, compute the accuracy
-
-    ```python
-    # Assuming binary sentiment labels (positive/negative)
-    actual_labels = test_data["label"]
-    predicted_labels = [1 if "positive" in pred else 0 for pred in predictions]
-
-    accuracy = compute_accuracy(predicted_labels, actual_labels)
-    print("Accuracy:", accuracy)
-    ```
-
-## Step 7: Analyze and Interpret Results
-
-- Interpret the Results
-    1. Analyze the BLEU, ROUGE, or accuracy scores to determine how well the GPT-4 model is performing on your task.
-    2. Discuss potential reasons for any discrepancies and consider ways to improve the model’s performance (e.g., fine-tuning, more data preprocessing).
-
-- Visualize the Results
-    1. Optionally, you can visualize the results using Matplotlib or any other visualization tool.
-
-    ```python
-    import matplotlib.pyplot as plt
-
-    # Example: Plot accuracy scores
-    plt.bar(["Accuracy"], [accuracy])
-    plt.ylabel("Score")
-    plt.title("Model Evaluation Metrics")
-    plt.show()
-    ```
-
-## Step 8: Experiment with Different Scenarios
-
-- Experiment with Different Prompts
-    1. Modify the prompt structure to see how it affects the model’s performance.
-
-- Evaluate on Different Datasets
-    1. Try using a different dataset to evaluate the GPT-4 model's versatility across various tasks.
-
-- Optimize Evaluation Metrics
-    1. Experiment with hyperparameters like temperature, max tokens, etc., to optimize the evaluation metrics.
-
-## Step 9: Clean Up Resources
-- Terminate the Cluster:
-    1. Go back to the "Compute" page, select your cluster, and click "Terminate" to stop the cluster.
-
-- Optional: Delete the Databricks Service:
-    1. To avoid incurring further charges, consider deleting the Databricks workspace if this lab is not part of a larger project or learning path.
-
-This exercise guides you through the process of evaluating a large language model using Azure Databricks and the GPT-4 OpenAI model. By completing this exercise, you will gain insights into the model's performance and understand how to improve and fine-tune the model for specific tasks.
+If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
