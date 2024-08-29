@@ -1,9 +1,9 @@
 ---
 lab:
-    title: 'Train a scalable Machine Learning Model using Azure Databricks'
+    title: 'Manage a machine learning model using Azure Databricks'
 ---
 
-# Train a scalable Machine Learning Model using Azure Databricks
+# Manage a machine learning model using Azure Databricks
 
 Training a machine learning model using Azure Databricks involves leveraging a unified analytics platform that provides a collaborative environment for data processing, model training, and deployment. Azure Databricks integrates with MLflow to manage the machine learning lifecycle, including experiment tracking and model serving.
 
