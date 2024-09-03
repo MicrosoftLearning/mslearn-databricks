@@ -1,13 +1,13 @@
 # ILT labs
 
-DP-3011 (Data Engineering with Azure Databricks):
+DP-3011 (Implement a data lakehouse analytics solution with Azure Databricks):
 
-- Instructions\Exercises\01-Explore-Azure-Databricks.md
-- Instructions\Exercises\02-Use-Spark-in-Azure-Databricks.md
-- Instructions\Exercises\03-Delta-lake-in-Azure-Databricks.md
-- Instructions\Exercises\04-Azure-Databricks-SQL.md
-- Instructions\Exercises\05-Azure-Databricks-Data-Factory.md
-
+- Instructions\Exercises\LA-01-Explore-Azure-Databricks.md
+- Instructions\Exercises\LA-02-Explore-data.md
+- Instructions\Exercises\LA-03-Transform-data.md
+- Instructions\Exercises\LA-04-Explore-Delta-Lake.md
+- Instructions\Exercises\LA-05-Build-data-pipeline.md
+- Instructions\Exercises\LA-06-Build-workflow.md
 
 DP-3014 (Machine Learning with Azure Databricks):
 
