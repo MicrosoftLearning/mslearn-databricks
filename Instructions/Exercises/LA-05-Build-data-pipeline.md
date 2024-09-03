@@ -117,7 +117,7 @@ Create a new SQL notebook and start defining the Delta Live Tables using SQL scr
     COMMENT "Formatted and filtered data for analysis."
     AS
     SELECT
-        DATE_FORMAT(Last_Update, 'MM/dd/yyyy') as Report_Date,
+        TO_DATE(Last_Update, 'MM/dd/yyyy') as Report_Date,
         Country_Region,
         Confirmed,
         Deaths,
@@ -154,8 +154,8 @@ Create a new SQL notebook and start defining the Delta Live Tables using SQL scr
  
 7. Once the pipeline is successfully executed, go back to the first notebook and verify that all 3 new tables have been created in the specified storage location with the following code:
 
-     ```sql
-    display(dbutils.fs.ls("dbfs:/pipelines/delta_lab"))
+     ```python
+    display(dbutils.fs.ls("dbfs:/pipelines/delta_lab/tables"))
      ```
 
 ## View results as a visualization
