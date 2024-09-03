@@ -11,7 +11,7 @@ Azure Databricks facilitates exploratory data analysis (EDA), allowing users to 
 
 It integrates with a variety of tools and techniques for EDA, including statistical methods and visualizations, to summarize data characteristics and identify any underlying issues.
 
-This exercise should take approximately **45** minutes to complete.
+This exercise should take approximately **30** minutes to complete.
 
 ## Provision an Azure Databricks workspace
 
