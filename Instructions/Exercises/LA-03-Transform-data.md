@@ -186,6 +186,14 @@ Observe that after updating the values in the **Tax** column, its data type is s
 
 1. While it’s useful to be able to embed SQL statements into a cell containing PySpark code, data analysts often just want to work directly in SQL. Add a new code cell and use it to run the following code.
 
+    ```python
+   df.createOrReplaceTempView("salesorders")
+    ```
+
+This code line will create a temporary view that can then be used directly with SQL statements.
+
+2. In a new cell, run the following code:
+   
     ```sql
    %sql
     

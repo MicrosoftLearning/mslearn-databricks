@@ -127,7 +127,7 @@ You implement your data processing and analysis workflow using tasks. A job is c
     df = df.withColumn('Tax', col('UnitPrice') * 0.08)
     df = df.withColumn('Tax', col('Tax').cast("float"))
      ```
-> Note: After updating the values in the **Tax** column, its data type is set to `float` again. This is due to its data type changing to `double` after the calculation is performed. Since `double` has a higher memory usage than `float`, it is better for performance to type cast the column back to `float`.
+    > **Note**: After updating the values in the **Tax** column, its data type is set to `float` again. This is due to its data type changing to `double` after the calculation is performed. Since `double` has a higher memory usage than `float`, it is better for performance to type cast the column back to `float`.
 
 5. In a new code cell, run the following code to aggregate and group the order data:
 

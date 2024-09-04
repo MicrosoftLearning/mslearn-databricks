@@ -162,7 +162,6 @@ Now that you have created a linked service, you can use it in a pipeline to run 
     ```json
     {
         "runPageUrl": "https://adb-..../run/...",
-        "runOutput": "dbfs:/product_data/products.csv",
         "effectiveIntegrationRuntime": "AutoResolveIntegrationRuntime (East US)",
         "executionDuration": 61,
         "durationInQueue": {
@@ -180,8 +179,6 @@ Now that you have created a linked service, you can use it in a pipeline to run 
         }
     }
     ```
-
-5. Note the **runOutput** value, which is the *path* variable to which the notebook saved the data.
 
 ## Clean up
 

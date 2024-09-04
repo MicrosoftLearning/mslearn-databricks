@@ -111,7 +111,7 @@ The data has been loaded into a dataframe. Let's persist it into a delta table.
 
     The data for a delta lake table is stored in Parquet format. A log file is also created to track modifications made to the data.
 
-1. Add a new code cell and use it to run the following shell commands to view the contents of the folder where the delta data has been saved.
+1. Add a new code cell and use it to run the following shell command to view the contents of the folder where the delta data has been saved.
 
     ```
     %sh
