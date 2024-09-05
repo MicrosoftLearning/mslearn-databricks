@@ -21,7 +21,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
 3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
@@ -78,7 +78,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-1. Change the default notebook name (**Untitled Notebook *[date]***) to **Explore Delta Lake** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore Delta Lake` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
@@ -169,7 +169,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
 ### Create an external table
 
-1. Use the following code to create a new database named **AdventureWorks** and then creates an external tabled named **ProductsExternal** in that database based on the path to the Delta files you defined previously:
+1. Use the following code to create a new database named **AdventureWorks** and then creates an external table named **ProductsExternal** in that database based on the path to the Delta files you defined previously:
 
     ```python
    spark.sql("CREATE DATABASE AdventureWorks")
@@ -189,7 +189,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
 ### Create a managed table
 
-1. Run the following code to create (and then describe) a managed tabled named **ProductsManaged** based on the dataframe you originally loaded from the **products.csv** file (before you updated the price of product 771).
+1. Run the following code to create (and then describe) a managed table named **ProductsManaged** based on the dataframe you originally loaded from the **products.csv** file (before you updated the price of product 771).
 
     ```python
    df.write.format("delta").saveAsTable("AdventureWorks.ProductsManaged")
