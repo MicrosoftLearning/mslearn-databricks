@@ -24,7 +24,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
 3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
@@ -75,7 +75,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-2. Change the default notebook name (**Untitled Notebook *[date]***) to **Transform data with Spark** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+2. Change the default notebook name (**Untitled Notebook *[date]***) to `Transform data with Spark` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 ## Ingest data
 
@@ -178,7 +178,7 @@ Observe that after updating the values in the **Tax** column, its data type is s
    display(yearlySales)
     ```
 
-    This time the results show the number of sales orders per year. Note that the select method includes a SQL **year** function to extract the year component of the *OrderDate* field, and then an **alias** method is used to assign a columm name to the extracted year value. The data is then grouped by the derived *Year* column and the **count** of rows in each group is calculated before finally the **orderBy** method is used to sort the resulting dataframe.
+    This time the results show the number of sales orders per year. Note that the select method includes a SQL **year** function to extract the year component of the *OrderDate* field, and then an **alias** method is used to assign a column name to the extracted year value. The data is then grouped by the derived *Year* column and the **count** of rows in each group is calculated before finally the **orderBy** method is used to sort the resulting dataframe.
 
 > **Note**: To learn more about working with Dataframes in Azure Databricks, see [Introduction to DataFrames - Python](https://docs.microsoft.com/azure/databricks/spark/latest/dataframes-datasets/introduction-to-dataframes-python) in the Azure Databricks documentation.
 
@@ -194,7 +194,7 @@ This code line will create a temporary view that can then be used directly with 
 
 2. In a new cell, run the following code:
    
-    ```sql
+    ```python
    %sql
     
    SELECT YEAR(OrderDate) AS OrderYear,
@@ -206,7 +206,7 @@ This code line will create a temporary view that can then be used directly with 
 
     Observe that:
     
-    - The ``%sql` line at the beginning of the cell (called a magic) indicates that the Spark SQL language runtime should be used to run the code in this cell instead of PySpark.
+    - The **%sql** line at the beginning of the cell (called a magic) indicates that the Spark SQL language runtime should be used to run the code in this cell instead of PySpark.
     - The SQL code references the **salesorder** view that you created previously.
     - The output from the SQL query is automatically displayed as the result under the cell.
     
