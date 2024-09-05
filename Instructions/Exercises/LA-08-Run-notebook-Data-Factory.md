@@ -20,7 +20,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
 3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
@@ -65,7 +65,7 @@ You can create notebooks in your Azure Databricks workspace to run code written 
 
 1. View the Azure Databricks workspace portal and note that the sidebar on the left side contains icons for the various tasks you can perform.
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
-1. Change the default notebook name (**Untitled Notebook *[date]***) to **Process Data**.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `Process Data`.
 1. In the first cell of the notebook, enter (but don't run) the following code to set up a variable for the folder where this notebook will save data.
 
     ```python
@@ -113,9 +113,9 @@ To use Azure Databricks from an Azure Data Factory pipeline, you need to create 
 4. On the **Manage** page, in the **Linked services** tab, select **+ New** to add a new linked service.
 5. In the **New linked service** pane, select the **Compute** tab at the top. Then select **Azure Databricks**.
 6. Continue, and create the linked service with the following settings:
-    - **Name**: AzureDatabricks
-    - **Description**: Azure Databricks workspace
-    - **Connect via integration runtime**: AutoResolveInegrationRuntime
+    - **Name**: `AzureDatabricks`
+    - **Description**: `Azure Databricks workspace`
+    - **Connect via integration runtime**: AutoResolveIntegrationRuntime
     - **Account selection method**: From Azure subscription
     - **Azure subscription**: *Select your subscription*
     - **Databricks workspace**: *Select your **databricksxxxxxxx** workspace*
@@ -137,11 +137,11 @@ Now that you have created a linked service, you can use it in a pipeline to run 
 
 1. In Azure Data Factory Studio, in the navigation pane, select **Author**.
 2. On the **Author** page, in the **Factory Resources** pane, use the **+** icon to add a **Pipeline**.
-3. In the **Properties** pane for the new pipeline, change its name to **Process Data with Databricks**. Then use the **Properties** button (which looks similar to **&#128463;<sub>*</sub>**) on the right end of the toolbar to hide the **Properties** pane.
+3. In the **Properties** pane for the new pipeline, change its name to `Process Data with Databricks`. Then use the **Properties** button (which looks similar to **&#128463;<sub>*</sub>**) on the right end of the toolbar to hide the **Properties** pane.
 4. In the **Activities** pane, expand **Databricks** and drag a **Notebook** activity to the pipeline designer surface.
 5. With the new **Notebook1** activity selected, set the following properties in the bottom pane:
     - **General**:
-        - **Name**: Process Data
+        - **Name**: `Process Data`
     - **Azure Databricks**:
         - **Databricks linked service**: *Select the **AzureDatabricks** linked service you created previously*
     - **Settings**:
