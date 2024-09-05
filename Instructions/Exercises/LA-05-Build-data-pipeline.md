@@ -21,7 +21,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
 3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
@@ -76,7 +76,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-2. Change the default notebook name (**Untitled Notebook *[date]***) to **Create a pipeline with Delta Live tables** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+2. Change the default notebook name (**Untitled Notebook *[date]***) to `Create a pipeline with Delta Live tables` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 3. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
@@ -91,7 +91,9 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Create Delta Live Tables Pipeline using SQL
 
-Create a new SQL notebook and start defining the Delta Live Tables using SQL scripts. Ensure you have enabled the DLT SQL UI.
+Create a new notebook and start defining the Delta Live Tables using SQL scripts.
+
+1. Next to the notebook's name, select **Python** and change the default language to **SQL**.
 
 1. Put the following code in the first cell without running it. All cells will be executed after the pipeline is created. This code defines a Delta Live Table that will be populated by the raw data previously downloaded:
 
