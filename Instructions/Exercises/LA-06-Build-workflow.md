@@ -21,7 +21,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
 3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
@@ -97,7 +97,7 @@ You implement your data processing and analysis workflow using tasks. A job is c
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-2. Change the default notebook name (**Untitled Notebook *[date]***) to **ETL task** and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+2. Change the default notebook name (**Untitled Notebook *[date]***) to `ETL task` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 3. In the first cell of the notebook, enter the following code, which defines a schema for the data and loads the datasets in a dataframe:
 
@@ -156,7 +156,7 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
 
 2. In the Workflows pane, select **Create job**.
 
-3. Change the default job name (**New job *[date]***) to **ETL job**.
+3. Change the default job name (**New job *[date]***) to `ETL job`.
 
 4. In the **Task name** field, enter a name for the task.
 
