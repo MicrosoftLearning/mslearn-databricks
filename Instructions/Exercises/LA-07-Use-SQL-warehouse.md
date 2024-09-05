@@ -11,7 +11,7 @@ This exercise should take approximately **30** minutes to complete.
 
 ## Provision an Azure Databricks workspace
 
-> **Tip**: If you already have have a *Premium* or *Trial* Azure Databricks workspace, you can skip this procedure and use your existing workspace.
+> **Tip**: If you already have a *Premium* or *Trial* Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
 This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
@@ -20,7 +20,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, use the drop-down menu at the top left of the cloud shell pane to change it to ***PowerShell***.
 
 3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#9723;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
@@ -68,11 +68,11 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 4. Use the **&#9658;Run (1000)** button to run the SQL code.
 5. When the code has been successfully executed, in the **Schema browser** pane, use the refresh button at the top of the pane to refresh the list. Then expand **hive_metastore** and **retail_db**, and observe that the database has been created, but contains no tables.
 
-You can use the **default** database for your tables, but when building an analytical data store its best to create custom databases for specific data.
+You can use the **default** database for your tables, but when building an analytical data store it's best to create custom databases for specific data.
 
 ## Create a table
 
-1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file to your local computer, saving it as **products.csv**.
+1. Download the [`products.csv`](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file to your local computer, saving it as **products.csv**.
 1. In the Azure Databricks workspace portal, in the sidebar, select **(+) New** and then select **Data**.
 1. In the **Add data** page, select **Create or modify table** and upload the **products.csv** file you downloaded to your computer.
 1. In the **Create or modify table from file upload** page, select the **retail_db** schema and set the table name to **products**. Then select **Create table** on the bottom right corner of the page.
@@ -83,7 +83,7 @@ The ability to create a table by importing data from a file makes it easy to pop
 ## Create a dashboard
 
 1. In the sidebar, select **(+) New** and then select **Dashboard**.
-2. Select the New dashboard name and change it to **Retail Dashboard**.
+2. Select the New dashboard name and change it to `Retail Dashboard`.
 3. In the **Data** tab, select **Create from SQL** and use the following query:
 
     ```sql
@@ -91,7 +91,7 @@ The ability to create a table by importing data from a file makes it easy to pop
    FROM retail_db.products; 
     ```
 
-4. Select **Run** and then rename the Untitled dataset to **Products and Categories**.
+4. Select **Run** and then rename the Untitled dataset to `Products and Categories`.
 5. Select the **Canvas** tab and then select **Add a visualization**.
 6. In the visualization editor, set the following properties:
     
