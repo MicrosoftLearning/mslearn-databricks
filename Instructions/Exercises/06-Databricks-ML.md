@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Get started with machine learning in Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Get started with machine learning in Azure Databricks

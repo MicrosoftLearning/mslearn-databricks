@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Automate an Azure Databricks Notebook with Azure Data Factory'
+    title: 'Deprecated'
 ---
 
 # Automate an Azure Databricks Notebook with Azure Data Factory

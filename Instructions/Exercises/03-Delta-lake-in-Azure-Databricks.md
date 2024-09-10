@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Use Delta Lake in Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Use Delta Lake in Azure Databricks

@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Explore Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Explore Azure Databricks

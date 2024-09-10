@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Use Apache Spark in Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Use Apache Spark in Azure Databricks
