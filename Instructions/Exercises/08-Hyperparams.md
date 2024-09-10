@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Optimize Hyperparameters for machine learning in Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Optimize Hyperparameters for machine learning in Azure Databricks

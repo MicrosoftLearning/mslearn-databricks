@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Use MLflow in Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Use MLflow in Azure Databricks

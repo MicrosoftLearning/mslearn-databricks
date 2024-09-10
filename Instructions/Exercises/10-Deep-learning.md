@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Train a deep learning model'
+    title: 'Deprecated'
 ---
 
 # Train a deep learning model

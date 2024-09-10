@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Use a SQL Warehouse in Azure Databricks'
+    title: 'Deprecated'
 ---
 
 # Use a SQL Warehouse in Azure Databricks

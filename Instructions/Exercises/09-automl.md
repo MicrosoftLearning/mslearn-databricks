@@ -1,6 +1,6 @@
 ---
 lab:
-    title: 'Train a model with AutoML'
+    title: 'Deprecated'
 ---
 
 # Train a model with AutoML
