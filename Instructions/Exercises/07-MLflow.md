@@ -1,3 +1,8 @@
+---
+lab:
+    title: 'Deprecated - Use MLflow in Azure Databricks'
+---
+
 # Use MLflow in Azure Databricks
 
 In this exercise, you'll explore to use use MLflow to train and serve machine learning models in Azure Databricks.

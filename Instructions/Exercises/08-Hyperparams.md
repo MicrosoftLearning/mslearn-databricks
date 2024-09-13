@@ -1,3 +1,8 @@
+---
+lab:
+    title: 'Deprecated - Optimize Hyperparameters for machine learning in Azure Databricks'
+---
+
 # Optimize Hyperparameters for machine learning in Azure Databricks
 
 In this exercise, you'll use the **Hyperopt** library to optimize hyperparameters for machine learning model training in Azure Databricks.

@@ -1,3 +1,8 @@
+---
+lab:
+    title: 'Deprecated - Get started with machine learning in Azure Databricks'
+---
+
 # Get started with machine learning in Azure Databricks
 
 In this exercise, you'll explore techniques for preparing data and training machine learning models in Azure Databricks.
