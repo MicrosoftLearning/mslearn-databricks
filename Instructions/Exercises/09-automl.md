@@ -1,8 +1,3 @@
----
-lab:
-    title: 'Deprecated'
----
-
 # Train a model with AutoML
 
 AutoML is a feature of Azure Databricks that tries multiple algorithms and parameters with your data to train an optimal machine learning model.

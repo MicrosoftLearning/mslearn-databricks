@@ -1,8 +1,3 @@
----
-lab:
-    title: 'Deprecated'
----
-
 # Use a SQL Warehouse in Azure Databricks
 
 SQL is an industry-standard language for querying and manipulating data. Many data analysts perform data analytics by using SQL to query tables in a relational database. Azure Databricks includes SQL functionality that builds on Spark and Delta Lake technologies to provide a relational database layer over files in a data lake.
