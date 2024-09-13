@@ -1,3 +1,7 @@
+---
+lab:
+    title: 'Deprecated - Explore Large Language Models with Azure Databricks'
+---
 # Explore Azure Databricks
 
 Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform.
