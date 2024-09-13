@@ -1,3 +1,8 @@
+---
+lab:
+    title: 'Deprecated - Train a deep learning model'
+---
+
 # Train a deep learning model
 
 In this exercise, you'll use the **PyTorch** library to train a deep learning model in Azure Databricks. Then you'll use the **Horovod** library to distribute deep learning training across multiple worker nodes in a cluster.
