@@ -82,7 +82,7 @@ while ($stop -ne 1){
     write-host "Trying $Region..."
     # Check that the required SKU is available
     $skuOK = 1
-    $skus = Get-AzComputeResourceSku $Region | Where-Object {$_.ResourceType -eq "VirtualMachines" -and $_.Name -eq "standard_e8ds_v4"}
+    $skus = Get-AzComputeResourceSku $Region | Where-Object {$_.ResourceType -eq "VirtualMachines" -and $_.Name -eq "Standard_D4ds_v5"}
     if ($skus.length -gt 0)
     {
         $r = $skus.Restrictions
@@ -96,7 +96,7 @@ while ($stop -ne 1){
     $available_quota = 0
     if ($skuOK -eq 1)
         {
-            $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard EDSv4 Family vCPUs'}
+            $quota = @(Get-AzVMUsage -Location $Region).where{$_.name.LocalizedValue -match 'Standard DDSv5 Family vCPUs'}
             $cores =  $quota.currentvalue
             $maxcores = $quota.limit
             write-host "$cores of $maxcores cores in use."
