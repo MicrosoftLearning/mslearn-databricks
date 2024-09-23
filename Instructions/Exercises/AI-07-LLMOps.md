@@ -108,10 +108,10 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 3. Name your notebook and select `Python` as the language.
 
-4. In the first code cell, enter and run the following code to install the necessary libraries:
+4. In the first code cell, enter and run the following code to install the OpenAI library:
    
      ```python
-    %pip install azure-ai-openai flask
+    %pip install openai
      ```
 
 5. After the installation is complete, restart the kernel in a new cell:
@@ -122,50 +122,53 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Log the LLM using MLflow
 
+MLflow’s LLM tracking capabilities allow you to log parameters, metrics, predictions, and artifacts. Parameters include key-value pairs detailing input configurations, while metrics provide quantitative measures of performance. Predictions encompass both the input prompts and the model’s responses, stored as artifacts for easy retrieval. This structured logging helps in maintaining a detailed record of each interaction, facilitating better analysis and optimization of LLMs.
+
+1. In a new cell, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
+
+     ```python
+    import os
+
+    os.environ["AZURE_OPENAI_API_KEY"] = "your_openai_api_key"
+    os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
+    os.environ["AZURE_OPENAI_API_VERSION"] = "2023-03-15-preview"
+     ```
 1. In a new cell, run the following code to initialize your Azure OpenAI client:
 
      ```python
-    from azure.ai.openai import OpenAIClient
+    import os
+    from openai import AzureOpenAI
 
-    client = OpenAIClient(api_key="<Your_API_Key>")
-    model = client.get_model("gpt-3.5-turbo")
+    client = AzureOpenAI(
+       azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
+       api_key = os.getenv("AZURE_OPENAI_API_KEY"),
+       api_version = os.getenv("AZURE_OPENAI_API_VERSION")
+    )
      ```
 
-1. In a new cell, run the following code to initialize MLflow tracking:     
+1. In a new cell, run the following code to initialize MLflow tracking and log the model:     
 
      ```python
     import mlflow
+    from openai import AzureOpenAI
 
-    mlflow.set_tracking_uri("databricks")
-    mlflow.start_run()
-     ```
+    system_prompt = "Assistant is a large language model trained by OpenAI."
 
-1. In a new cell, run the following code to log the model:
+    mlflow.openai.autolog()
 
-     ```python
-    mlflow.pyfunc.log_model("model", python_model=model)
+    with mlflow.start_run():
+
+        response = client.chat.completions.create(
+            model="gpt-35-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Tell me a joke about animals."},
+            ],
+        )
+
+        print(response.choices[0].message.content)
+        mlflow.log_param("completion_tokens", response.usage.completion_tokens)
     mlflow.end_run()
-     ```
-
-## Deploy the model
-
-1. Create a new notebook and in its first cell, run the following code to create a REST API for the model:
-
-     ```python
-    from flask import Flask, request, jsonify
-    import mlflow.pyfunc
-
-    app = Flask(__name__)
-
-    @app.route('/predict', methods=['POST'])
-    def predict():
-        data = request.json
-        model = mlflow.pyfunc.load_model("model")
-        prediction = model.predict(data["input"])
-        return jsonify(prediction)
-
-    if __name__ == '__main__':
-        app.run(host='0.0.0.0', port=5000)
      ```
 
 ## Monitor the model
