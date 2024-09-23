@@ -171,34 +171,17 @@ MLflow’s LLM tracking capabilities allow you to log parameters, metrics, predi
     mlflow.end_run()
      ```
 
+The cell above will start an experiment in your workspace and register the traces of each chat completion iteration, keeping track of the inputs, outputs and metadata of each run.
+
 ## Monitor the model
 
-1. In your first notebook, create a new cell and run the following code to enable MLflow autologging:
+1. In the sidebar on the left, select **Experiments** and select the experiment associated to the notebook you used for this exercise. Select the latest run and verify in the Overview page that there is one logged parameter: `completion_tokens`. The command `mlflow.openai.autolog()` will log the traces of each run by default, but you can also log additional parameters with `mlflow.log_param()` that can later be used to monitor the model.
 
-     ```python
-    mlflow.autolog()
-     ```
+1. Select the **Traces** tab and then select the last one created. Verify that the `completion_tokens` parameter is part of the trace's output:
 
-1. In a new cell, run the following code to track predictions and input data.
+   ![MLFlow Trace UI](./images/trace-ui.png)  
 
-     ```python
-    mlflow.log_param("input", data["input"])
-    mlflow.log_metric("prediction", prediction)
-     ```
-
-1. In a new cell, run the following code to monitor data drift:
-
-     ```python
-    import pandas as pd
-    from evidently.dashboard import Dashboard
-    from evidently.tabs import DataDriftTab
-
-    report = Dashboard(tabs=[DataDriftTab()])
-    report.calculate(reference_data=historical_data, current_data=current_data)
-    report.show()
-     ```
-
-Once you start monitoring the model, you can set up automated retraining pipelines based on data drift detection.
+Once you start monitoring the model, you can compare the traces from different runs to detect data drift. Look for significant changes in the input data distributions, model predictions, or performance metrics over time. You can use statistical tests or visualization tools to aid in this analysis.
 
 ## Clean up
 
