@@ -68,7 +68,7 @@ In this exercise, you'll create a *single-node* cluster to minimize the compute 
     - **Access mode**: Single user (*with your user account selected*)
     - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
     - **Use Photon Acceleration**: Selected
-    - **Node type**: Standard_DS3_v2
+    - **Node type**: Standard_D4ds_v5
     - **Terminate after** *20* **minutes of inactivity**
 
 1. Wait for the cluster to be created. It may take a minute or two.
