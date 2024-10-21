@@ -93,7 +93,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
         - *Includes Scala > **2.11***
         - *Includes Spark > **3.4***
     - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Node type**: Standard_DS3_v2
+    - **Node type**: Standard_D4ds_v5
     - **Terminate after** *20* **minutes of inactivity**
 
 6. Wait for the cluster to be created. It may take a minute or two.
