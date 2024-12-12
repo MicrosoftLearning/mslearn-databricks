@@ -150,7 +150,7 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
 3. Change the default job name (**New job *[date]***) to `ETL job`.
 
 4. Configure the job with the following settings:
-    - **Task name**: `Clean data`
+    - **Task name**: `Run ETL task notebook`
     - **Type**: Notebook
     - **Source**: Workspace
     - **Path**: *Select your* ETL task *notebook*
