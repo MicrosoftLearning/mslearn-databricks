@@ -41,7 +41,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [What is Delta Live Tables?](https://learn.microsoft.com/azure/databricks/delta-live-tables/) article in the Azure Databricks documentation.
 
 ## Create a cluster
 
@@ -149,27 +149,37 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     - **Pipeline name**: `Covid Pipeline`
     - **Product edition**: Advanced
     - **Pipeline mode**: Triggered
-    - **Source code**: Browse to your *Pipeline Notebook* notebook in the *Users/user@name* folder.
+    - **Source code**: *Browse to your* Pipeline Notebook *notebook in the* Users/user@name *folder*.
     - **Storage options**: Hive Metastore
     - **Storage location**: `dbfs:/pipelines/delta_lab`
+    - **Target schema**: *Enter* `default`
 
 1. Select **Create** and then **Start**. Then wait for the pipeline to run (which may take some time).
  
-1. After the pipeline has successfully run, go back to the *Create a pipeline with Delta Live tables* notebook you created first, and run the following code in a new cell to verify that all 3 new tables have been created in the specified storage location:
+1. After the pipeline has successfully run, go back to the recent *Create a pipeline with Delta Live tables* notebook you created first, and run the following code in a new cell to verify that the files for all 3 new tables have been created in the specified storage location:
 
      ```python
     display(dbutils.fs.ls("dbfs:/pipelines/delta_lab/tables"))
+     ```
+
+1. Add another code cell and run the following code to verify that the tables have been created in the **default** database:
+
+     ```sql
+    %sql
+
+    SHOW TABLES
      ```
 
 ## View results as a visualization
 
 After creating the tables, it is possible to load them into dataframes and visualize the data.
 
-1. In the first notebook, add a new code cell and run the following code to load the `aggregated_covid_data` into a dataframe:
+1. In the *Create a pipeline with Delta Live tables* notebook, add a new code cell and run the following code to load the `aggregated_covid_data` into a dataframe:
 
-    ```python
-   df = spark.read.format("delta").load('/pipelines/delta_lab/tables/aggregated_covid_data')
-   display(df)
+    ```sql
+    %sql
+    
+    SELECT * FROM aggregated_covid_data
     ```
 
 1. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:

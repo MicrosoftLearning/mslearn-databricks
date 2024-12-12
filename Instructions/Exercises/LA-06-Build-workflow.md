@@ -41,7 +41,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Schedule and orchestrate workflows](https://learn.microsoft.com/azure/databricks/jobs/) article in the Azure Databricks documentation.
 
 ## Create a cluster
 
@@ -100,7 +100,9 @@ You implement your data processing and analysis workflow using tasks. A job is c
 
 2. Change the default notebook name (**Untitled Notebook *[date]***) to `ETL task` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
-3. In the first cell of the notebook, enter the following code, which defines a schema for the data and loads the datasets in a dataframe:
+    Ensure that the default language for the notebook is set to **Python**.
+
+3. In the first cell of the notebook, enter and run the following code, which defines a schema for the data and loads the datasets in a dataframe:
 
     ```python
    from pyspark.sql.types import *
@@ -137,18 +139,6 @@ You implement your data processing and analysis workflow using tasks. A job is c
    display(yearlySales)
     ```
 
-6. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
-
-   **General** tab:
-    - **Visualization type**: Bar
-    - **X Column**: Year
-    - **Y Column**: *Add a new column and select* **count**. *Apply the* **Sum** *aggregation*.
-   
-   **X axis** tab:
-    - **Scale**: Categorical
-
-8. Select **Save**.
-
 ## Build the Workflow
 
 Azure Databricks manages the task orchestration, cluster management, monitoring, and error reporting for all of your jobs. You can run your jobs immediately, periodically through an easy-to-use scheduling system, whenever new files arrive in an external location, or continuously to ensure an instance of the job is always running.
@@ -159,22 +149,23 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
 
 3. Change the default job name (**New job *[date]***) to `ETL job`.
 
-4. In the **Task name** field, enter a name for the task.
+4. Configure the job with the following settings:
+    - **Task name**: `Clean data`
+    - **Type**: Notebook
+    - **Source**: Workspace
+    - **Path**: *Select your* ETL task *notebook*
+    - **Cluster**: *Select your cluster*
 
-5. In the **Type** drop-down menu, select **Notebook**.
+5. Select **Create task**.
 
-6. In the **Path** field, select your **ETL task** notebook.
+6. Select **Run now**.
 
-7. Select **Create task**.
+7. After the job starts running, you can monitor its execution by selecting **Job Runs** in the left sidebar.
 
-8. Select **Run now**.
-
-9. Once the job starts running, you can monitor its execution by selecting **Job Runs** in the left sidebar.
-
-10. After the job run succeeds, you can select it and verify its output.
+8. After the job run succeeds, you can select it and verify its output.
 
 Additionally, you can run jobs on a triggered basis, for example, running a workflow on a schedule. To schedule a periodic job run, you can open the job task and add a trigger.
-    
+
 ## Clean up
 
 In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Stop** to shut it down.
