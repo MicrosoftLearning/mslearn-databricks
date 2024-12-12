@@ -9,6 +9,8 @@ Delta Lake is an open source project to build a transactional data storage layer
 
 This lab will take approximately **30** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
@@ -55,7 +57,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (you may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
@@ -90,7 +92,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
 
 1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
-1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the file and view the first 10 rows.
+1. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the file and view the first 10 rows.
 
     ```python
    df = spark.read.load('/delta_lab/products.csv', format='csv', header=True)

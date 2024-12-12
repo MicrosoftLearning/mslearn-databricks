@@ -9,6 +9,8 @@ Creating an end-to-end streaming pipeline with Delta Live Tables in Azure Databr
 
 This lab will take approximately **30** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.

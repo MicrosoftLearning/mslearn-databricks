@@ -9,6 +9,8 @@ Azure Databricks provides a unified platform that streamlines the AI lifecycle, 
 
 This lab will take approximately **20** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Before you start
 
 You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.

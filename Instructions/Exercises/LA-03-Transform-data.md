@@ -5,13 +5,13 @@ lab:
 
 # Transform data with Apache Spark in Azure Databricks
 
-Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform. 
-
-Azure Databricks is built on Apache Spark, and offers a highly scalable solution for data engineering and analysis tasks that involve working with data in files.
+Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform. Azure Databricks is built on Apache Spark, and offers a highly scalable solution for data engineering and analysis tasks that involve working with data in files.
 
 Common data transformation tasks in Azure Databricks include data cleaning, performing aggregations, and type casting. These transformations are essential for preparing data for analysis and are part of the larger ETL (Extract, Transform, Load) process.
 
 This exercise should take approximately **30** minutes to complete.
+
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
 ## Provision an Azure Databricks workspace
 
@@ -56,7 +56,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (you may need to look in the **More** submenu).
 5. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
@@ -91,7 +91,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
      ```
 
 2. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
-3. Add a new code cell and use it to run the following code, which defines a schema for the data:
+3. Under the output, use the **+ Code** icon to add a new code cell, and use it to run the following code, which defines a schema for the data:
 
     ```python
    from pyspark.sql.types import *
@@ -115,15 +115,14 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 Observe that this dataset has some duplicated rows and `null` values in the **Tax** column. Therefore, a cleaning step is required before any further processing and analysis is done with the data.
 
-![Table with data to clean.](./images/data-cleaning.png)
-
-1. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to remove duplicate rows from the table and to replace the `null` entries with the correct values:
+1. Add a new code cell. Then in the new cell, enter and run the following code to remove duplicate rows from the table and to replace the `null` entries with the correct values:
 
     ```python
     from pyspark.sql.functions import col
     df = df.dropDuplicates()
     df = df.withColumn('Tax', col('UnitPrice') * 0.08)
     df = df.withColumn('Tax', col('Tax').cast("float"))
+    display(df.limit(100))
     ```
 
 Observe that after updating the values in the **Tax** column, its data type is set to `float` again. This is due to its data type changing to `double` after the calculation is performed. Since `double` has a higher memory usage than `float`, it is better for performance to type cast the column back to `float`.

@@ -7,11 +7,11 @@ lab:
 
 Azure Databricks is a Microsoft Azure-based version of the popular open-source Databricks platform. 
 
-Azure Databricks facilitates exploratory data analysis (EDA), allowing users to quickly discover insights and drive decision-making. 
-
-It integrates with a variety of tools and techniques for EDA, including statistical methods and visualizations, to summarize data characteristics and identify any underlying issues.
+Azure Databricks facilitates exploratory data analysis (EDA), allowing users to quickly discover insights and drive decision-making. It integrates with a variety of tools and techniques for EDA, including statistical methods and visualizations, to summarize data characteristics and identify any underlying issues.
 
 This exercise should take approximately **30** minutes to complete.
+
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
 ## Provision an Azure Databricks workspace
 

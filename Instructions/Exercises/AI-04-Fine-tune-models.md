@@ -9,6 +9,8 @@ With Azure Databricks, users can now leverage the power of LLMs for specialized 
 
 This lab will take approximately **60** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Before you start
 
 You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.

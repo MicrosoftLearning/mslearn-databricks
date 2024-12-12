@@ -9,6 +9,8 @@ Azure Databricks Workflows provide a robust platform for deploying workloads eff
 
 This lab will take approximately **40** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
@@ -55,7 +57,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (You may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
@@ -118,7 +120,7 @@ You implement your data processing and analysis workflow using tasks. A job is c
    display(df.limit(100))
     ```
 
-4. Under the existing code cell, use the **+** icon to add a new code cell. Then in the new cell, enter and run the following code to remove duplicate rows and to replace the `null` entries with the correct values:
+4. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following code to remove duplicate rows and to replace the `null` entries with the correct values:
 
      ```python
     from pyspark.sql.functions import col
@@ -171,9 +173,7 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
 
 10. After the job run succeeds, you can select it and verify its output.
 
-Additionally, you can run jobs on a triggered basis, for example, running a workflow on a schedule. To schedule a periodic job run, you can open the job task and select **Add trigger** in the right side panel.
-
-   ![Workflow task pane](./images/workflow-schedule.png)
+Additionally, you can run jobs on a triggered basis, for example, running a workflow on a schedule. To schedule a periodic job run, you can open the job task and add a trigger.
     
 ## Clean up
 

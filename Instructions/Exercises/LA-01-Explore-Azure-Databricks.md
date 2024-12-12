@@ -13,6 +13,8 @@ In this exercise, you'll provision an Azure Databricks workspace and explore som
 
 This exercise should take approximately **20** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.

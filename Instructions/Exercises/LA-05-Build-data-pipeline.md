@@ -9,6 +9,8 @@ Delta Live Tables is a declarative framework for building reliable, maintainable
 
 This lab will take approximately **40** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
@@ -55,7 +57,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (You may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
@@ -90,11 +92,11 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Create Delta Live Tables Pipeline using SQL
 
-Create a new notebook and start defining the Delta Live Tables using SQL scripts.
+1. Create a new notebook and rename it to `Pipeline Notebook`.
 
 1. Next to the notebook's name, select **Python** and change the default language to **SQL**.
 
-1. Put the following code in the first cell without running it. All cells will be executed after the pipeline is created. This code defines a Delta Live Table that will be populated by the raw data previously downloaded:
+1. Enter the following code in the first cell without running it. All cells will be executed after the pipeline is created. This code defines a Delta Live Table that will be populated by the raw data previously downloaded:
 
      ```sql
     CREATE OR REFRESH LIVE TABLE raw_covid_data
@@ -109,7 +111,7 @@ Create a new notebook and start defining the Delta Live Tables using SQL scripts
     FROM read_files('dbfs:/delta_lab/covid_data.csv', format => 'csv', header => true)
      ```
 
-2. Add a new cell and use the following code to query, filter, and format the data from the previous table before analysis.
+1. Under the first cell, use the **+ Code** icon to add a new cell, and enter the following code to query, filter, and format the data from the previous table before analysis.
 
      ```sql
     CREATE OR REFRESH LIVE TABLE processed_covid_data(
@@ -126,7 +128,7 @@ Create a new notebook and start defining the Delta Live Tables using SQL scripts
     FROM live.raw_covid_data;
      ```
 
-3. In a new code cell, put the following code that will create an enriched data view for further analysis once the pipeline is successfully executed.
+1. In a third new code cell, enter the following code that will create an enriched data view for further analysis once the pipeline is successfully executed.
 
      ```sql
     CREATE OR REFRESH LIVE TABLE aggregated_covid_data
@@ -141,19 +143,19 @@ Create a new notebook and start defining the Delta Live Tables using SQL scripts
     GROUP BY Report_Date;
      ```
      
-4. Select **Delta Live Tables** in the left sidebar and then select **Create Pipeline**.
+1. Select **Delta Live Tables** in the left sidebar and then select **Create Pipeline**.
 
-5. In the **Create pipeline** page, create a new pipeline with the following settings:
-    - **Pipeline name**: Give the pipeline a name
+1. In the **Create pipeline** page, create a new pipeline with the following settings:
+    - **Pipeline name**: `Covid Pipeline`
     - **Product edition**: Advanced
     - **Pipeline mode**: Triggered
-    - **Source code**: Select your SQL notebook
+    - **Source code**: Browse to your *Pipeline Notebook* notebook in the *Users/user@name* folder.
     - **Storage options**: Hive Metastore
-    - **Storage location**: dbfs:/pipelines/delta_lab
+    - **Storage location**: `dbfs:/pipelines/delta_lab`
 
-6. Select **Create** and then **Start**.
+1. Select **Create** and then **Start**. Then wait for the pipeline to run (which may take some time).
  
-7. Once the pipeline is successfully executed, go back to the first notebook and verify that all 3 new tables have been created in the specified storage location with the following code:
+1. After the pipeline has successfully run, go back to the *Create a pipeline with Delta Live tables* notebook you created first, and run the following code in a new cell to verify that all 3 new tables have been created in the specified storage location:
 
      ```python
     display(dbutils.fs.ls("dbfs:/pipelines/delta_lab/tables"))

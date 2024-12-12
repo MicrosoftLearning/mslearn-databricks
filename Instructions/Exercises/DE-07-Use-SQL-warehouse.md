@@ -9,6 +9,8 @@ SQL is an industry-standard language for querying and manipulating data. Many da
 
 This exercise should take approximately **30** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have a *Premium* or *Trial* Azure Databricks workspace, you can skip this procedure and use your existing workspace.

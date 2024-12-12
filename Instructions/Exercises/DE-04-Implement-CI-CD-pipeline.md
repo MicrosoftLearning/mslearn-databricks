@@ -9,6 +9,8 @@ Implementing CI/CD workflows with GitHub Actions and Azure Databricks can stream
 
 This lab will take approximately **40** minutes to complete.
 
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
 >**Note:** You need a Github account to complete this exercise.
 
 ## Provision an Azure Databricks workspace
