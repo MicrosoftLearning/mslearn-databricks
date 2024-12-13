@@ -57,7 +57,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (you may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
@@ -75,7 +75,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Create a notebook and ingest data
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. In the sidebar, use the **(+) New** link to create a **Notebook** and change the default notebook name (**Untitled Notebook *[date]***) to **Optimize Data Ingestion**. Then, in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 2. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
@@ -86,7 +86,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     wget -O /dbfs/nyc_taxi_trips/yellow_tripdata_2021-01.parquet https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/yellow_tripdata_2021-01.parquet
      ```
 
-3. In a new cell, run the following code to load the dataset into a dataframe:
+3. Under the output from the first cell, use the **+ Code** icon to add a new cell and run the following code in it to load the dataset into a dataframe:
    
      ```python
     # Load the dataset into a DataFrame
@@ -126,17 +126,13 @@ Auto Loader provides a Structured Streaming source called `cloudFiles`. Given an
     wget -O /dbfs/nyc_taxi_trips/yellow_tripdata_2021-02_edited.parquet https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/yellow_tripdata_2021-02_edited.parquet
      ```
    
-The new file has a new column, so the stream stops with an `UnknownFieldException` error. Before your stream throws this error, Auto Loader performs schema inference on the latest micro-batch of data and updates the schema location with the latest schema by merging new columns to the end of the schema. The data types of existing columns remain unchanged.
+    The new file has a new column, so the stream stops with an `UnknownFieldException` error. Before your stream throws this error, Auto Loader performs schema inference on the latest micro-batch of data and updates the schema location with the latest schema by merging new columns to the end of the schema. The data types of existing columns remain unchanged.
 
-3. Run the streaming code cell again and verify that two new columns were added to the table:
-
-   ![Delta table with new columns](./images/autoloader-new-columns.png)
-   
-> Note: The `_rescued_data` column contains any data that isn’t parsed due to type mismatch, case mismatch or column missing from schema.
+3. Run the streaming code cell again and verify that two new columns (**new_column** and *_rescued_data**) were added to the table. The **_rescued_data** column contains any data that isn’t parsed due to type mismatch, case mismatch or column missing from schema.
 
 4. Select **Interrupt** to stop the data streaming.
    
-The streaming data is written in Delta tables. Delta Lake provides a set of enhancements over traditional Parquet files, including ACID transactions, schema evolution, time travel, and unifies streaming and batch data processing, making it a powerful solution for managing big data workloads.
+    The streaming data is written in Delta tables. Delta Lake provides a set of enhancements over traditional Parquet files, including ACID transactions, schema evolution, time travel, and unifies streaming and batch data processing, making it a powerful solution for managing big data workloads.
 
 ## Optimize Data Transformation
 

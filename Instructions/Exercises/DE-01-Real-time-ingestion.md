@@ -57,7 +57,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (you may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
@@ -110,7 +110,7 @@ Delta lake supports *streaming* data. Delta tables can be a *sink* or a *source*
 {"device":"Dev1","status":"ok"}
 ```
 
-1. In a new cell, run the following code to create a stream based on the folder containing the JSON device data:
+1. Under the output for the first cell, use the **+ Code** icon to add a new cell. Then run the following code in it to create a stream based on the folder containing the JSON device data:
 
     ```python
    from pyspark.sql.types import *
