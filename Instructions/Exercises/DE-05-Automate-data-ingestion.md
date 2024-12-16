@@ -73,9 +73,9 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
-## Create a notebook and source data
+## Create a notebook and get source data
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. In the sidebar, use the **(+) New** link to create a **Notebook** and change the default notebook name (**Untitled Notebook *[date]***) to **Data Processing**. Then, in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 2. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
 
@@ -90,17 +90,15 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Automate data processing with Azure Databricks Jobs
 
-1. Create a new notebook and name it *Data processing* for easier identification later on. It will be used as the task to automate data ingestion and processing workflow in a Databricks Job.
-
-2. In the first cell of the notebook, run the following code to load the dataset into a dataframe:
+1. Replace the code in the first of the notebook, with the following code. Then run it to load the data into a dataframe:
 
      ```python
     # Load the sample dataset into a DataFrame
     df = spark.read.csv('/FileStore/*.csv', header=True, inferSchema=True)
     df.show()
      ```
-     
-3. In a new cell, enter the following code to aggregate sales data by product category:
+
+1. Move the mouse under the existing code cell, and use the **+ Code** icon that appears to add a new code cell. Then in the new cell, enter and run the following code to aggregate sales data by product category:
 
      ```python
     from pyspark.sql.functions import col, sum
@@ -110,21 +108,28 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     sales_by_category.show()
      ```
 
-4. In the sidebar, use the **(+) New** link to create a **Job**.
+1. In the sidebar, use the **(+) New** link to create a **Job**.
 
-5. Provide a name for the task and specify the notebook you created as the task's source in the **Path** field.
+1. Change the default job name (**New job *[date]***) to `Automated job`.
 
-6. Select **Create task**.
+1. Configure the unnamed task in the job with the following settings:
+    - **Task name**: `Run notebook`
+    - **Type**: Notebook
+    - **Source**: Workspace
+    - **Path**: *Select your* Data Processing *notebook*
+    - **Cluster**: *Select your cluster*
 
-7. In the right-side panel, under **Schedule**, you can select **Add trigger** and set up a schedule for running the job (e.g., daily, weekly). However, for this exercise, we will execute it manually.
+1. Select **Create task**.
 
-8. Select **Run now**.
+1. Select **Run now**
 
-9. Select the **Runs** tab in the Job panel and monitor the job run.
+    **Tip**: In the right-side panel, under **Schedule**, you can select **Add trigger** and set up a schedule for running the job (e.g., daily, weekly). However, for this exercise, we will execute it manually.
 
-10. After the job run is successful, you can select it in the **Runs** list and verify its output.
+1. Select the **Runs** tab in the Job panel and monitor the job run.
 
-You have successfully set up and automated data ingestion and processing using Azure Databricks Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
+1. After the job run is successful, you can select it in the **Runs** list and verify its output.
+
+    You have successfully set up and automated data ingestion and processing using Azure Databricks Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
 
 ## Clean up
 
