@@ -11,7 +11,7 @@ This lab will take approximately **40** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
->**Note:** You need a Github account to complete this exercise.
+> **Note:** You need a Github account to complete this exercise.
 
 ## Provision an Azure Databricks workspace
 
@@ -59,7 +59,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (you may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)

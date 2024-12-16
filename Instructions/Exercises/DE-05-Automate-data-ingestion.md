@@ -57,7 +57,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
+1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (you may need to look in the **More** submenu).
 
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
@@ -73,7 +73,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
-## Create a notebook and ingest data
+## Create a notebook and source data
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
@@ -122,7 +122,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 9. Select the **Runs** tab in the Job panel and monitor the job run.
 
-10. Once the job run is successful, you can select it in the Runs list and verify its output.
+10. After the job run is successful, you can select it in the **Runs** list and verify its output.
 
 You have successfully set up and automated data ingestion and processing using Azure Databricks Jobs. You can now scale this solution to handle more complex data pipelines and integrate with other Azure services for a robust data processing architecture.
 
