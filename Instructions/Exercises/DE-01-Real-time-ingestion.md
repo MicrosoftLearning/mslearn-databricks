@@ -1,9 +1,9 @@
 ---
 lab:
-    title: 'Real-time Ingestion and Processing with Spark Structured Streaming and Delta Lake with Azure Databricks'
+    title: 'Real-time data processing with Spark Structured Streaming and Delta Lake with Azure Databricks'
 ---
 
-# Real-time Ingestion and Processing with Spark Structured Streaming and Delta Lake with Azure Databricks
+# Real-time data processing with Spark Structured Streaming and Delta Lake with Azure Databricks
 
 Spark Structured Streaming allows you to process data in real-time with end-to-end fault tolerance. Delta Lake enhances this by providing a storage layer with ACID transactions, ensuring data integrity and consistency. You can ingest data from cloud storage into Delta Lake, and use Delta Live Tables to manage and optimize your streaming data pipelines.
 
@@ -41,7 +41,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Query streaming data](https://learn.microsoft.com/azure/databricks/query/streaming) article in the Azure Databricks documentation.
 
 ## Create a cluster
 
