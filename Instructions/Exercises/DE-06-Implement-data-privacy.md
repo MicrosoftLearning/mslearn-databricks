@@ -5,6 +5,10 @@ lab:
 
 # Implementing Data Privacy and Governance using Unity Catalog with Azure Databricks
 
+> **IMPORTANT**: This exercise assumes you have an Azure subscription in an organization where Unity Catalog for Azure Databricks is supported. Enabling Unity Catalog requires Azure Databricks account administrative access and access to tenant-level resources. If you do not have access to an environment that supports Unity Catalog, you will be unable to complete this exercise.
+>
+> See *[Set up and manage Unity Catalog](https://learn.microsoft.com/azure/databricks/data-governance/unity-catalog/get-started)* for more information.
+
 Unity Catalog offers a centralized governance solution for data and AI, simplifying security by providing a single place to administer and audit data access. It supports fine-grained access control lists (ACLs) and dynamic data masking, which are essential for protecting sensitive information. 
 
 This lab will take approximately **30** minutes to complete.
@@ -17,7 +21,7 @@ You'll need an [Azure subscription](https://azure.microsoft.com/free) in which y
 
 ## Provision an Azure Databricks workspace
 
-> **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
+> **Tip**: If you already have a Unity Catalog enabled Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
 This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
@@ -77,7 +81,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
-## Set up Unity Catalog
+## Create a schema in Unity Catalog
 
 Unity Catalog metastores register metadata about securable objects (such as tables, volumes, external locations, and shares) and the permissions that govern access to them. Each metastore exposes a three-level namespace (`catalog`.`schema`.`table`) by which data can be organized. You must have one metastore for each region in which your organization operates. To work with Unity Catalog, users must be on a workspace that is attached to a metastore in their region.
 
@@ -89,7 +93,7 @@ Unity Catalog metastores register metadata about securable objects (such as tabl
 
 4. Select your catalog and in the right pane select the **Workspaces** tab. Verify that your workspace has `Read & Write` access to it.
 
-## Ingest sample data into Azure Databricks
+## Ingest data into Unity Catalog
 
 1. Download the sample data files:
    * [customers.csv](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/DE-05/customers.csv)
