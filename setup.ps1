@@ -57,7 +57,7 @@ $delay = 0, 30, 60, 90, 120 | Get-Random
 Start-Sleep -Seconds $delay # random delay to stagger requests from multi-student classes
 
 # Get a list of locations for Azure Databricks
-$supported_regions = "centralus","eastus","eastus2","northcentralus","northeurope","westeurope","westus"
+$supported_regions = "centralus","eastus","eastus2","northcentralus","northeurope","westeurope","westus", "uksouth"
 $locations = Get-AzLocation | Where-Object {
     $_.Providers -contains "Microsoft.Databricks" -and
     $_.Providers -contains "Microsoft.Compute" -and
