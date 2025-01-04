@@ -131,7 +131,7 @@ Now that you've assigned an eternal metastore and enabled Unity Catalog, you can
 1. In a new browser tab, download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file from `https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv` to your local computer, saving it as **products.csv**.
 1. In the Catalog explorer in Azure Databricks workspace, with the **sales** schema selected, select **Create** > **Create table**. Then upload the **products.csv** file you downloaded to create a new table named **products** in the **sales** schema.
 
-    > **Note**: You may need to wait a few minutes for serverless comute to start.
+    > **Note**: You may need to wait a few minutes for serverless compute to start.
 
     ![Screenshot of the Create Table interface in an Azure Databricks workspace.](./images/create-table.png)
 
