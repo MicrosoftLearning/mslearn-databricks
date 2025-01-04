@@ -23,9 +23,12 @@ This exercise should take approximately **20** minutes to complete.
 2. Create an **Azure Databricks** resource with the following settings:
     - **Subscription**: *Select your Azure subscription*
     - **Resource group**: *Create a new resource group named `msl-xxxxxxx` (where "xxxxxxx" is a unique value)*
+    - **Workspace name**: `databricks-xxxxxxx` *(where "xxxxxxx" is the value used in the resource group name)*
     - **Region**: *Select any available region*
-    - **Name**: `databricks-xxxxxxx` *(where "xxxxxxx" is a unique value)*
     - **Pricing tier**: *Premium* or *Trial*
+    - **Managed Resource Group name**: `databricks-xxxxxxx-managed` *(where "xxxxxxx" is the value used in the resource group name)*
+
+    ![Screenshot of the Create Azure Databricks Workspace page in the Azure portal.](./images/create-databricks.png)
 
 3. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
 
