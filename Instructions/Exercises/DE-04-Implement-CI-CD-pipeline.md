@@ -94,13 +94,13 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 Once you connect a GitHub repository to an Azure Databricks workspace, you can set up CI/CD pipelines in GitHub Actions that trigger with any changes made to your repository.
 
-1. Go to your [GitHub account](https://github.com/) and create a new private repository with a suitable name (for examle, *databricks-cicd-repo*).
+1. Go to your [GitHub account](https://github.com/) and create a new private repository with a suitable name (for example, *databricks-cicd-repo*).
 
 1. Clone the empty repository to your local machine using the [git clone](https://git-scm.com/docs/git-clone) command.
 
 1. Download the required files for this exercise to the local folder for your repository:
    - [CSV file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales.csv)
-   - [Databricks notebook](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales_notebook.dbc)
+   - [Databricks notebook](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales_notebook.py)
    - [Job configuration file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/job-config.json)
 
 1. In your local clone of the Git repo, [add](https://git-scm.com/docs/git-add) the files. Then [commit](https://git-scm.com/docs/git-commit) the changes and [push](https://git-scm.com/docs/git-push) them to the repo.
@@ -188,9 +188,9 @@ Now that you have stored the necessary variables for accessing your Azure Databr
 
 4. Go to your workspace page, select **Compute** and then select your cluster.
 
-5. In the cluster's page, select **More ...** and then select **View JSON**. Copy the cluster's id.
+5. In the cluster's page, open up the options to the left of the **Terminate** button, and then select **View JSON**. Copy the cluster's id.
 
-6. In your repository, open the **job-config.json** in your repository and replace *your_cluster_id* with the cluster id you just copied. Also replace */Workspace/Users/your_username/your_notebook* with the path in your workspace where you want to store the notebook used in the pipeline. Commit the changes.
+6. Open the **job-config.json** in your repository and replace *your_cluster_id* with the cluster id you just copied. Also replace */Workspace/Users/your_username/your_notebook* with the path in your workspace where you want to store the notebook used in the pipeline. Commit the changes.
 
     > **Note:** If you go to the **Actions** tab, you will see that the CI pipeline started running again. Since it is supposed to trigger whenever a commit is pushed, changing *job-config.json* will deploy the pipeline as expected.
 
@@ -226,15 +226,17 @@ Now that you have stored the necessary variables for accessing your Azure Databr
             ${{ secrets.DATABRICKS_HOST }}
             ${{ secrets.DATABRICKS_TOKEN }}
             EOF
-        - name: Upload Notebook to DBFS
-          run: databricks fs cp sample_sales_notebook.dbc dbfs:/Workspace/Users/your_username/your_notebook --overwrite
+     
+        - name: Import Notebook to Workspace
+          run: databricks workspace import sample_sales_notebook.py /Workspace/Users/your_username/your_notebook -l python --overwrite
+
           env:
             DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
         - name: Run Databricks Job
           run: |
             databricks jobs create --json-file job-config.json
-            databricks jobs run-now --job-id $(databricks jobs list | grep 'CD pipeline' | awk '{print $1}')
+            databricks jobs run-now --job-id $(databricks jobs list | grep -m 1 'CD pipeline' | awk '{print $1}')
           env:
             DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
      ```
