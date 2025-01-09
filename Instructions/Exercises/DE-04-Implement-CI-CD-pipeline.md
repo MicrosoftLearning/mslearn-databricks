@@ -7,7 +7,7 @@ lab:
 
 Implementing CI/CD workflows with GitHub Actions and Azure Databricks can streamline your development process and enhance automation. GitHub Actions provide a powerful platform for automating software workflows, including continuous integration (CI) and continuous delivery (CD). When integrated with Azure Databricks, these workflows can execute complex data tasks, like running notebooks or deploying updates to Databricks environments. For instance, you can use GitHub Actions to automate the deployment of Databricks notebooks, manage Databricks file system uploads, and set up the Databricks CLI within your workflows. This integration facilitates a more efficient and error-resistant development cycle, especially for data-driven applications.
 
-This lab will take approximately **40** minutes to complete.
+This lab will take approximately **30** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
@@ -74,33 +74,18 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 1. Wait for the cluster to be created. It may take a minute or two.
 
     > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
-
-## Create a notebook and ingest data
-
-1. In the sidebar, use the **(+) New** link to create a **Notebook** and change the default notebook name (**Untitled Notebook *[date]***) to **CICD Notebook**. Then, in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
-
-1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
-
-     ```python
-    %sh
-    rm -r /dbfs/FileStore
-    mkdir /dbfs/FileStore
-    wget -O /dbfs/FileStore/sample_sales.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales.csv
-     ```
-
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
    
 ## Set up a GitHub repository
 
 Once you connect a GitHub repository to an Azure Databricks workspace, you can set up CI/CD pipelines in GitHub Actions that trigger with any changes made to your repository.
 
-1. Go to your [GitHub account](https://github.com/) and create a new private repository with a suitable name (for examle, *databricks-cicd-repo*).
+1. Go to your [GitHub account](https://github.com/) and create a new private repository with a suitable name (for example, *databricks-cicd-repo*).
 
 1. Clone the empty repository to your local machine using the [git clone](https://git-scm.com/docs/git-clone) command.
 
 1. Download the required files for this exercise to the local folder for your repository:
    - [CSV file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales.csv)
-   - [Databricks notebook](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales_notebook.dbc)
+   - [Databricks notebook](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/sample_sales_notebook.py)
    - [Job configuration file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/job-config.json)
 
 1. In your local clone of the Git repo, [add](https://git-scm.com/docs/git-add) the files. Then [commit](https://git-scm.com/docs/git-commit) the changes and [push](https://git-scm.com/docs/git-push) them to the repo.
@@ -115,31 +100,31 @@ Before creating repository secrets, you need to generate a personal access token
 
 1. In your Azure Databricks workspace, select the *user* icon in the top bar, and then select **Settings** from the drop down.
 
-2. On the **Developer** page, next to **Access tokens**, select **Manage**.
+1. On the **Developer** page, next to **Access tokens**, select **Manage**.
 
-3. Select **Generate new token** and then select **Generate**.
+1. Select **Generate new token** and then select **Generate**.
 
-4. Copy the displayed token and paste it somewhere you can refer to it later. Then select **Done**.
+1. Copy the displayed token and paste it somewhere you can refer to it later. Then select **Done**.
 
-5. Now in your GitHub repository page, select the **Settings** tab.
+1. Now in your GitHub repository page, select the **Settings** tab.
 
    ![GitHub settings tab](./images/github-settings.png)
 
-6. In the left sidebar, select **Secrets and variables** and then select **Actions**.
+1. In the left sidebar, select **Secrets and variables** and then select **Actions**.
 
-7. Select **New repository secret** and add each of these variables:
+1. Select **New repository secret** and add each of these variables:
    - **Name:** DATABRICKS_HOST **Secret:** Add the URL of your Databricks workspace.
    - **Name:** DATABRICKS_TOKEN **Secret:** Add the access token generated previously.
 
-## Set up CI/CD pipelines
+## Set up CI pipeline
 
-Now that you have stored the necessary variables for accessing your Azure Databricks workspace from GitHub, you will create workflows to automate data ingestion and processing, which will trigger every time the repository is updated.
+Now that you have stored the necessary credentials for accessing your Azure Databricks workspace from GitHub, you will create a workflow to automate data ingestion. It will deploy whenever the repository's main branch has a commit pushed or a pull request merged. This workflow will ensure that the data source used in the Azure Databricks workspace is always up to date.
 
 1. In your repository page, select the **Actions** tab.
 
     ![GitHub Actions tab](./images/github-actions.png)
 
-2. Select **set up a workflow yourself** and enter the following code:
+1. Select **set up a workflow yourself** and enter the following code:
 
      ```yaml
     name: CI Pipeline for Azure Databricks
@@ -176,25 +161,38 @@ Now that you have stored the necessary variables for accessing your Azure Databr
             ${{ secrets.DATABRICKS_TOKEN }}
             EOF
 
-        - name: Download Sample Data from DBFS
-          run: databricks fs cp dbfs:/FileStore/sample_sales.csv . --overwrite
+        - name: Upload sample data to DBFS
+          run: databricks fs cp sample_sales.csv dbfs:/FileStore/sample_sales.csv --overwrite
      ```
 
-    This code will install and configure Databricks CLI, and download the sample data to your repository every time a commit is pushed or a pull request is merged.
+    The code above will install and configure Databricks CLI, and copy the sample data from your repository to your workspace.
 
-3. Name the workflow **CI_pipeline.yml** and select **Commit changes**. The pipeline will run automatically and you can check its status in the **Actions** tab.
+1. Name the workflow **CI_pipeline.yml** and select **Commit changes**. The pipeline will run automatically and you can check its status in the **Actions** tab.
 
-    Once the workflow is completed, it is time to setup the configurations for your CD pipeline.
+1. Once the workflow is completed, go to your workspace page, select **+ New** and create a new notebook.
+  
+1. In the first code cell, run the following code:
 
-4. Go to your workspace page, select **Compute** and then select your cluster.
+     ```python
+    %fs
+    ls FileStore
+     ``` 
 
-5. In the cluster's page, select **More ...** and then select **View JSON**. Copy the cluster's id.
+    In the output, you can verify that the sample data is now present in the Databricks file system and can now be used in the workspace.
 
-6. In your repository, open the **job-config.json** in your repository and replace *your_cluster_id* with the cluster id you just copied. Also replace */Workspace/Users/your_username/your_notebook* with the path in your workspace where you want to store the notebook used in the pipeline. Commit the changes.
+## Set up CD pipeline
+
+After setting up the CI workflow to automate data ingestion, you will create a second workflow to automate data processing. The CD workflow will execute a notebook as a job run with its output registered in the **Job runs** page of your Azure Databricks workspace. The notebook contains all the transformation steps required by the data before it is consumed.
+
+1. Go to your workspace page, select **Compute** and then select your cluster.
+
+1. In the cluster's page, open up the options to the left of the **Terminate** button, and then select **View JSON**. Copy the cluster's id as it will be needed to set up the job run in the workflow.
+
+1. Open the **job-config.json** in your repository and replace *your_cluster_id* with the cluster id you just copied. Also replace */Workspace/Users/your_username/your_notebook* with the path in your workspace where you want to store the notebook used in the pipeline. Commit the changes.
 
     > **Note:** If you go to the **Actions** tab, you will see that the CI pipeline started running again. Since it is supposed to trigger whenever a commit is pushed, changing *job-config.json* will deploy the pipeline as expected.
 
-7. In the **Actions** tab, create a new workflow named **CD_pipeline.yml** and enter the following code:
+1. In the **Actions** tab, create a new workflow named **CD_pipeline.yml** and enter the following code:
 
      ```yaml
     name: CD Pipeline for Azure Databricks
@@ -226,24 +224,26 @@ Now that you have stored the necessary variables for accessing your Azure Databr
             ${{ secrets.DATABRICKS_HOST }}
             ${{ secrets.DATABRICKS_TOKEN }}
             EOF
-        - name: Upload Notebook to DBFS
-          run: databricks fs cp sample_sales_notebook.dbc dbfs:/Workspace/Users/your_username/your_notebook --overwrite
+     
+        - name: Import Notebook to Workspace
+          run: databricks workspace import sample_sales_notebook.py /Workspace/Users/your_username/your_notebook -l python --overwrite
+
           env:
             DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
         - name: Run Databricks Job
           run: |
             databricks jobs create --json-file job-config.json
-            databricks jobs run-now --job-id $(databricks jobs list | grep 'CD pipeline' | awk '{print $1}')
+            databricks jobs run-now --job-id $(databricks jobs list | grep -m 1 'CD pipeline' | awk '{print $1}')
           env:
             DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
      ```
 
-    Before committing the changes, replace `/path/to/your/notebook` with the file path of your notebook in your repository and `/Workspace/Users/your_username/your_notebook` with the file path where you want to import the notebook in your Azure Databricks workspace.
+    Before committing the changes, replace `/Workspace/Users/your_username/your_notebook` with the file path where you want to import the notebook in your Azure Databricks workspace.
 
-8. Commit the changes.
+1. Commit the changes.
 
-    This code will once again install and configure Databricks CLI, import the Notebook to your Databricks File System, and create and run a job that you can monitor in the **Workflows** page of your workspace. Check the output and verify that the data sample is modified.
+    This code will once again install and configure Databricks CLI, import the notebook to your workspace, and create a job run that will execute it. You can monitor the progress of the job run in the **Workflows** page of your workspace. Check the output and verify that the data sample is loaded into a dataframe and modified for further analysis.
 
 ## Clean up
 
