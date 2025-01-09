@@ -182,7 +182,7 @@ Now that you have stored the necessary credentials for accessing your Azure Data
 
 ## Set up CD pipeline
 
-After setting up the CI workflow to automate data ingestion, you will create a second workflow to automate data processing. The CD workflow will execute a notebook as a job run with its output registered in the **Job runs** page of your Azure Databricks workspace. The notebook contains all the transformations required by the data before being consumed.
+After setting up the CI workflow to automate data ingestion, you will create a second workflow to automate data processing. The CD workflow will execute a notebook as a job run with its output registered in the **Job runs** page of your Azure Databricks workspace. The notebook contains all the transformation steps required by the data before it is consumed.
 
 1. Go to your workspace page, select **Compute** and then select your cluster.
 
