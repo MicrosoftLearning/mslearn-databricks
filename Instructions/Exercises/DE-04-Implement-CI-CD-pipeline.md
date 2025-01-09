@@ -118,7 +118,7 @@ Before creating repository secrets, you need to generate a personal access token
 
 ## Set up CI pipeline
 
-Now that you have stored the necessary credentials for accessing your Azure Databricks workspace from GitHub, you will create a workflow to automate data ingestion, which will trigger every time the repository's main branch is updated.
+Now that you have stored the necessary credentials for accessing your Azure Databricks workspace from GitHub, you will create a workflow to automate data ingestion. It will deploy whenever the repository's main branch has a commit pushed or a pull request merged. This workflow will ensure that the data source used in the Azure Databricks workspace is always up to date.
 
 1. In your repository page, select the **Actions** tab.
 
@@ -165,7 +165,7 @@ Now that you have stored the necessary credentials for accessing your Azure Data
           run: databricks fs cp sample_sales.csv dbfs:/FileStore/sample_sales.csv --overwrite
      ```
 
-    This code will install and configure Databricks CLI, and copy the sample data from your repository to your workspace every time a commit is pushed or a pull request is merged.
+    The code above will install and configure Databricks CLI, and copy the sample data from your repository to your workspace.
 
 1. Name the workflow **CI_pipeline.yml** and select **Commit changes**. The pipeline will run automatically and you can check its status in the **Actions** tab.
 
@@ -182,7 +182,7 @@ Now that you have stored the necessary credentials for accessing your Azure Data
 
 ## Set up CD pipeline
 
-After setting up the workflow to automate data ingestion, you will create a second workflow to automate data processing. This workflow will execute a notebook as a job run with its output registered in the **Job runs** page of your Azure Databricks workspace.
+After setting up the workflow to automate data ingestion, you will create a second workflow to automate data processing. This workflow will execute a notebook as a job run with its output registered in the **Job runs** page of your Azure Databricks workspace. The notebook contains all the transformations required by the data before being consumed.
 
 1. Go to your workspace page, select **Compute** and then select your cluster.
 
