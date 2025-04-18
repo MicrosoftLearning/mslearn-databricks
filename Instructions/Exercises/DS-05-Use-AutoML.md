@@ -98,7 +98,7 @@ Now that you have some data, you can use it with AutoML to train a model.
 
 1. In the sidebar on the left, select **Experiments**.
 1. On the **Experiments** page, select **Create AutoML experiment**.
-1. Configure the AutoML experiment wuth the following settings:
+1. Configure the AutoML experiment with the following settings:
     - **Cluster**: *Select your cluster*
     - **ML problem type**: Classification
     - **Input training dataset**: *Browse to the **default** database and select the **penguins** table*
