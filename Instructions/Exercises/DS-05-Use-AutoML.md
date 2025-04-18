@@ -119,7 +119,7 @@ Now that you have some data, you can use it with AutoML to train a model.
 
 Having run an AutoML experiment, you can explore the best performing model that it generated.
 
-1. In the **Penguin-classification** experiment page, select **View notebook for best model** to open the notebook used to rain the model in a new browser tab.
+1. In the **Penguin-classification** experiment page, select **View notebook for best model** to open the notebook used to train the model in a new browser tab.
 1. Scroll through the cells in the notebook, noting the code that was used to train the model.
 1. Close the browser tab containing the notebook to return to the **Penguin-classification** experiment page.
 1. In the list of runs, select the name of the first run (which produced the best model) to open it.
