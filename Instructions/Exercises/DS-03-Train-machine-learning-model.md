@@ -399,7 +399,7 @@ So far you've trained a classification model by using the logistic regression al
 
     This time, the pipeline includes the same feature preparation stages as before but uses a *Decision Tree* algorithm to train the model.
     
-   1. Run the following code to use the new pipeline with the test data:
+1. Run the following code to use the new pipeline with the test data:
 
     ```python
    # Get predictions
