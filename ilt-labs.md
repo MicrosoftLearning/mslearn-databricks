@@ -17,6 +17,17 @@ DP-3014 (Machine Learning with Azure Databricks):
 - Instructions\Exercises\09-automl.md
 - Instructions\Exercises\10-Deep-learning.md
 
+DP-3027 (Implement a data engineering solution with Azure Databricks):
+
+- Instructions\Exercises\DE-01-Real-time-ingestion.md
+- Instructions\Exercises\DE-02-End-to-end-streaming.md
+- Instructions\Exercises\DE-03-Optimize-data-pipelines.md
+- Instructions\Exercises\DE-04-Implement-CI-CD-pipeline.md
+- Instructions\Exercises\DE-05-Automate-data-ingestion.md
+- Instructions\Exercises\DE-06-Implement-data-privacy.md
+- Instructions\Exercises\DE-07-Use-SQL-warehouse.md
+- Instructions\Exercises\DE-08-Run-notebook-Data-Factory.md
+
 DP-3028 (Implement Generative AI engineering with Azure Databricks):
 
 - Instructions\Exercises\AI-01-Explore-LLMs.md
