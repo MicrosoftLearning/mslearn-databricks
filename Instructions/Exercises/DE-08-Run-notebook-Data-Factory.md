@@ -107,6 +107,26 @@ To use Azure Databricks from an Azure Data Factory pipeline, you need to create 
 1. Select **Generate new token** and generate a new token with the comment *Data Factory* and a blank lifetime (so the token doesn't expire). Be careful to **copy the token when it is displayed <u>before</u> selecting *Done***.
 1. Paste the copied token to a text file so you have it handy for later in this exercise.
 
+## Use a pipeline to run the Azure Databricks notebook
+
+Now that you have created a linked service, you can use it in a pipeline to run the notebook you viewed previously.
+
+### Create a pipeline
+
+1. In Azure Data Factory Studio, in the navigation pane, select **Author**.
+2. On the **Author** page, in the **Factory Resources** pane, use the **+** icon to add a **Pipeline**.
+3. In the **Properties** pane for the new pipeline, change its name to `Process Data with Databricks`. Then use the **Properties** button (which looks similar to **&#128463;<sub>*</sub>**) on the right end of the toolbar to hide the **Properties** pane.
+4. In the **Activities** pane, expand **Databricks** and drag a **Notebook** activity to the pipeline designer surface.
+5. With the new **Notebook1** activity selected, set the following properties in the bottom pane:
+    - **General**:
+        - **Name**: `Process Data`
+    - **Azure Databricks**:
+        - **Databricks linked service**: *Select the **AzureDatabricks** linked service you created previously*
+    - **Settings**:
+        - **Notebook path**: *Browse to the **Users/your_user_name** folder and select the **Process Data** notebook*
+        - **Base parameters**: *Add a new parameter named `folder` with the value `product_data`*
+6. Use the **Validate** button above the pipeline designer surface to validate the pipeline. Then use the **Publish all** button to publish (save) it.
+
 ### Create a linked service in Azure Data Factory
 
 1. Return to the Azure portal, and in the **msl-*xxxxxxx*** resource group, select the **adf*xxxxxxx*** Azure Data Factory resource.
@@ -130,26 +150,6 @@ To use Azure Databricks from an Azure Data Factory pipeline, you need to create 
     - **Python version**: 3
     - **Worker options**: Fixed
     - **Workers**: 1
-
-## Use a pipeline to run the Azure Databricks notebook
-
-Now that you have created a linked service, you can use it in a pipeline to run the notebook you viewed previously.
-
-### Create a pipeline
-
-1. In Azure Data Factory Studio, in the navigation pane, select **Author**.
-2. On the **Author** page, in the **Factory Resources** pane, use the **+** icon to add a **Pipeline**.
-3. In the **Properties** pane for the new pipeline, change its name to `Process Data with Databricks`. Then use the **Properties** button (which looks similar to **&#128463;<sub>*</sub>**) on the right end of the toolbar to hide the **Properties** pane.
-4. In the **Activities** pane, expand **Databricks** and drag a **Notebook** activity to the pipeline designer surface.
-5. With the new **Notebook1** activity selected, set the following properties in the bottom pane:
-    - **General**:
-        - **Name**: `Process Data`
-    - **Azure Databricks**:
-        - **Databricks linked service**: *Select the **AzureDatabricks** linked service you created previously*
-    - **Settings**:
-        - **Notebook path**: *Browse to the **Users/your_user_name** folder and select the **Process Data** notebook*
-        - **Base parameters**: *Add a new parameter named `folder` with the value `product_data`*
-6. Use the **Validate** button above the pipeline designer surface to validate the pipeline. Then use the **Publish all** button to publish (save) it.
 
 ### Run the pipeline
 
