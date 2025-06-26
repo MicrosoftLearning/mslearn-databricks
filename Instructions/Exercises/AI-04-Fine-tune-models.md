@@ -142,7 +142,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     os.environ["TEMP_AUTH_TOKEN"] = "your_access_token"
      ```
      
-## Validade token counts
+## Validate token counts
 
 Both `training_set.jsonl` and `validation_set.jsonl` are made of different conversation examples between `user` and `assistant` that will serve as data points for training and validating the fine-tuned model. Individual examples need to remain under the `gpt-35-turbo` model's input token limit of 4096 tokens.
 
