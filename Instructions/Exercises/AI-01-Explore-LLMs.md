@@ -96,10 +96,8 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 5. In the first code cell, enter and run the following code:
 
     ```python
-   # Upgrade torch to the required version
-   %pip install torch>=2.6
-
    from transformers import pipeline
+
    # Load the summarization model with PyTorch weights
    summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="pt")
 
