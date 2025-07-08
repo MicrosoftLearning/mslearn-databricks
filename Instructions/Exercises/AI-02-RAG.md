@@ -192,7 +192,7 @@ If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, 
 
 Verify that the output finds the corresponding Wiki page related to the query prompt.
 
-## Augment Prompts with Retrieved Data:
+## Augment prompts with retrieved data
 
 Now we can enchance the capabilities of large language models by providing them with additional context from external data sources. By doing so, the models can generate more accurate and contextually relevant responses.
 
