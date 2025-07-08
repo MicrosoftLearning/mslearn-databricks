@@ -41,22 +41,21 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 ## Deploy the required model
 
-Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
+Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
    
-1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo** model with the following settings:
-    - **Deployment name**: *gpt-35-turbo*
-    - **Model**: gpt-35-turbo
-    - **Model version**: Default
+1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+    - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
-    - **Tokens per minute rate limit**: 5K\*
+    - **Model version**: *Use default version*
+    - **Tokens per minute rate limit**: 10K\*
     - **Content filter**: Default
     - **Enable dynamic quota**: Disabled
     
-> \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
+> \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
 ## Provision an Azure Databricks workspace
 
@@ -76,7 +75,7 @@ Azure provides a web-based portal named **Azure AI Studio**, that you can use to
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
 2. Select your Azure Databricks Service resource.
@@ -88,27 +87,15 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 5. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
-        - *Does **not** use a GPU*
-        - *Includes Scala > **2.11***
-        - *Includes Spark > **3.4***
+    - **Machine learning**: Enabled
+    - **Databricks runtime**: 15.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
+    - **Worker type**: Standard_D4ds_v5
+    - **Single node**: Checked
 
 6. Wait for the cluster to be created. It may take a minute or two.
 
 > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
-
-## Install required libraries
-
-1. In your cluster's page, select the **Libraries** tab.
-
-2. Select **Install New**.
-
-3. Select **PyPI** as the library source and install `openai==1.42.0`.
 
 ## Create a new notebook
 
@@ -169,7 +156,7 @@ Responsible AI refers to the ethical and sustainable development, deployment, an
 
     for row in neutral_input:
         completion = client.chat.completions.create(
-            model="gpt-35-turbo",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": row},
@@ -180,7 +167,7 @@ Responsible AI refers to the ethical and sustainable development, deployment, an
 
     for row in loaded_input:
         completion = client.chat.completions.create(
-            model="gpt-35-turbo",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": row},
