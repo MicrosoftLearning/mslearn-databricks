@@ -79,7 +79,7 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
 2. Select your Azure Databricks Service resource.
@@ -101,18 +101,6 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
 
-## Install required libraries
-
-1. In your cluster's page, select the **Libraries** tab.
-
-2. Select **Install New**.
-
-3. Select **PyPI** as the library source and install the following Python packages:
-   - `numpy==2.1.0`
-   - `requests==2.32.3`
-   - `openai==1.42.0`
-   - `tiktoken==0.7.0`
-
 ## Create a new notebook and ingest data
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
@@ -124,7 +112,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
    CREATE VOLUME <catalog_name>.default.fine_tuning;
     ```
 
-1. Replace `<catalog_name>` with the name of your workspace, as Azure Databricks automatically creates a default catalog with that name.
+1. Replace `<catalog_name>` with the name of your default catalog. You can verify its name by selecting **Catalog** in the sidebar.
 1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
 
@@ -146,7 +134,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
      
 ## Validate token counts
 
-Both `training_set.jsonl` and `validation_set.jsonl` are made of different conversation examples between `user` and `assistant` that will serve as data points for training and validating the fine-tuned model.
+Both `training_set.jsonl` and `validation_set.jsonl` are made of different conversation examples between `user` and `assistant` that will serve as data points for training and validating the fine-tuned model. While the datasets for this exercise are considered small, it is important to keep in mind when working with bigger datasets that the LLMs have a maximum context length in terms of tokens. Therefore, you can verify the token count of your datasets before training your model and revise them if necessary. 
 
 1. In a new cell, run the following code to validate the token counts for each file:
 
@@ -181,7 +169,7 @@ Both `training_set.jsonl` and `validation_set.jsonl` are made of different conve
        print(f"min / max: {min(values)}, {max(values)}")
        print(f"mean / median: {np.mean(values)}, {np.median(values)}")
 
-   files = ['/dbfs/fine_tuning/training_set.jsonl', '/dbfs/fine_tuning/validation_set.jsonl']
+   files = ['/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl', '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl']
 
    for file in files:
        print(f"File: {file}")
@@ -201,6 +189,8 @@ Both `training_set.jsonl` and `validation_set.jsonl` are made of different conve
        print('*' * 75)
     ```
 
+As a reference, the model used in this exercise, GPT-4o, has the context limit (total number of tokens in the input prompt and the generated response combined) of 128K tokens.
+
 ## Upload fine-tuning files to Azure OpenAI
 
 Before you start to fine-tune the model, you need to initialize an OpenAI client and add the fine-tuning files to its environment, generating file IDs that will be used to initialize the job.
@@ -217,8 +207,8 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
       api_version = "2024-05-01-preview"  # This API version or later is required to access seed/events/checkpoint features
     )
 
-    training_file_name = '/dbfs/fine_tuning/training_set.jsonl'
-    validation_file_name = '/dbfs/fine_tuning/validation_set.jsonl'
+    training_file_name = '/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl'
+    validation_file_name = '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl'
 
     training_response = client.files.create(
         file = open(training_file_name, "rb"), purpose="fine-tune"
@@ -259,6 +249,8 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    print("Job ID:", response.id)
    print("Status:", response.status)
     ```
+
+>**Note**: You can also monitor the job status in AI Foundry by selecting **Fine-tuning** in the left sidebar.
 
 3. Once the job status changes to `succeeded`, run the following code to get the final results:
 
