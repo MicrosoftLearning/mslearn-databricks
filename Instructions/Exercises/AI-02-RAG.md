@@ -32,26 +32,26 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 4. In the PowerShell pane, enter the following commands to clone this repo:
 
-     ```powershell
-    rm -r mslearn-databricks -f
-    git clone https://github.com/MicrosoftLearning/mslearn-databricks
-     ```
+    ```powershell
+   rm -r mslearn-databricks -f
+   git clone https://github.com/MicrosoftLearning/mslearn-databricks
+    ```
 
 5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
-     ```powershell
-    ./mslearn-databricks/setup.ps1
-     ```
+    ```powershell
+   ./mslearn-databricks/setup.ps1
+    ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer.
 
 ## Create a cluster
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
 1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
@@ -63,15 +63,11 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
-        - *Does **not** use a GPU*
-        - *Includes Scala > **2.11***
-        - *Includes Spark > **3.4***
+    - **Machine learning**: Enabled
+    - **Databricks runtime**: 15.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
+    - **Worker type**: Standard_D4ds_v5
+    - **Single node**: Checked
 
 1. Wait for the cluster to be created. It may take a minute or two.
 
@@ -83,61 +79,66 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 2. Select **Install New**.
 
-3. Select **PyPI** as the library source and type `transformers==4.44.0` in the **Package** field.
+3. Select **PyPI** as the library source and type `transformers==4.53.0` in the **Package** field.
 
 4. Select **Install**.
 
-5. Repeat the steps above to install `databricks-vectorsearch==0.40`as well.
+5. Repeat the steps above to install `databricks-vectorsearch==0.56`as well.
    
 ## Create a notebook and ingest data
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
-2. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+1. In the first cell of the notebook, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
 
-     ```python
-    %sh
-    rm -r /dbfs/RAG_lab
-    mkdir /dbfs/RAG_lab
-    wget -O /dbfs/RAG_lab/enwiki-latest-pages-articles.xml https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml
-     ```
+    ```python
+   %sql 
+   CREATE VOLUME <catalog_name>.default.RAG_lab;
+    ```
 
-3. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. Replace `<catalog_name>` with the name of your workspace, as Azure Databricks automatically creates a default catalog with that name.
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
 
-4. In a new cell, run the following code to create a dataframe from the raw data:
+    ```python
+   %sh
+   wget -O /Volumes/<catalog_name>/default/RAG_lab/enwiki-latest-pages-articles.xml https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml
+    ```
 
-     ```python
-    from pyspark.sql import SparkSession
+1. In a new cell, run the following code to create a dataframe from the raw data:
 
-    # Create a Spark session
-    spark = SparkSession.builder \
-        .appName("RAG-DataPrep") \
-        .getOrCreate()
+    ```python
+   from pyspark.sql import SparkSession
 
-    # Read the XML file
-    raw_df = spark.read.format("xml") \
-        .option("rowTag", "page") \
-        .load("/RAG_lab/enwiki-latest-pages-articles.xml")
+   # Create a Spark session
+   spark = SparkSession.builder \
+       .appName("RAG-DataPrep") \
+       .getOrCreate()
 
-    # Show the DataFrame
-    raw_df.show(5)
+   # Read the XML file
+   raw_df = spark.read.format("xml") \
+       .option("rowTag", "page") \
+       .load("/Volumes/<catalog_name>/default/RAG_lab/enwiki-latest-pages-articles.xml")
 
-    # Print the schema of the DataFrame
-    raw_df.printSchema()
-     ```
+   # Show the DataFrame
+   raw_df.show(5)
 
-5. In a new cell, run the following code, replacing `<catalog_name>` with your Unity catalog's name (the catalog with your workspace's name plus a unique suffix), to clean and preprocess the data to extract the relevant text fields:
+   # Print the schema of the DataFrame
+   raw_df.printSchema()
+    ```
 
-     ```python
-    from pyspark.sql.functions import col
+1. In a new cell, run the following code, replacing `<catalog_name>` with your Unity catalog's name, to clean and preprocess the data to extract the relevant text fields:
 
-    clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
-    clean_df = clean_df.na.drop()
-    clean_df.write.format("delta").mode("overwrite").saveAsTable("<catalog_name>.default.wiki_pages")
-    clean_df.show(5)
-     ```
+    ```python
+   from pyspark.sql.functions import col
 
-If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your default Unity catalog.
+   clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
+   clean_df = clean_df.na.drop()
+   clean_df.write.format("delta").mode("overwrite").saveAsTable("<catalog_name>.default.wiki_pages")
+   clean_df.show(5)
+    ```
+
+    If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your default Unity catalog.
 
 ## Generate embeddings and implement vector search
 
@@ -145,33 +146,33 @@ Databricks' Mosaic AI Vector Search is a vector database solution integrated wit
 
 1. In a new cell, run the following SQL query to enable the Change Data Feed feature in the source table before creating a delta sync index.
 
-     ```python
-    %sql
-    ALTER TABLE <catalog_name>.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
-     ```
+    ```python
+   %sql
+   ALTER TABLE <catalog_name>.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
+    ```
 
 2. In a new cell, run the following code to create the vector search index.
 
-     ```python
-    from databricks.vector_search.client import VectorSearchClient
+    ```python
+   from databricks.vector_search.client import VectorSearchClient
 
-    client = VectorSearchClient()
+   client = VectorSearchClient()
 
-    client.create_endpoint(
-        name="vector_search_endpoint",
-        endpoint_type="STANDARD"
+   client.create_endpoint(
+       name="vector_search_endpoint",
+       endpoint_type="STANDARD"
+   )
+
+   index = client.create_delta_sync_index(
+     endpoint_name="vector_search_endpoint",
+     source_table_name="<catalog_name>.default.wiki_pages",
+     index_name="<catalog_name>.default.wiki_index",
+     pipeline_type="TRIGGERED",
+     primary_key="title",
+     embedding_source_column="text",
+     embedding_model_endpoint_name="databricks-gte-large-en"
     )
-
-    index = client.create_delta_sync_index(
-      endpoint_name="vector_search_endpoint",
-      source_table_name="<catalog_name>.default.wiki_pages",
-      index_name="<catalog_name>.default.wiki_index",
-      pipeline_type="TRIGGERED",
-      primary_key="title",
-      embedding_source_column="text",
-      embedding_model_endpoint_name="databricks-gte-large-en"
-     )
-     ```
+    ```
      
 If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, you will see the index created in your default Unity catalog.
 
@@ -179,15 +180,15 @@ If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, 
 
 3. In a new cell, run the following code to search for relevant documents based on a query vector.
 
-     ```python
-    results_dict=index.similarity_search(
-        query_text="Anthropology fields",
-        columns=["title", "text"],
-        num_results=1
-    )
+    ```python
+   results_dict=index.similarity_search(
+       query_text="Anthropology fields",
+       columns=["title", "text"],
+       num_results=1
+   )
 
-    display(results_dict)
-     ```
+   display(results_dict)
+    ```
 
 Verify that the output finds the corresponding Wiki page related to the query prompt.
 
@@ -197,52 +198,52 @@ Now we can enchance the capabilities of large language models by providing them 
 
 1. In a new cell, run the following code to combine the retrieved data with the user's query to create a rich prompt for the LLM.
 
-     ```python
-    # Convert the dictionary to a DataFrame
-    results = spark.createDataFrame([results_dict['result']['data_array'][0]])
+    ```python
+   # Convert the dictionary to a DataFrame
+   results = spark.createDataFrame([results_dict['result']['data_array'][0]])
 
-    from transformers import pipeline
+   from transformers import pipeline
 
-    # Load the summarization model
-    summarizer = pipeline("summarization")
+   # Load the summarization model
+   summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="pt")
 
-    # Extract the string values from the DataFrame column
-    text_data = results.select("_2").rdd.flatMap(lambda x: x).collect()
+   # Extract the string values from the DataFrame column
+   text_data = results.select("_2").rdd.flatMap(lambda x: x).collect()
 
-    # Pass the extracted text data to the summarizer function
-    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=True)
+   # Pass the extracted text data to the summarizer function
+   summary = summarizer(text_data, max_length=512, min_length=100, do_sample=True)
 
-    def augment_prompt(query_text):
-        context = " ".join([item['summary_text'] for item in summary])
-        return f"Query: {query_text}\nContext: {context}"
+   def augment_prompt(query_text):
+       context = " ".join([item['summary_text'] for item in summary])
+       return f"Query: {query_text}\nContext: {context}"
 
-    prompt = augment_prompt("Explain the significance of Anthropology")
-    print(prompt)
-     ```
+   prompt = augment_prompt("Explain the significance of Anthropology")
+   print(prompt)
+    ```
 
 3. In a new cell, run the following code to use an LLM to generate responses.
 
-     ```python
-    from transformers import GPT2LMHeadModel, GPT2Tokenizer
+    ```python
+   from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-    model = GPT2LMHeadModel.from_pretrained("gpt2")
+   tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+   model = GPT2LMHeadModel.from_pretrained("gpt2")
 
-    inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model.generate(
-        inputs["input_ids"], 
-        max_length=300, 
-        num_return_sequences=1, 
-        repetition_penalty=2.0, 
-        top_k=50, 
-        top_p=0.95, 
-        temperature=0.7,
-        do_sample=True
-    )
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+   inputs = tokenizer(prompt, return_tensors="pt")
+   outputs = model.generate(
+       inputs["input_ids"], 
+       max_length=300, 
+       num_return_sequences=1, 
+       repetition_penalty=2.0, 
+       top_k=50, 
+       top_p=0.95, 
+       temperature=0.7,
+       do_sample=True
+   )
+   response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    print(response)
-     ```
+   print(response)
+    ```
 
 ## Clean up
 
