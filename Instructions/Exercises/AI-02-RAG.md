@@ -87,25 +87,13 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
    
 ## Create a notebook and ingest data
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
-
-1. In the first cell of the notebook, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
-
-    ```python
-   %sql 
-   CREATE VOLUME <catalog_name>.default.RAG_lab;
-    ```
-
-1. Replace `<catalog_name>` with the name of your workspace, as Azure Databricks automatically creates a default catalog with that name.
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
-1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
-
-    ```python
-   %sh
-   wget -O /Volumes/<catalog_name>/default/RAG_lab/enwiki-latest-pages-articles.xml https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml
-    ```
-
-1. In a new cell, run the following code to create a dataframe from the raw data:
+1. In a new browser tab, download the [sample file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml) that will be used as data in this exercise: `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml`
+1. Back in the Databricks workspace tab, in the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. Open the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
+1. In the **Add data** page, select **Upload files to DBFS**.
+1. In the **DBFS** page, name the target directory `RAG_lab` and upload the .xml file you saved earlier.
+1. In the sidebar, select **Workspace** and open your notebook again.
+1. In the first code cell, enter the following code to create a dataframe from the raw data:
 
     ```python
    from pyspark.sql import SparkSession
@@ -118,7 +106,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
    # Read the XML file
    raw_df = spark.read.format("xml") \
        .option("rowTag", "page") \
-       .load("/Volumes/<catalog_name>/default/RAG_lab/enwiki-latest-pages-articles.xml")
+       .load("/FileStore/tables/RAG_lab/enwiki_latest_pages_articles.xml")
 
    # Show the DataFrame
    raw_df.show(5)
@@ -127,18 +115,19 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
    raw_df.printSchema()
     ```
 
-1. In a new cell, run the following code, replacing `<catalog_name>` with your Unity catalog's name, to clean and preprocess the data to extract the relevant text fields:
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. In a new cell, run the following code to clean and preprocess the data to extract the relevant text fields:
 
     ```python
    from pyspark.sql.functions import col
 
    clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
    clean_df = clean_df.na.drop()
-   clean_df.write.format("delta").mode("overwrite").saveAsTable("<catalog_name>.default.wiki_pages")
+   clean_df.write.format("delta").mode("overwrite").saveAsTable("hive_metastore.default.wiki_pages")
    clean_df.show(5)
     ```
 
-    If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your default Unity catalog.
+    If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your hive metastore.
 
 ## Generate embeddings and implement vector search
 
@@ -148,7 +137,7 @@ Databricks' Mosaic AI Vector Search is a vector database solution integrated wit
 
     ```python
    %sql
-   ALTER TABLE <catalog_name>.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
+   ALTER TABLE hive_metastore.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
     ```
 
 2. In a new cell, run the following code to create the vector search index.
