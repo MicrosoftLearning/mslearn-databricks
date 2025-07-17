@@ -9,7 +9,7 @@ With Azure Databricks, users can now leverage the power of LLMs for specialized 
 
 This lab will take approximately **60** minutes to complete.
 
-> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+> **NOTE**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
 ## Before you start
 
@@ -41,13 +41,13 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 6. Launch Cloud Shell and run `az account get-access-token` to get a temporary authorization token for API testing. Keep it together with the endpoint and key copied previously.
 
-    >**Note**: You only need to copy the `accessToken` field value and **not** the entire JSON output.
+    >**NOTE**: You only need to copy the `accessToken` field value and **not** the entire JSON output.
 
 ## Deploy the required model
 
 Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **NOTE**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
 1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
    
@@ -99,30 +99,17 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 6. Wait for the cluster to be created. It may take a minute or two.
 
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
+> **NOTE**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
 
 ## Create a new notebook and ingest data
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
-
-1. In the first cell of the notebook, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
-
-    ```python
-   %sql 
-   CREATE VOLUME <catalog_name>.default.fine_tuning;
-    ```
-
-1. Replace `<catalog_name>` with the name of your default catalog. You can verify its name by selecting **Catalog** in the sidebar.
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
-1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
-
-    ```python
-   %sh
-   wget -O /Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl
-   wget -O /Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl
-    ```
-
-3. In a new cell, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
+1. In a new browser tab, download the [training dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl` and the [validation dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl` that will be used in this exercise.
+1. Back in the Databricks workspace tab, with your notebook open, select the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
+1. In the **Add data** page, select **Upload files to DBFS**.
+1. In the **DBFS** page, name the target directory `fine_tuning` and upload the .jsonl files you saved earlier.
+1. In the sidebar, select **Workspace** and open your notebook again.
+1. In the first cell of the notebook, enter the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
 
     ```python
    import os
@@ -131,6 +118,8 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
    os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
    os.environ["TEMP_AUTH_TOKEN"] = "your_access_token"
     ```
+
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
      
 ## Validate token counts
 
@@ -169,7 +158,7 @@ Both `training_set.jsonl` and `validation_set.jsonl` are made of different conve
        print(f"min / max: {min(values)}, {max(values)}")
        print(f"mean / median: {np.mean(values)}, {np.median(values)}")
 
-   files = ['/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl', '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl']
+   files = ['/FileStore/tables/fine_tuning/training_set.jsonl', '/FileStore/tables/fine_tuning/validation_set.jsonl']
 
    for file in files:
        print(f"File: {file}")
@@ -207,8 +196,8 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
       api_version = "2024-05-01-preview"  # This API version or later is required to access seed/events/checkpoint features
     )
 
-    training_file_name = '/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl'
-    validation_file_name = '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl'
+    training_file_name = '/FileStore/tables/fine_tuning/training_set.jsonl'
+    validation_file_name = '/FileStore/tables/fine_tuning/validation_set.jsonl'
 
     training_response = client.files.create(
         file = open(training_file_name, "rb"), purpose="fine-tune"
@@ -250,7 +239,7 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    print("Status:", response.status)
     ```
 
->**Note**: You can also monitor the job status in AI Foundry by selecting **Fine-tuning** in the left sidebar.
+    >**NOTE**: You can also monitor the job status in AI Foundry by selecting **Fine-tuning** in the left sidebar.
 
 3. Once the job status changes to `succeeded`, run the following code to get the final results:
 
@@ -260,8 +249,10 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    print(response.model_dump_json(indent=2))
    fine_tuned_model = response.fine_tuned_model
     ```
-   
-## Deploy fine-tuned model
+
+    >**NOTE**: Fine-tuning a model can take over 60 minutes, so you can finish the exercise at this point and consider the model's deployment an optional task in case you have time to spare.
+
+## [OPTIONAL] Deploy fine-tuned model
 
 Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Foundry, or via the chat completion API.
 
