@@ -75,25 +75,22 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Install required libraries
 
-1. In your cluster's page, select the **Libraries** tab.
-
-2. Select **Install New**.
-
-3. Select **PyPI** as the library source and type `transformers==4.53.0` in the **Package** field.
-
-4. Select **Install**.
-
-5. Repeat the steps above to install `databricks-vectorsearch==0.56`as well.
+1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. In the first code cell, enter and run the following code to install the necessary libraries:
    
-## Create a notebook and ingest data
+    ```python
+   %pip install faiss-cpu
+   dbutils.library.restartPython()
+    ```
+   
+## Ingest data
 
 1. In a new browser tab, download the [sample file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml) that will be used as data in this exercise: `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml`
-1. Back in the Databricks workspace tab, in the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
-1. Open the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
+1. Back in the Databricks workspace tab, with your notebook open, select the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
 1. In the **Add data** page, select **Upload files to DBFS**.
 1. In the **DBFS** page, name the target directory `RAG_lab` and upload the .xml file you saved earlier.
 1. In the sidebar, select **Workspace** and open your notebook again.
-1. In the first code cell, enter the following code to create a dataframe from the raw data:
+1. In a new code cell, enter the following code to create a dataframe from the raw data:
 
     ```python
    from pyspark.sql import SparkSession
@@ -123,60 +120,53 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
    clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
    clean_df = clean_df.na.drop()
-   clean_df.write.format("delta").mode("overwrite").saveAsTable("hive_metastore.default.wiki_pages")
    clean_df.show(5)
     ```
 
-    If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your hive metastore.
-
 ## Generate embeddings and implement vector search
 
-Databricks' Mosaic AI Vector Search is a vector database solution integrated within the Azure Databricks Platform. It optimizes the storage and retrieval of embeddings utilizing the Hierarchical Navigable Small World (HNSW) algorithm. It allows for efficient nearest neighbor searches, and its hybrid keyword-similarity search capability provides more relevant results by combining vector-based and keyword-based search techniques.
+FAISS (Facebook AI Similarity Search) is an open-source vector database library developed by Meta AI, designed for efficient similarity search and clustering of dense vectors. FAISS enables fast and scalable nearest neighbor searches, and can be integrated with hybrid search systems to combine vector-based similarity with traditional keyword-based techniques, enhancing the relevance of search results.
 
-1. In a new cell, run the following SQL query to enable the Change Data Feed feature in the source table before creating a delta sync index.
+1. In a new cell, run the following code to load the pre-trained `all-MiniLM-L6-v2` model and convert text to embeddings:
 
     ```python
-   %sql
-   ALTER TABLE hive_metastore.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
+   from sentence_transformers import SentenceTransformer
+   import numpy as np
+    
+   # Load pre-trained model
+   model = SentenceTransformer('all-MiniLM-L6-v2')
+    
+   # Function to convert text to embeddings
+   def text_to_embedding(text):
+       embeddings = model.encode([text])
+       return embeddings[0]
+    
+   # Convert the DataFrame to a Pandas DataFrame
+   pandas_df = clean_df.toPandas()
+    
+   # Apply the function to get embeddings
+   pandas_df['embedding'] = pandas_df['text'].apply(text_to_embedding)
+   embeddings = np.vstack(pandas_df['embedding'].values)
     ```
 
-2. In a new cell, run the following code to create the vector search index.
+1. In a new cell, run the following code to create and query the FAISS index:
 
     ```python
-   from databricks.vector_search.client import VectorSearchClient
-
-   client = VectorSearchClient()
-
-   client.create_endpoint(
-       name="vector_search_endpoint",
-       endpoint_type="STANDARD"
-   )
-
-   index = client.create_delta_sync_index(
-     endpoint_name="vector_search_endpoint",
-     source_table_name="<catalog_name>.default.wiki_pages",
-     index_name="<catalog_name>.default.wiki_index",
-     pipeline_type="TRIGGERED",
-     primary_key="title",
-     embedding_source_column="text",
-     embedding_model_endpoint_name="databricks-gte-large-en"
-    )
-    ```
-     
-If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, you will see the index created in your default Unity catalog.
-
-> **Note:** Before running the next code cell, verify that the index was successfully created. To do that, right-click the index in the Catalog pane and select **Open in Catalog Explorer**. Wait until the index status is **Online**.
-
-3. In a new cell, run the following code to search for relevant documents based on a query vector.
-
-    ```python
-   results_dict=index.similarity_search(
-       query_text="Anthropology fields",
-       columns=["title", "text"],
-       num_results=1
-   )
-
-   display(results_dict)
+   import faiss
+    
+   # Create a FAISS index
+   d = embeddings.shape[1]  # dimension
+   index = faiss.IndexFlatL2(d)  # L2 distance
+   index.add(embeddings)  # add vectors to the index
+    
+   # Perform a search
+   query_embedding = text_to_embedding("Anthropology fields")
+   k = 1  # number of nearest neighbors
+   distances, indices = index.search(np.array([query_embedding]), k)
+    
+   # Get the results
+   results = pandas_df.iloc[indices[0]]
+   display(results)
     ```
 
 Verify that the output finds the corresponding Wiki page related to the query prompt.
@@ -188,29 +178,26 @@ Now we can enchance the capabilities of large language models by providing them 
 1. In a new cell, run the following code to combine the retrieved data with the user's query to create a rich prompt for the LLM.
 
     ```python
-   # Convert the dictionary to a DataFrame
-   results = spark.createDataFrame([results_dict['result']['data_array'][0]])
-
    from transformers import pipeline
-
+    
    # Load the summarization model
    summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="pt")
-
+    
    # Extract the string values from the DataFrame column
-   text_data = results.select("_2").rdd.flatMap(lambda x: x).collect()
-
+   text_data = results["text"].tolist()
+    
    # Pass the extracted text data to the summarizer function
    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=True)
-
+    
    def augment_prompt(query_text):
        context = " ".join([item['summary_text'] for item in summary])
-       return f"Query: {query_text}\nContext: {context}"
-
+       return f"{context}\n\nQuestion: {query_text}\nAnswer:"
+    
    prompt = augment_prompt("Explain the significance of Anthropology")
    print(prompt)
     ```
 
-3. In a new cell, run the following code to use an LLM to generate responses.
+1. In a new cell, run the following code to use an LLM to generate responses.
 
     ```python
    from transformers import GPT2LMHeadModel, GPT2Tokenizer
