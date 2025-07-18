@@ -1,9 +1,9 @@
 ---
 lab:
-    title: 'Implementing LLMOps with Azure Databricks'
+    title: 'Implement LLMOps with Azure Databricks'
 ---
 
-# Implementing LLMOps with Azure Databricks
+# Implement LLMOps with Azure Databricks
 
 Azure Databricks provides a unified platform that streamlines the AI lifecycle, from data preparation to model serving and monitoring, optimizing the performance and efficiency of machine learning systems. It supports the development of generative AI applications, leveraging features like Unity Catalog for data governance, MLflow for model tracking, and Mosaic AI Model Serving for deploying LLMs.
 
@@ -41,22 +41,21 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 ## Deploy the required model
 
-Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
+Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
    
-1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo** model with the following settings:
-    - **Deployment name**: *gpt-35-turbo*
-    - **Model**: gpt-35-turbo
-    - **Model version**: Default
+1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+    - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
-    - **Tokens per minute rate limit**: 5K\*
+    - **Model version**: *Use default version*
+    - **Tokens per minute rate limit**: 10K\*
     - **Content filter**: Default
     - **Enable dynamic quota**: Disabled
     
-> \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
+> \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
 ## Provision an Azure Databricks workspace
 
@@ -88,39 +87,15 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 5. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
-        - *Does **not** use a GPU*
-        - *Includes Scala > **2.11***
-        - *Includes Spark > **3.4***
+    - **Machine learning**: Enabled
+    - **Databricks runtime**: 15.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
+    - **Worker type**: Standard_D4ds_v5
+    - **Single node**: Checked
 
 6. Wait for the cluster to be created. It may take a minute or two.
 
 > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
-
-## Install required libraries
-
-1. In the Databricks workspace, go to the **Workspace** section.
-
-2. Select **Create** and then select **Notebook**.
-
-3. Name your notebook and select `Python` as the language.
-
-4. In the first code cell, enter and run the following code to install the OpenAI library:
-   
-     ```python
-    %pip install openai
-     ```
-
-5. After the installation is complete, restart the kernel in a new cell:
-
-     ```python
-    %restart_python
-     ```
 
 ## Log the LLM using MLflow
 
@@ -133,7 +108,7 @@ MLflow’s LLM tracking capabilities allow you to log parameters, metrics, predi
 
     os.environ["AZURE_OPENAI_API_KEY"] = "your_openai_api_key"
     os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
-    os.environ["AZURE_OPENAI_API_VERSION"] = "2023-03-15-preview"
+    os.environ["AZURE_OPENAI_API_VERSION"] = "2024-05-01-preview"
      ```
 1. In a new cell, run the following code to initialize your Azure OpenAI client:
 
@@ -161,7 +136,7 @@ MLflow’s LLM tracking capabilities allow you to log parameters, metrics, predi
     with mlflow.start_run():
 
         response = client.chat.completions.create(
-            model="gpt-35-turbo",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": "Tell me a joke about animals."},
@@ -177,13 +152,11 @@ The cell above will start an experiment in your workspace and register the trace
 
 ## Monitor the model
 
-1. In the sidebar on the left, select **Experiments** and select the experiment associated to the notebook you used for this exercise. Select the latest run and verify in the Overview page that there is one logged parameter: `completion_tokens`. The command `mlflow.openai.autolog()` will log the traces of each run by default, but you can also log additional parameters with `mlflow.log_param()` that can later be used to monitor the model.
-
-1. Select the **Traces** tab and then select the last one created. Verify that the `completion_tokens` parameter is part of the trace's output:
+After running the last cell, MLflow Trace UI will automatically be displayed together with the cell's output. You can also see it by selecting **Experiments** in the left sidebar, and then opening your notebook's experiment run:
 
    ![MLFlow Trace UI](./images/trace-ui.png)  
 
-Once you start monitoring the model, you can compare the traces from different runs to detect data drift. Look for significant changes in the input data distributions, model predictions, or performance metrics over time. You can use statistical tests or visualization tools to aid in this analysis.
+The command `mlflow.openai.autolog()` will log the traces of each run by default, but you can also log additional parameters with `mlflow.log_param()` that can later be used to monitor the model. Once you start monitoring the model, you can compare the traces from different runs to detect data drift. Look for significant changes in the input data distributions, model predictions, or performance metrics over time. You can also use statistical tests or visualization tools to aid in this analysis.
 
 ## Clean up
 

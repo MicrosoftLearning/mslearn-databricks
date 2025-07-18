@@ -7,7 +7,7 @@ lab:
 
 AutoML is a feature of Azure Databricks that tries multiple algorithms and parameters with your data to train an optimal machine learning model.
 
-This exercise should take approximately **30** minutes to complete.
+This exercise should take approximately **45** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
@@ -81,15 +81,15 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 To train a machine learning model using AutoML, you need to upload the training data. In this exercise, you'll train a model to classify a penguin as one of three species based on observations including its location and body measurements. You'll load training data that includes the species label into a table in an Azure Databricks data warehouse.
 
 1. In the Azure Databricks portal for your workspace, in the sidebar, under **SQL**, select **SQL Warehouses**.
-1. Observe that the workspace already includes a SQL Warehouse named **Starter Warehouse**.
+1. Observe that the workspace already includes a SQL Warehouse named **Serverless Starter Warehouse**.
 1. In the **Actions** (**&#8285;**) menu for the SQL Warehouse, select **Edit**. Then set the **Cluster size** property to **2X-Small** and save your changes.
 1. Use the **Start** button to start the SQL Warehouse (which may take a minute or two).
 
-> **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try requesting for a quota increase as detailed in the error message when the warehouse fails to start. Alternatively, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
+    > **Note**: If your SQL Warehouse fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [Required Azure vCPU quota](https://docs.microsoft.com/azure/databricks/sql/admin/sql-endpoints#required-azure-vcpu-quota) for details. If this happens, you can try requesting for a quota increase as detailed in the error message when the warehouse fails to start. Alternatively, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
 1. Download the [**penguins.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/penguins.csv) file from `https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/penguins.csv` to your local computer, saving it as **penguins.csv**.
-1. In the Azure Databricks workspace portal, in the sidebar, select **(+) New** and then select **File Upload** and upload the **penguins.csv** file you downloaded to your computer.
-1. In the **Upload data** page, select the **default** schema and set the table name to **penguins**. Then select **Create table** on the bottom left corner of the page.
+1. In the Azure Databricks workspace portal, in the sidebar, select **(+) New** and then select **Add or upload data**. In the **Add data** page, select **Create or modify table** and upload the **penguins.csv** file you downloaded to your computer.
+1. In the **Create or modify table from file upload** page, select the **default** schema and set the table name to **penguins**. Then select **Create table**.
 1. When the table has been created, review its details.
 
 ## Create an AutoML experiment
@@ -97,10 +97,9 @@ To train a machine learning model using AutoML, you need to upload the training 
 Now that you have some data, you can use it with AutoML to train a model.
 
 1. In the sidebar on the left, select **Experiments**.
-1. On the **Experiments** page, select **Create AutoML experiment**.
+1. On the **Experiments** page, find the **Classification** tile and select **Start training**.
 1. Configure the AutoML experiment with the following settings:
     - **Cluster**: *Select your cluster*
-    - **ML problem type**: Classification
     - **Input training dataset**: *Browse to the **default** database and select the **penguins** table*
     - **Prediction target**: Species
     - **Experiment name**: Penguin-classification
@@ -112,7 +111,7 @@ Now that you have some data, you can use it with AutoML to train a model.
         - **Positive label**: *Leave blank*
         - **Intermediate data storage location**: MLflow Artifact
 1. Use the **Start AutoML** button to start the experiment. Close any information dialogs that are displayed.
-1. Wait for the experiment to complete. You can use the **Refresh** button on the right to view details of the runs that are generated.
+1. Wait for the experiment to complete. You can view details of the runs that are generated under the **Runs** tab.
 1. After five minutes, the experiment will end. Refreshing the runs will show the run that resulted in the best performing model (based on the *precision* metric you selected) at the top of the list.
 
 ## Deploy the best performing model

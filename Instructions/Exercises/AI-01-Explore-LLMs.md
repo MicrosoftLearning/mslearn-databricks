@@ -45,13 +45,13 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer.
 
 ## Create a cluster
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
 1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
@@ -63,15 +63,11 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 1. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
-        - *Does **not** use a GPU*
-        - *Includes Scala > **2.11***
-        - *Includes Spark > **3.4***
+    - **Machine learning**: Enabled
+    - **Databricks runtime**: 15.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
+    - **Worker type**: Standard_D4ds_v5
+    - **Single node**: Checked
 
 1. Wait for the cluster to be created. It may take a minute or two.
 
@@ -83,7 +79,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 2. Select **Install New**.
 
-3. Select **PyPI** as the library source and type `transformers==4.44.0` in the **Package** field.
+3. Select **PyPI** as the library source and type `transformers==4.53.0` in the **Package** field.
 
 4. Select **Install**.
 
@@ -93,26 +89,29 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 2. Select **Create** and then select **Notebook**.
 
-3. Name your notebook and select `Python` as the language.
+3. Name your notebook and verify that `Python` is selected as the language.
 
-4. In the first code cell, enter and run the following code:
+4. In the **Connect** dropdown menu, select the compute resource you created earlier.
 
-     ```python
-    from transformers import pipeline
+5. In the first code cell, enter and run the following code:
 
-    # Load the summarization model
-    summarizer = pipeline("summarization")
+    ```python
+   from transformers import pipeline
 
-    # Load the sentiment analysis model
-    sentiment_analyzer = pipeline("sentiment-analysis")
+   # Load the summarization model with PyTorch weights
+   summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="pt")
 
-    # Load the translation model
-    translator = pipeline("translation_en_to_fr")
+   # Load the sentiment analysis model
+   sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english", revision="714eb0f")
 
-    # Load a general purpose model for zero-shot classification and few-shot learning
-    classifier = pipeline("zero-shot-classification")
-     ```
-This will load all the necessary models for the NLP tasks presented in this exercise.
+   # Load the translation model
+   translator = pipeline("translation_en_to_fr", model="google-t5/t5-base", revision="a9723ea")
+
+   # Load a general purpose model for zero-shot classification and few-shot learning
+   classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli", revision="d7645e1") 
+    ```
+     
+    This will load all the necessary models for the NLP tasks presented in this exercise.
 
 ### Summarize Text
 

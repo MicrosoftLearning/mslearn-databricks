@@ -84,7 +84,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     %sh
     rm -r /dbfs/device_stream
     mkdir /dbfs/device_stream
-    wget -O /dbfs/device_stream/device_data.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/device_data.csv
+    !wget -O /dbfs/device_stream/device_data.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/device_data.csv
      ```
 
 4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.

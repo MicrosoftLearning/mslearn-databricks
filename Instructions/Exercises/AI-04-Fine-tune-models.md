@@ -41,24 +41,25 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 6. Launch Cloud Shell and run `az account get-access-token` to get a temporary authorization token for API testing. Keep it together with the endpoint and key copied previously.
 
+    >**Note**: You only need to copy the `accessToken` field value and **not** the entire JSON output.
+
 ## Deploy the required model
 
-Azure provides a web-based portal named **Azure AI Studio**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Studio to deploy a model.
+Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Studio, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Studio**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
    
-1. In Azure AI Studio, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-35-turbo** model with the following settings:
-    - **Deployment name**: *gpt-35-turbo-0613*
-    - **Model**: gpt-35-turbo
-    - **Model version**: 0613
+1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+    - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
-    - **Tokens per minute rate limit**: 5K\*
+    - **Model version**: *Use default version*
+    - **Tokens per minute rate limit**: 10K\*
     - **Content filter**: Default
     - **Enable dynamic quota**: Disabled
     
-> \* A rate limit of 5,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
+> \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
 ## Provision an Azure Databricks workspace
 
@@ -78,7 +79,7 @@ Azure provides a web-based portal named **Azure AI Studio**, that you can use to
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 13.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
 2. Select your Azure Databricks Service resource.
@@ -90,114 +91,105 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 5. In the **New Cluster** page, create a new cluster with the following settings:
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: *Select the **<u>ML</u>** edition of the latest non-beta version of the runtime (**Not** a Standard runtime version) that:*
-        - *Does **not** use a GPU*
-        - *Includes Scala > **2.11***
-        - *Includes Spark > **3.4***
+    - **Machine learning**: Enabled
+    - **Databricks runtime**: 15.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
+    - **Worker type**: Standard_D4ds_v5
+    - **Single node**: Checked
 
 6. Wait for the cluster to be created. It may take a minute or two.
 
 > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
 
-## Install required libraries
-
-1. In your cluster's page, select the **Libraries** tab.
-
-2. Select **Install New**.
-
-3. Select **PyPI** as the library source and install the following Python packages:
-   - `numpy==2.1.0`
-   - `requests==2.32.3`
-   - `openai==1.42.0`
-   - `tiktoken==0.7.0`
-
 ## Create a new notebook and ingest data
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**.
-   
-1. Name your notebook and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
-2. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+1. In the first cell of the notebook, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
 
-     ```python
-    %sh
-    rm -r /dbfs/fine_tuning
-    mkdir /dbfs/fine_tuning
-    wget -O /dbfs/fine_tuning/training_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl
-    wget -O /dbfs/fine_tuning/validation_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl
-     ```
+    ```python
+   %sql 
+   CREATE VOLUME <catalog_name>.default.fine_tuning;
+    ```
+
+1. Replace `<catalog_name>` with the name of your default catalog. You can verify its name by selecting **Catalog** in the sidebar.
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
+
+    ```python
+   %sh
+   wget -O /Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl
+   wget -O /Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl
+    ```
 
 3. In a new cell, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
 
-     ```python
-    import os
+    ```python
+   import os
 
-    os.environ["AZURE_OPENAI_API_KEY"] = "your_openai_api_key"
-    os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
-    os.environ["TEMP_AUTH_TOKEN"] = "your_access_token"
-     ```
+   os.environ["AZURE_OPENAI_API_KEY"] = "your_openai_api_key"
+   os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
+   os.environ["TEMP_AUTH_TOKEN"] = "your_access_token"
+    ```
      
-## Validade token counts
+## Validate token counts
 
-Both `training_set.jsonl` and `validation_set.jsonl` are made of different conversation examples between `user` and `assistant` that will serve as data points for training and validating the fine-tuned model. Individual examples need to remain under the `gpt-35-turbo` model's input token limit of 4096 tokens.
+Both `training_set.jsonl` and `validation_set.jsonl` are made of different conversation examples between `user` and `assistant` that will serve as data points for training and validating the fine-tuned model. While the datasets for this exercise are considered small, it is important to keep in mind when working with bigger datasets that the LLMs have a maximum context length in terms of tokens. Therefore, you can verify the token count of your datasets before training your model and revise them if necessary. 
 
 1. In a new cell, run the following code to validate the token counts for each file:
 
-   ```python
-    import json
-    import tiktoken
-    import numpy as np
-    from collections import defaultdict
+    ```python
+   import json
+   import tiktoken
+   import numpy as np
+   from collections import defaultdict
 
-    encoding = tiktoken.get_encoding("cl100k_base")
+   encoding = tiktoken.get_encoding("cl100k_base")
 
-    def num_tokens_from_messages(messages, tokens_per_message=3, tokens_per_name=1):
-        num_tokens = 0
-        for message in messages:
-            num_tokens += tokens_per_message
-            for key, value in message.items():
-                num_tokens += len(encoding.encode(value))
-                if key == "name":
-                    num_tokens += tokens_per_name
-        num_tokens += 3
-        return num_tokens
+   def num_tokens_from_messages(messages, tokens_per_message=3, tokens_per_name=1):
+       num_tokens = 0
+       for message in messages:
+           num_tokens += tokens_per_message
+           for key, value in message.items():
+               num_tokens += len(encoding.encode(value))
+               if key == "name":
+                   num_tokens += tokens_per_name
+       num_tokens += 3
+       return num_tokens
 
-    def num_assistant_tokens_from_messages(messages):
-        num_tokens = 0
-        for message in messages:
-            if message["role"] == "assistant":
-                num_tokens += len(encoding.encode(message["content"]))
-        return num_tokens
+   def num_assistant_tokens_from_messages(messages):
+       num_tokens = 0
+       for message in messages:
+           if message["role"] == "assistant":
+               num_tokens += len(encoding.encode(message["content"]))
+       return num_tokens
 
-    def print_distribution(values, name):
-        print(f"\n##### Distribution of {name}:")
-        print(f"min / max: {min(values)}, {max(values)}")
-        print(f"mean / median: {np.mean(values)}, {np.median(values)}")
+   def print_distribution(values, name):
+       print(f"\n##### Distribution of {name}:")
+       print(f"min / max: {min(values)}, {max(values)}")
+       print(f"mean / median: {np.mean(values)}, {np.median(values)}")
 
-    files = ['/dbfs/fine_tuning/training_set.jsonl', '/dbfs/fine_tuning/validation_set.jsonl']
+   files = ['/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl', '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl']
 
-    for file in files:
-        print(f"File: {file}")
-        with open(file, 'r', encoding='utf-8') as f:
-            dataset = [json.loads(line) for line in f]
+   for file in files:
+       print(f"File: {file}")
+       with open(file, 'r', encoding='utf-8') as f:
+           dataset = [json.loads(line) for line in f]
 
-        total_tokens = []
-        assistant_tokens = []
+       total_tokens = []
+       assistant_tokens = []
 
-        for ex in dataset:
-            messages = ex.get("messages", {})
-            total_tokens.append(num_tokens_from_messages(messages))
-            assistant_tokens.append(num_assistant_tokens_from_messages(messages))
+       for ex in dataset:
+           messages = ex.get("messages", {})
+           total_tokens.append(num_tokens_from_messages(messages))
+           assistant_tokens.append(num_assistant_tokens_from_messages(messages))
 
-        print_distribution(total_tokens, "total tokens")
-        print_distribution(assistant_tokens, "assistant tokens")
-        print('*' * 75)
-   ```
+       print_distribution(total_tokens, "total tokens")
+       print_distribution(assistant_tokens, "assistant tokens")
+       print('*' * 75)
+    ```
+
+As a reference, the model used in this exercise, GPT-4o, has the context limit (total number of tokens in the input prompt and the generated response combined) of 128K tokens.
 
 ## Upload fine-tuning files to Azure OpenAI
 
@@ -215,8 +207,8 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
       api_version = "2024-05-01-preview"  # This API version or later is required to access seed/events/checkpoint features
     )
 
-    training_file_name = '/dbfs/fine_tuning/training_set.jsonl'
-    validation_file_name = '/dbfs/fine_tuning/validation_set.jsonl'
+    training_file_name = '/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl'
+    validation_file_name = '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl'
 
     training_response = client.files.create(
         file = open(training_file_name, "rb"), purpose="fine-tune"
@@ -234,105 +226,107 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
 
 ## Submit fine-tuning job
 
-Now that the fine-tuning files have been successfully uploaded you can submit your fine-tuning training job. It isn't unusual for training to take more than an hour to complete. Once training is completed, you can see the results in Azure AI Studio by selecting the **Fine-tuning** option in the left pane.
+Now that the fine-tuning files have been successfully uploaded you can submit your fine-tuning training job. It isn't unusual for training to take more than an hour to complete. Once training is completed, you can see the results in Azure AI Foundry by selecting the **Fine-tuning** option in the left pane.
 
 1. In a new cell, run the following code to start the fine-tuning training job:
 
-     ```python
-    response = client.fine_tuning.jobs.create(
-        training_file = training_file_id,
-        validation_file = validation_file_id,
-        model = "gpt-35-turbo-0613",
-        seed = 105 # seed parameter controls reproducibility of the fine-tuning job. If no seed is specified one will be generated automatically.
-    )
+    ```python
+   response = client.fine_tuning.jobs.create(
+       training_file = training_file_id,
+       validation_file = validation_file_id,
+       model = "gpt-4o",
+       seed = 105 # seed parameter controls reproducibility of the fine-tuning job. If no seed is specified one will be generated automatically.
+   )
 
-    job_id = response.id
-     ```
+   job_id = response.id
+    ```
 
 The `seed` parameter controls reproducibility of the fine-tuning job. Passing in the same seed and job parameters should produce the same results, but can differ in rare cases. If no seed is specified one will be generated automatically.
 
 2. In a new cell, you can run the following code to monitor the status of the fine-tuning job:
 
-     ```python
-    print("Job ID:", response.id)
-    print("Status:", response.status)
-     ```
+    ```python
+   print("Job ID:", response.id)
+   print("Status:", response.status)
+    ```
+
+>**Note**: You can also monitor the job status in AI Foundry by selecting **Fine-tuning** in the left sidebar.
 
 3. Once the job status changes to `succeeded`, run the following code to get the final results:
 
-     ```python
-    response = client.fine_tuning.jobs.retrieve(job_id)
+    ```python
+   response = client.fine_tuning.jobs.retrieve(job_id)
 
-    print(response.model_dump_json(indent=2))
-    fine_tuned_model = response.fine_tuned_model
-     ```
+   print(response.model_dump_json(indent=2))
+   fine_tuned_model = response.fine_tuned_model
+    ```
    
 ## Deploy fine-tuned model
 
-Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Studio, or via the chat completion API.
+Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Foundry, or via the chat completion API.
 
 1. In a new cell, run the following code to deploy your fine-tuned model:
    
-     ```python
-    import json
-    import requests
+    ```python
+   import json
+   import requests
 
-    token = os.getenv("TEMP_AUTH_TOKEN")
-    subscription = "<YOUR_SUBSCRIPTION_ID>"
-    resource_group = "<YOUR_RESOURCE_GROUP_NAME>"
-    resource_name = "<YOUR_AZURE_OPENAI_RESOURCE_NAME>"
-    model_deployment_name = "gpt-35-turbo-ft"
+   token = os.getenv("TEMP_AUTH_TOKEN")
+   subscription = "<YOUR_SUBSCRIPTION_ID>"
+   resource_group = "<YOUR_RESOURCE_GROUP_NAME>"
+   resource_name = "<YOUR_AZURE_OPENAI_RESOURCE_NAME>"
+   model_deployment_name = "gpt-4o-ft"
 
-    deploy_params = {'api-version': "2023-05-01"}
-    deploy_headers = {'Authorization': 'Bearer {}'.format(token), 'Content-Type': 'application/json'}
+   deploy_params = {'api-version': "2023-05-01"}
+   deploy_headers = {'Authorization': 'Bearer {}'.format(token), 'Content-Type': 'application/json'}
 
-    deploy_data = {
-        "sku": {"name": "standard", "capacity": 1},
-        "properties": {
-            "model": {
-                "format": "OpenAI",
-                "name": "<YOUR_FINE_TUNED_MODEL>",
-                "version": "1"
-            }
-        }
-    }
-    deploy_data = json.dumps(deploy_data)
+   deploy_data = {
+       "sku": {"name": "standard", "capacity": 1},
+       "properties": {
+           "model": {
+               "format": "OpenAI",
+               "name": "<YOUR_FINE_TUNED_MODEL>",
+               "version": "1"
+           }
+       }
+   }
+   deploy_data = json.dumps(deploy_data)
 
-    request_url = f'https://management.azure.com/subscriptions/{subscription}/resourceGroups/{resource_group}/providers/Microsoft.CognitiveServices/accounts/{resource_name}/deployments/{model_deployment_name}'
+   request_url = f'https://management.azure.com/subscriptions/{subscription}/resourceGroups/{resource_group}/providers/Microsoft.CognitiveServices/accounts/{resource_name}/deployments/{model_deployment_name}'
 
-    print('Creating a new deployment...')
+   print('Creating a new deployment...')
 
-    r = requests.put(request_url, params=deploy_params, headers=deploy_headers, data=deploy_data)
+   r = requests.put(request_url, params=deploy_params, headers=deploy_headers, data=deploy_data)
 
-    print(r)
-    print(r.reason)
-    print(r.json())
-     ```
+   print(r)
+   print(r.reason)
+   print(r.json())
+    ```
 
 2. In a new cell, run the following code to use your customized model in a chat completion call:
    
-     ```python
-    import os
-    from openai import AzureOpenAI
+    ```python
+   import os
+   from openai import AzureOpenAI
 
-    client = AzureOpenAI(
-      azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
-      api_key = os.getenv("AZURE_OPENAI_API_KEY"),
-      api_version = "2024-02-01"
-    )
+   client = AzureOpenAI(
+     azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
+     api_key = os.getenv("AZURE_OPENAI_API_KEY"),
+     api_version = "2024-02-01"
+   )
 
-    response = client.chat.completions.create(
-        model = "gpt-35-turbo-ft", # model = "Custom deployment name you chose for your fine-tuning model"
-        messages = [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": "Does Azure OpenAI support customer managed keys?"},
-            {"role": "assistant", "content": "Yes, customer managed keys are supported by Azure OpenAI."},
-            {"role": "user", "content": "Do other Azure AI services support this too?"}
-        ]
-    )
+   response = client.chat.completions.create(
+       model = "gpt-4o-ft", # model = "Custom deployment name you chose for your fine-tuning model"
+       messages = [
+           {"role": "system", "content": "You are a helpful assistant."},
+           {"role": "user", "content": "Does Azure OpenAI support customer managed keys?"},
+           {"role": "assistant", "content": "Yes, customer managed keys are supported by Azure OpenAI."},
+           {"role": "user", "content": "Do other Azure AI services support this too?"}
+       ]
+   )
 
-    print(response.choices[0].message.content)
-     ```
+   print(response.choices[0].message.content)
+    ```
  
 ## Clean up
 
