@@ -158,7 +158,7 @@ Both `training_set.jsonl` and `validation_set.jsonl` are made of different conve
        print(f"min / max: {min(values)}, {max(values)}")
        print(f"mean / median: {np.mean(values)}, {np.median(values)}")
 
-   files = ['/FileStore/tables/fine_tuning/training_set.jsonl', '/FileStore/tables/fine_tuning/validation_set.jsonl']
+   files = ['/dbfs/FileStore/tables/fine_tuning/training_set.jsonl', '/dbfs/FileStore/tables/fine_tuning/validation_set.jsonl']
 
    for file in files:
        print(f"File: {file}")
@@ -196,8 +196,8 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
       api_version = "2024-05-01-preview"  # This API version or later is required to access seed/events/checkpoint features
     )
 
-    training_file_name = '/FileStore/tables/fine_tuning/training_set.jsonl'
-    validation_file_name = '/FileStore/tables/fine_tuning/validation_set.jsonl'
+    training_file_name = '/dbfs/FileStore/tables/fine_tuning/training_set.jsonl'
+    validation_file_name = '/dbfs/FileStore/tables/fine_tuning/validation_set.jsonl'
 
     training_response = client.files.create(
         file = open(training_file_name, "rb"), purpose="fine-tune"
@@ -256,7 +256,7 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
 
 Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Foundry, or via the chat completion API.
 
-1. In a new cell, run the following code to deploy your fine-tuned model:
+1. In a new cell, run the following code to deploy your fine-tuned model, replacing the placeholders `<YOUR_SUBSCRIPTION_ID>`, `<YOUR_RESOURCE_GROUP_NAME>`, and `<YOUR_AZURE_OPENAI_RESOURCE_NAME>`:
    
     ```python
    import json
@@ -276,7 +276,7 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
        "properties": {
            "model": {
                "format": "OpenAI",
-               "name": "<YOUR_FINE_TUNED_MODEL>",
+               "name": "gpt-4o-ft",
                "version": "1"
            }
        }
@@ -294,6 +294,8 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
    print(r.json())
     ```
 
+> **NOTE**: You can find your subscription ID in the Overview page of your Databricks workspace or OpenAI resource on Azure Portal.
+
 2. In a new cell, run the following code to use your customized model in a chat completion call:
    
     ```python
@@ -307,7 +309,7 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
    )
 
    response = client.chat.completions.create(
-       model = "gpt-4o-ft", # model = "Custom deployment name you chose for your fine-tuning model"
+       model = "gpt-4o-ft",
        messages = [
            {"role": "system", "content": "You are a helpful assistant."},
            {"role": "user", "content": "Does Azure OpenAI support customer managed keys?"},
