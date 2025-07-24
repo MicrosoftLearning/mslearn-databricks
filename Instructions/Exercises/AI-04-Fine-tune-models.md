@@ -79,7 +79,7 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 16.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
 2. Select your Azure Databricks Service resource.
@@ -92,7 +92,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
     - **Machine learning**: Enabled
-    - **Databricks runtime**: 15.4 LTS
+    - **Databricks runtime**: 16.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
     - **Worker type**: Standard_D4ds_v5
     - **Single node**: Checked
@@ -105,6 +105,9 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 1. In a new browser tab, download the [training dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl` and the [validation dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl` that will be used in this exercise.
+
+> **Note**: Your device might default to saving the file as a .txt file. In the **Save as type** field, select **All files** and remove the .txt suffix to ensure you're saving the file as JSONL.
+
 1. Back in the Databricks workspace tab, with your notebook open, select the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
 1. In the **Add data** page, select **Upload files to DBFS**.
 1. In the **DBFS** page, name the target directory `fine_tuning` and upload the .jsonl files you saved earlier.
