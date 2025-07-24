@@ -89,7 +89,7 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
 
-> **Tip**: If you already have a cluster with a 15.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+> **Tip**: If you already have a cluster with a 16.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
 
 1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
 1. Select your Azure Databricks Service resource.
@@ -102,7 +102,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
     - **Cluster name**: *User Name's* cluster (the default cluster name)
     - **Policy**: Unrestricted
     - **Machine learning**: Enabled
-    - **Databricks runtime**: 15.4 LTS
+    - **Databricks runtime**: 16.4 LTS
     - **Use Photon Acceleration**: <u>Un</u>selected
     - **Worker type**: Standard_D4ds_v5
     - **Single node**: Checked
