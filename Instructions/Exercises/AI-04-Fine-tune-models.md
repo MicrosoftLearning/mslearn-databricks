@@ -253,13 +253,15 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    fine_tuned_model = response.fine_tuned_model
     ```
 
+4. Review the json response and note the unique name generated in the `"fine_tuned_model"` field. It will be used in the following optional task.
+
     >**NOTE**: Fine-tuning a model can take over 60 minutes, so you can finish the exercise at this point and consider the model's deployment an optional task in case you have time to spare.
 
 ## [OPTIONAL] Deploy fine-tuned model
 
 Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Foundry, or via the chat completion API.
 
-1. In a new cell, run the following code to deploy your fine-tuned model, replacing the placeholders `<YOUR_SUBSCRIPTION_ID>`, `<YOUR_RESOURCE_GROUP_NAME>`, and `<YOUR_AZURE_OPENAI_RESOURCE_NAME>`:
+1. In a new cell, run the following code to deploy your fine-tuned model, replacing the placeholders `<YOUR_SUBSCRIPTION_ID>`, `<YOUR_RESOURCE_GROUP_NAME>`, `<YOUR_AZURE_OPENAI_RESOURCE_NAME>`, and `<FINE_TUNED_MODEL>`:
    
     ```python
    import json
@@ -279,7 +281,7 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
        "properties": {
            "model": {
                "format": "OpenAI",
-               "name": "gpt-4o-ft",
+               "name": "<FINE_TUNED_MODEL>",
                "version": "1"
            }
        }
@@ -323,7 +325,9 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
 
    print(response.choices[0].message.content)
     ```
- 
+
+>**NOTE**: It might take a few minutes before the fine-tuned model deployment is completed. You can verify it in the **Deployments** page in Azure AI Foundry.
+
 ## Clean up
 
 When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
