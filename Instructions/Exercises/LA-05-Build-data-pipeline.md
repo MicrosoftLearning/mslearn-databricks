@@ -159,7 +159,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 1. After the pipeline has successfully run, go back to the recent *Create a pipeline with Delta Live tables* notebook you created first, and run the following code in a new cell to verify that the files for all 3 new tables have been created in the specified storage location:
 
      ```python
-    display(dbutils.fs.ls("dbfs:/pipelines/delta_lab/tables"))
+    display(dbutils.fs.ls("dbfs:/pipelines/delta_lab/schemas/default/tables"))
      ```
 
 1. Add another code cell and run the following code to verify that the tables have been created in the **default** database:
