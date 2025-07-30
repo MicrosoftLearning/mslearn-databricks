@@ -20,17 +20,29 @@ This exercise should take approximately **20** minutes to complete.
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
 1. Sign into the **Azure portal** at `https://portal.azure.com`.
-2. Create an **Azure Databricks** resource with the following settings:
-    - **Subscription**: *Select your Azure subscription*
-    - **Resource group**: *Create a new resource group named `msl-xxxxxxx` (where "xxxxxxx" is a unique value)*
-    - **Workspace name**: `databricks-xxxxxxx` *(where "xxxxxxx" is the value used in the resource group name)*
-    - **Region**: *Select any available region*
-    - **Pricing tier**: *Premium* or *Trial*
-    - **Managed Resource Group name**: `databricks-xxxxxxx-managed` *(where "xxxxxxx" is the value used in the resource group name)*
+2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
-    ![Screenshot of the Create Azure Databricks Workspace page in the Azure portal.](./images/create-databricks.png)
+    ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
-3. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
+    > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, switch it to ***PowerShell***.
+
+3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#10530;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
+
+4. In the PowerShell pane, enter the following commands to clone this repo:
+
+    ```
+    rm -r mslearn-databricks -f
+    git clone https://github.com/MicrosoftLearning/mslearn-databricks
+    ```
+
+5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
+
+    ```
+    ./mslearn-databricks/setup.ps1
+    ```
+
+6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Exploratory data analysis on Azure Databricks](https://learn.microsoft.com/azure/databricks/exploratory-data-analysis/) article in the Azure Databricks documentation.
 
 ## Create a cluster
 
