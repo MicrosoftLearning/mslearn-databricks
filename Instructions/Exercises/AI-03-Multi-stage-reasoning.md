@@ -119,7 +119,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 1. In the first code cell, enter and run the following code to install the necessary libraries:
    
     ```python
-   %pip install langchain openai langchain_openai faiss-cpu
+   %pip install langchain openai langchain_openai langchain-community faiss-cpu
     ```
 
 1. After the installation is complete, restart the kernel in a new cell:
