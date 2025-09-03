@@ -1,11 +1,11 @@
 ---
 lab:
-    title: 'Deploy workloads with Azure Databricks Workflows'
+    title: 'Deploy workloads with Azure Databricks Lakeflow jobs'
 ---
 
-# Deploy workloads with Azure Databricks Workflows
+# Deploy workloads with Azure Databricks Lakeflow jobs
 
-Azure Databricks Workflows provide a robust platform for deploying workloads efficiently. With features like Azure Databricks Jobs and Delta Live Tables, users can orchestrate complex data processing, machine learning, and analytics pipelines.
+Azure Databricks Lakeflow jobs provide a robust platform for deploying workloads efficiently. With features like Azure Databricks Jobs and Delta Live Tables, users can orchestrate complex data processing, machine learning, and analytics pipelines.
 
 This lab will take approximately **40** minutes to complete.
 
@@ -41,7 +41,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Schedule and orchestrate workflows](https://learn.microsoft.com/azure/databricks/jobs/) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Lakeflow jobs](https://learn.microsoft.com/azure/databricks/jobs/) article in the Azure Databricks documentation.
 
 ## Create a cluster
 
@@ -143,9 +143,9 @@ You implement your data processing and analysis workflow using tasks. A job is c
 
 Azure Databricks manages the task orchestration, cluster management, monitoring, and error reporting for all of your jobs. You can run your jobs immediately, periodically through an easy-to-use scheduling system, whenever new files arrive in an external location, or continuously to ensure an instance of the job is always running.
 
-1. In the left sidebar, select **Workflows**.
+1. In your workspace, click ![Workflows icon.](./images/WorkflowsIcon.svg) **Jobs & Pipelines** in the sidebar.
 
-2. In the Workflows pane, select **Create job**.
+2. In the Jobs & Pipelines pane, select **Create**, then **Job**.
 
 3. Change the default job name (**New job *[date]***) to `ETL job`.
 
