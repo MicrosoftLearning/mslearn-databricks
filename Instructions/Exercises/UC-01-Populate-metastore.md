@@ -99,7 +99,7 @@ You'll use a notebook to run SQL commands that create and explore Unity Catalog 
 
 3. In the first cell of your notebook, enter and run the following code to set your new catalog as the default and verify:
 
-    ```sql
+    ```
     %sql
     USE CATALOG <your_catalog_name>;
     SELECT current_catalog();
@@ -109,7 +109,7 @@ You'll use a notebook to run SQL commands that create and explore Unity Catalog 
 
 1. Add a new cell and run the following code to create a schema named **sales** and set it as default:
 
-    ```sql
+    ```
     %sql
     CREATE SCHEMA IF NOT EXISTS sales
     COMMENT 'Schema for sales data';
@@ -126,7 +126,7 @@ You'll use a notebook to run SQL commands that create and explore Unity Catalog 
 
 1. Add a new cell and run the following code to create a managed table for customer data:
 
-    ```sql
+    ```
     %sql
     CREATE OR REPLACE TABLE customers (
       customer_id INT,
@@ -140,7 +140,7 @@ You'll use a notebook to run SQL commands that create and explore Unity Catalog 
 
 2. Add a new cell and run the following code to insert sample data and verify it was inserted:
 
-    ```sql
+    ```
     %sql
     INSERT INTO customers VALUES
       (1, 'Aaron Gonzales', 'aaron@contoso.com', 'Seattle', 'USA'),
@@ -162,7 +162,7 @@ You'll use a notebook to run SQL commands that create and explore Unity Catalog 
 
 1. Add a new cell and run the following code to create a view that filters customers:
 
-    ```sql
+    ```
     %sql
     CREATE OR REPLACE VIEW usa_customers AS
     SELECT customer_id, customer_name, email, city
@@ -184,7 +184,7 @@ Now that you've created objects using SQL and verified them in Catalog Explorer,
 
 2. Add a new cell and run the following code to list all catalogs you have access to:
 
-    ```sql
+    ```
     %sql
     SHOW CATALOGS;
     ```
@@ -193,21 +193,21 @@ Now that you've created objects using SQL and verified them in Catalog Explorer,
 
 3. Add a new cell and run the following code to list all schemas in your current catalog:
 
-    ```sql
+    ```
     %sql
     SHOW SCHEMAS;
     ```
 
 4. Add a new cell and run the following code to list all tables and views in your current schema:
 
-    ```sql
+    ```
     %sql
     SHOW TABLES;
     ```
 
 5. Add a new cell and run the following code to use DESCRIBE to get detailed table metadata:
 
-    ```sql
+    ```
     %sql
     DESCRIBE EXTENDED customers;
     ```
