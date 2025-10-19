@@ -5,13 +5,17 @@ lab:
 
 # Upgrade Tables to Unity Catalog
 
-Unity Catalog provides a centralized governance solution for data assets in Azure Databricks. When migrating from traditional Hive metastore tables to Unity Catalog, you need to upgrade existing tables to take advantage of Unity Catalog's enhanced security, governance, and management features.
+Unity Catalog provides a centralized governance solution for data assets in Azure Databricks. Unity Catalog delivers fine-grained access controls, automated data lineage tracking, and cross-workspace data sharing capabilities that build on the basic table management that the Hive metastore provides.
 
-In this exercise, you'll learn how to upgrade existing tables from the Hive metastore to Unity Catalog, understand the migration process, and explore the benefits of Unity Catalog governance.
+In this exercise, you'll learn how to upgrade existing tables from the Hive metastore to Unity Catalog. You'll use SQL commands and the Azure Databricks user interface to analyze existing data structures, apply migration techniques, evaluate transformation options, and upgrade metadata without moving data.
 
 This exercise should take approximately **30** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+
+## Before you start
+
+You'll need account administrator capabilities and cloud storage resources to support the metastore. You must also have metastore admin capability to create and manage catalogs.
 
 ## Provision an Azure Databricks workspace
 
@@ -54,14 +58,6 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 2. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
 
 3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
-
-## Upgrading Tables to Unity Catalog
-
-In this exercise, you will learn essential techniques for upgrading tables to the Unity Catalog, a pivotal step in efficient data management. This exercise will cover various aspects, including analyzing existing data structures, applying migration techniques, evaluating transformation options, and upgrading metadata without moving data. Both SQL commands and user interface (UI) tools will be utilized for seamless upgrades.
-
-By the end of this exercise, you will be able to analyze the current catalog, schema, and table structures in your data environment, execute methods to move data from Hive metastore to Unity Catalog including cloning and Create Table As Select (CTAS), assess and apply necessary data transformations during the migration process, utilize methods to upgrade table metadata while keeping data in its original location, and perform table upgrades using both SQL commands and user interface tools for efficient data management.
-
-**Prerequisites:** To complete this exercise, you need account administrator capabilities and cloud storage resources to support the metastore. You must also have metastore admin capability to create and manage catalogs.
 
 ## Create a Notebook
 
@@ -107,15 +103,15 @@ As part of the setup, you now have a table called *movies*, residing in a user-s
     LIMIT 10
     ```
 
-## Overview of Upgrade Methods
+## Overview of upgrade methods
 
 There are a few different ways to upgrade a table, but the method you choose will be driven primarily by how you want to treat the table data. If you wish to leave the table data in place, then the resulting upgraded table will be an external table. If you wish to move the table data into your Unity Catalog metastore, then the resulting table will be a managed table.
 
-### Moving Table Data into the Unity Catalog Metastore
+### Move table data into the Unity Catalog Metastore
 
 In this approach, table data will be copied from wherever it resides into the managed data storage area for the destination schema. The result will be a managed Delta table in your Unity Catalog metastore.
 
-#### Cloning a Table
+#### Clone a Table
 
 Cloning a table is optimal when the source table is Delta. It's simple to use, will copy metadata, and gives you the option of copying data (deep clone) or leaving it in place (shallow clone).
 
@@ -159,7 +155,7 @@ Using CTAS is a universally applicable technique that creates a new table based 
     SHOW TABLES IN example;
     ```
 
-#### Applying Transformations during the Upgrade
+#### Apply transformations during the upgrade
 
 CTAS offers the ability to transform the data while copying it. When migrating tables to Unity Catalog, it's a great time to consider whether your table structures still address your organization's business requirements.
 
@@ -183,17 +179,17 @@ CTAS offers the ability to transform the data while copying it. When migrating t
     FROM movies_transformed;
     ```
 
-## Upgrade External Tables (Example)
+## Upgrade external tables (Example)
 
-**Note**: This lab environment does not have access to external tables. This is an example of what you can do in your environment.
+**Note**: You may not have access to external tables so this is an example of what you can do in your environment.
 
 When upgrading external tables, some use cases may call for leaving the data in place, such as when data location is dictated by regulatory requirements, you cannot change the data format to Delta, or you want to avoid the time and cost of moving large datasets.
 
-### Using the SYNC Command
+### Use the SYNC command
 
 The `SYNC` SQL command allows you to upgrade external tables in Hive Metastore to external tables in Unity Catalog without moving the data.
 
-### Using Catalog Explorer to Upgrade Tables
+### Using Catalog Explorer to upgrade tables
 
 You can also upgrade tables using the Catalog Explorer user interface:
 
