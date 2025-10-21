@@ -93,38 +93,6 @@ Load sample data into a hive_metastore table so you can migrate it to Unity Cata
     SELECT current_catalog(), current_schema()
     ```  
 
-## Analyze Available Tables and Views
-
-1. Add a new cell and run the following code to check your current catalog and schema:
-
-    ```
-    SELECT current_catalog(), current_schema();
-    ```
-
-2. Add a new cell and run the following code to show the list of tables within your schema:
-
-    ```
-    SHOW TABLES FROM example;
-    ```
-
-3. Add a new cell and run the following code to display a list of views in your schema:
-
-    ```
-    SHOW VIEWS FROM example;
-    ```
-
-## Explore the Hive Metastore Source Table
-
-As part of the setup, you now have a table called *movies*, residing in a user-specific schema of the Hive metastore.
-
-1. Add a new cell and run the following code to preview the data stored in this table:
-
-    ```
-    SELECT * 
-    FROM IDENTIFIER('hive_metastore.' || user_hive_schema || '.movies')
-    LIMIT 10
-    ```
-
 ## Overview of upgrade methods
 
 There are a few different ways to upgrade a table, but the method you choose will be driven primarily by how you want to treat the table data. If you wish to leave the table data in place, then the resulting upgraded table will be an external table. If you wish to move the table data into your Unity Catalog metastore, then the resulting table will be a managed table.
