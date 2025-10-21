@@ -69,7 +69,29 @@ You'll use a notebook to run SQL commands that demonstrate various table upgrade
 
    > **Important**: Serverless compute will not work with the Hive metastore. You must use a classic compute cluster for this exercise.
 
-## INCLUDE SETUP INSTRUCTIONS HERE
+## Create hive_metastore objects
+Load sample data into a hive_metastore table so you can migrate it to Unity Catalog.
+
+1. Add a new cell and run the following code to create a schema and a populated table in the hive_metastore, then confirm the rows are in the new table:
+
+    ```
+    CREATE SCHEMA IF NOT EXISTS hive_metastore.bakehouse;
+
+    CREATE TABLE hive_metastore.bakehouse.sales_customers AS
+    SELECT * FROM samples.bakehouse.sales_customers;
+
+    SELECT * FROM hive_metastore.bakehouse.sales_customers;
+    ```
+
+2.  In a new cell, run the following to set your default catalog and schema to the Unity Catalog that has the same name as your workspace.
+    
+    **Note**: The name of your workspace is on the top right of your Azure Databricks workspace. Replace `<workspace_catalog>` in the USE CATALOG statement below with the name of your workspace. If your workspace name has a `-` in it, replace that with a `_`.
+
+    ```
+    USE CATALOG <workspace_catalog>;
+    USE SCHEMA default;
+    SELECT current_catalog(), current_schema()
+    ```  
 
 ## Analyze Available Tables and Views
 
@@ -118,41 +140,43 @@ Cloning a table is optimal when the source table is Delta. It's simple to use, w
 1. Add a new cell and run the following code to check the format of the source table:
 
     ```
-    DESCRIBE EXTENDED IDENTIFIER('hive_metastore.' || user_hive_schema || '.movies')
+    DESCRIBE EXTENDED hive_metastore.bakehouse.sales_customers;
     ```
 
    Notice that the *Provider* row shows the source is a Delta table, and the *Location* row shows that the table is stored in DBFS.
 
-2. Add a new cell and run the following code to perform a deep clone operation:
+2. Add a new cell and run the following code to perform a deep clone operation. This will create a table in the default catalog in Unity Catalog. Add a new cell and run the following code to clone the hive_metastore into a new table in Unity Catalog. The new table will be created in the default schema of catalog that has the same name as your workspace.  
+
+     **Note**: The name of your workspace is on the top right of your Azure Databricks workspace. Replace <workspace-catalog> in the CREATE TABLE statement below with the name of your workspace.
 
     ```
-    CREATE OR REPLACE TABLE movies_clone 
-    DEEP CLONE IDENTIFIER('hive_metastore.' || user_hive_schema || '.movies')
+    CREATE OR REPLACE TABLE sales_customers_clone
+      DEEP CLONE hive_metastore.bakehouse.sales_customers;
     ```
 
 3. Verify the cloned table by viewing your catalog in Catalog Explorer:
-   - Select the catalog icon on the left
-   - Expand your unique catalog name
-   - Expand the **example** schema
+   - Select the **Catalog** icon on the left side of your workspace
+   - Expand your catalog with the same name as your workspace
+   - Expand the **default** schema
    - Expand **Tables**
-   - Notice that the **movies** table has been cloned as **movies_clone**
+   - Notice that the **sales_customer** table has been cloned as **sales_customer_clone**
 
 #### Create Table As Select (CTAS)
 
 Using CTAS is a universally applicable technique that creates a new table based on the output of a `SELECT` statement. This will always copy the data, but no metadata will be copied.
 
-1. Add a new cell and run the following code to copy the table using CTAS:
+1. Return to the notebook. Add a new cell and run the following code to copy the table using CTAS:
 
     ```
-    CREATE OR REPLACE TABLE movies_ctas AS 
+    CREATE TABLE sales_customers_ctas AS 
     SELECT * 
-    FROM IDENTIFIER('hive_metastore.' || user_hive_schema || '.movies');
+    FROM hive_metastore.bakehouse.sales_customers;
     ```
 
 2. Add a new cell and run the following code to verify the table was created:
 
     ```
-    SHOW TABLES IN example;
+    SHOW TABLES IN default;
     ```
 
 #### Apply transformations during the upgrade
@@ -162,22 +186,20 @@ CTAS offers the ability to transform the data while copying it. When migrating t
 1. Add a new cell and run the following code to create a transformed version of the table:
 
     ```
-    CREATE OR REPLACE TABLE movies_transformed AS 
+    CREATE TABLE sales_customers_transformed AS 
     SELECT
-      id AS Movie_ID,
-      title AS Movie_Title,
-      genres AS Genres,
-      upper(original_language) AS Original_Language,
-      vote_average AS Vote_Average
-    FROM IDENTIFIER('hive_metastore.' || user_hive_schema || '.movies');
+      customerID as ID,
+      first_name as first_name,
+      last_name as last_name
+    FROM hive_metastore.bakehouse.sales_customers;
     ```
 
-2. Add a new cell and run the following code to view the transformed table:
-
-    ```
-    SELECT * 
-    FROM movies_transformed;
-    ```
+2. Verify the new table by viewing your catalog in Catalog Explorer:
+   - Select the **Catalog** icon on the left side of your workspace
+   - Expand your catalog with the same name as your workspace
+   - Expand the **default** schema
+   - Expand **Tables**
+   - Select the **sales_customer_transformed** table and note that the ID column name has been changed from customerID.
 
 ## Upgrade external tables (Example)
 
@@ -195,9 +217,8 @@ You can also upgrade tables using the Catalog Explorer user interface:
 
 1. Select the catalog icon on the left
 2. Expand the **hive_metastore**
-3. Expand your schema name in the hive metastore
-4. Right-click on your schema name and select **Open in Catalog Explorer**
-5. Select a table and click **Upgrade**
+3. Expand your bakehouse schema in the hive metastore
+5. Select the **sales_customers** table and click **Upgrade**
 6. Select your destination catalog and schema
 7. Configure the upgrade options as needed
 
