@@ -59,22 +59,27 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 
 3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
-## Create a Notebook
+## Review what's in catalog explorer
+1. Select **Catalog** on the left of your workspace.
+2. Note that there's a catalog that was automatically created and has the same name as your workspace.
+3. Expand that catalog and note the default schema. We'll migrate tables to that default schema later in the exercise.
+4. Note the **hive_metastore** catalog, also created automatically. 
+5. Open the **samples** catalog, and note the **bakehouse** schema. Expand it and note the table named sales_customers.
+6. In this exercise, we'll use sample data from the samples.bakehouse.sales_customers table to create and populate a table in the hive_metastore. Then we'll explore options to upgrade that table to Unity Catalog.
 
+## Create a Notebook
 You'll use a notebook to run SQL commands that demonstrate various table upgrade techniques.
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
    
-2. Change the default notebook name (**Untitled Notebook *[date]***) to `Upgrade tables to Unity Catalog` and in the **Connect** drop-down list, ensure you select a **classic compute cluster** rather than **Serverless**.
-
-   > **Important**: Serverless compute will not work with the Hive metastore. You must use a classic compute cluster for this exercise.
+2. Change the default notebook name (**Untitled Notebook *[date]***) to `Upgrade tables to Unity Catalog` and in the **Connect** drop-down list, select **Serverless.**
 
 ## Create hive_metastore objects
 Load sample data into a hive_metastore table so you can migrate it to Unity Catalog.
 
 1. Add a new cell and run the following code to create a schema and a populated table in the hive_metastore, then confirm the rows are in the new table:
 
-    ```
+    ```sql
     CREATE SCHEMA IF NOT EXISTS hive_metastore.bakehouse;
 
     CREATE TABLE hive_metastore.bakehouse.sales_customers AS
@@ -87,7 +92,7 @@ Load sample data into a hive_metastore table so you can migrate it to Unity Cata
     
     **Note**: The name of your workspace is on the top right of your Azure Databricks workspace. Replace `<workspace_catalog>` in the USE CATALOG statement below with the name of your workspace. If your workspace name has a `-` in it, replace that with a `_`.
 
-    ```
+    ```sql
     USE CATALOG <workspace_catalog>;
     USE SCHEMA default;
     SELECT current_catalog(), current_schema()
@@ -95,7 +100,7 @@ Load sample data into a hive_metastore table so you can migrate it to Unity Cata
 
 ## Overview of upgrade methods
 
-There are a few different ways to upgrade a table, but the method you choose will be driven primarily by how you want to treat the table data. If you wish to leave the table data in place, then the resulting upgraded table will be an external table. If you wish to move the table data into your Unity Catalog metastore, then the resulting table will be a managed table.
+There are a few different ways to upgrade a table, but the method you choose will be driven primarily by how you want to treat the table data. If you want to leave the table data in place, then the resulting upgraded table will be an external table. If you want to move the table data into your Unity Catalog metastore, then the resulting table will be a managed table.
 
 ### Move table data into the Unity Catalog Metastore
 
@@ -107,7 +112,7 @@ Cloning a table is optimal when the source table is Delta. It's simple to use, w
 
 1. Add a new cell and run the following code to check the format of the source table:
 
-    ```
+    ```sql
     DESCRIBE EXTENDED hive_metastore.bakehouse.sales_customers;
     ```
 
@@ -115,9 +120,7 @@ Cloning a table is optimal when the source table is Delta. It's simple to use, w
 
 2. Add a new cell and run the following code to perform a deep clone operation. This will create a table in the default catalog in Unity Catalog. Add a new cell and run the following code to clone the hive_metastore into a new table in Unity Catalog. The new table will be created in the default schema of catalog that has the same name as your workspace.  
 
-     **Note**: The name of your workspace is on the top right of your Azure Databricks workspace. Replace <workspace-catalog> in the CREATE TABLE statement below with the name of your workspace.
-
-    ```
+    ```sql
     CREATE OR REPLACE TABLE sales_customers_clone
       DEEP CLONE hive_metastore.bakehouse.sales_customers;
     ```
@@ -126,7 +129,6 @@ Cloning a table is optimal when the source table is Delta. It's simple to use, w
    - Select the **Catalog** icon on the left side of your workspace
    - Expand your catalog with the same name as your workspace
    - Expand the **default** schema
-   - Expand **Tables**
    - Notice that the **sales_customer** table has been cloned as **sales_customer_clone**
 
 #### Create Table As Select (CTAS)
@@ -135,7 +137,7 @@ Using CTAS is a universally applicable technique that creates a new table based 
 
 1. Return to the notebook. Add a new cell and run the following code to copy the table using CTAS:
 
-    ```
+    ```sql
     CREATE TABLE sales_customers_ctas AS 
     SELECT * 
     FROM hive_metastore.bakehouse.sales_customers;
@@ -143,7 +145,7 @@ Using CTAS is a universally applicable technique that creates a new table based 
 
 2. Add a new cell and run the following code to verify the table was created:
 
-    ```
+    ```sql
     SHOW TABLES IN default;
     ```
 
@@ -153,7 +155,7 @@ CTAS offers the ability to transform the data while copying it. When migrating t
 
 1. Add a new cell and run the following code to create a transformed version of the table:
 
-    ```
+    ```sql
     CREATE TABLE sales_customers_transformed AS 
     SELECT
       customerID as ID,
@@ -167,7 +169,7 @@ CTAS offers the ability to transform the data while copying it. When migrating t
    - Expand your catalog with the same name as your workspace
    - Expand the **default** schema
    - Expand **Tables**
-   - Select the **sales_customer_transformed** table and note that the ID column name has been changed from customerID.
+   - Select the **sales_customer_transformed** table and note that the ID column name has been changed from customerID. If you don't see the table, select the refresh button at the top of Catalog Explorer.
 
 ## Upgrade external tables (Example)
 
