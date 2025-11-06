@@ -174,7 +174,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```python
    spark.sql("CREATE DATABASE AdventureWorks")
-   spark.sql("CREATE TABLE AdventureWorks.ProductsExternal USING DELTA LOCATION '{0}'".format(delta_table_path))
+   spark.sql("CREATE TABLE AdventureWorks.ProductsExternal USING DELTA LOCATION 'dbfs:{0}'".format(delta_table_path))
    spark.sql("DESCRIBE EXTENDED AdventureWorks.ProductsExternal").show(truncate=False)
     ```
 
@@ -258,7 +258,7 @@ So far you've worked with delta tables by loading data from the folder containin
    USE AdventureWorks;
    CREATE TABLE Products
    USING DELTA
-   LOCATION '/delta/products-delta';
+   LOCATION 'dbfs:/delta/products-delta';
     ```
 
 1. Use the following code to query the new table:

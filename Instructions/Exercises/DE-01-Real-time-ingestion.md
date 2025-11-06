@@ -148,7 +148,7 @@ Delta lake supports *streaming* data. Delta tables can be a *sink* or a *source*
 
     ```python
    # create a catalog table based on the streaming sink
-   spark.sql("CREATE TABLE IotDeviceData USING DELTA LOCATION '{0}'".format(delta_stream_table_path))
+   spark.sql("CREATE TABLE IotDeviceData USING DELTA LOCATION 'dbfs:{0}'".format(delta_stream_table_path))
     ```
 
 1. Use the following code to query the table:
