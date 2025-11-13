@@ -59,7 +59,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-1. Change the default notebook name (**Untitled Notebook *[date]***) to `Data Ingestion and Exploration` and in the **Connect** drop-down list, select the **Serverless cluster** if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `Data Ingestion and Exploration` and in the **Connect** drop-down list, select the **Serverless SQL Warehouse** if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
 1. In the first cell of the notebook, enter the following code, which creates a volume for storing covid data.
 
@@ -170,6 +170,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
         sum(Deaths) as Total_Deaths,
         sum(Recovered) as Total_Recovered
     FROM covid_silver
+    WHERE Country_Region = 'US'
     GROUP BY Report_Date;
     ```
 
@@ -207,7 +208,5 @@ After creating the tables, it is possible to load them into dataframes and visua
 1. Save the visualization and view the resulting chart in the notebook.
 
 ## Clean up
-
-In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

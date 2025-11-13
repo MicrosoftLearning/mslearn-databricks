@@ -59,18 +59,18 @@ Now let's create a Spark notebook and import the data that we'll work with in th
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-1. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore Delta Lake` and in the **Connect** drop-down list, select the **Serverless cluster** if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+2. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore Delta Lake` and in the **Connect** drop-down list, select the **Serverless SQL Warehouse** if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
-1. In the first cell of the notebook, enter the following code, which creates a volume for storing product data.
+3. In the first cell of the notebook, enter the following code, which creates a volume for storing product data.
 
      ```sql
     %sql
     CREATE VOLUME IF NOT EXISTS product_data_volume
      ```
 
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
-1. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following Python code.
+5. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following Python code.
 
     ```python
     import requests
@@ -91,7 +91,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
 
     This Python code downloads a CSV file containing product data from a GitHub URL and saves it directly into a Unity Catalog volume in Databricks, using the current catalog context to dynamically construct the storage path.
 
-1. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the file and view the first 10 rows.
+6. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following code to load the data from the file and view the first 10 rows.
 
     ```python
    df = spark.read.load(volume_path, format='csv', header=True)
@@ -163,7 +163,5 @@ Delta Lake has a safety check to prevent you from running a dangerous VACUUM com
 > **Note**: If you run VACUUM on a delta table, you lose the ability to time travel back to a version older than the specified data retention period.
 
 ## Clean up
-
-In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

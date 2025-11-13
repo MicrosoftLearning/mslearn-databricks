@@ -60,7 +60,7 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
    
-1. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore data with Spark` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore data with Spark` and in the **Connect** drop-down list, select the **Serverless SQL Warehouse** if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
 ## Ingest data
 
@@ -73,7 +73,7 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 
 1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
-1. Add a new code cell and use it to run the following code, which uses *Python* to download data files from GitHub into the file system used by your cluster.
+2. Add a new code cell and use it to run the following code, which uses *Python* to download data files from GitHub into your volume.
 
     ```python
     import requests
@@ -98,7 +98,7 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
             f.write(response.content)
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+3. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
 ## Query data in files
 
@@ -300,7 +300,5 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 > **Note**: To learn more about plotting with seaborn, see the [seaborn documentation](https://seaborn.pydata.org/index.html).
 
 ## Clean up
-
-In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.

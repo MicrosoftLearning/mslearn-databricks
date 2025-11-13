@@ -57,7 +57,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-1. Change the default notebook name (**Untitled Notebook *[date]***) to `ETL task` and in the **Connect** drop-down list, select **Serverless cluster** if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `ETL task` and in the **Connect** drop-down list, select **Serverless SQL Warehouse** if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
 ## Ingest data
 
@@ -68,7 +68,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
     CREATE VOLUME IF NOT EXISTS spark_lab
     ```
 
-1. Add a new code cell and use it to run the following code, which uses *Python* to download data files from GitHub into the file system used by your cluster.
+1. Add a new code cell and use it to run the following code, which uses *Python* to download data files from GitHub into your volume.
 
     ```python
     import requests
@@ -161,7 +161,5 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
 Additionally, you can run jobs on a triggered basis, for example, running a workflow on a schedule. To schedule a periodic job run, you can open the job task and add a trigger.
 
 ## Clean up
-
-In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Stop** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
