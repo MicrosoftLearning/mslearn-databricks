@@ -173,9 +173,9 @@ So far you've worked with delta tables by loading data from the folder containin
 1. Use the following code to create a new database named **AdventureWorks** and then creates an external table named **ProductsExternal** in that database based on the path to the Delta files you defined previously:
 
     ```python
-   spark.sql("CREATE DATABASE AdventureWorks")
-   spark.sql("CREATE TABLE AdventureWorks.ProductsExternal USING DELTA LOCATION '{0}'".format(delta_table_path))
-   spark.sql("DESCRIBE EXTENDED AdventureWorks.ProductsExternal").show(truncate=False)
+   spark.sql("CREATE DATABASE hive_metastore.AdventureWorks")
+   spark.sql("CREATE TABLE hive_metastore.AdventureWorks.ProductsExternal USING DELTA LOCATION '{0}'".format(delta_table_path))
+   spark.sql("DESCRIBE EXTENDED hive_metastore.AdventureWorks.ProductsExternal").show(truncate=False)
     ```
 
     Note that the **Location** property of the new table is the path you specified.
@@ -184,7 +184,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```sql
    %sql
-   USE AdventureWorks;
+   USE hive_metastore.AdventureWorks;
    SELECT * FROM ProductsExternal;
     ```
 
@@ -193,8 +193,8 @@ So far you've worked with delta tables by loading data from the folder containin
 1. Run the following code to create (and then describe) a managed table named **ProductsManaged** based on the dataframe you originally loaded from the **products.csv** file (before you updated the price of product 771).
 
     ```python
-   df.write.format("delta").saveAsTable("AdventureWorks.ProductsManaged")
-   spark.sql("DESCRIBE EXTENDED AdventureWorks.ProductsManaged").show(truncate=False)
+   df.write.format("delta").saveAsTable("hive_metastore.AdventureWorks.ProductsManaged")
+   spark.sql("DESCRIBE EXTENDED hive_metastore.AdventureWorks.ProductsManaged").show(truncate=False)
     ```
 
     You did not specify a path for the parquet files used by the table - this is managed for you in the Hive metastore, and shown in the **Location** property in the table description.
@@ -203,7 +203,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```sql
    %sql
-   USE AdventureWorks;
+   USE hive_metastore.AdventureWorks;
    SELECT * FROM ProductsManaged;
     ```
 
@@ -213,7 +213,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```sql
    %sql
-   USE AdventureWorks;
+   USE hive_metastore.AdventureWorks;
    SHOW TABLES;
     ```
 
@@ -232,7 +232,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```sql
    %sql
-   USE AdventureWorks;
+   USE hive_metastore.AdventureWorks;
    DROP TABLE IF EXISTS ProductsExternal;
    DROP TABLE IF EXISTS ProductsManaged;
    SHOW TABLES;
@@ -255,7 +255,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```sql
    %sql
-   USE AdventureWorks;
+   USE hive_metastore.AdventureWorks;
    CREATE TABLE Products
    USING DELTA
    LOCATION '/delta/products-delta';
@@ -265,7 +265,7 @@ So far you've worked with delta tables by loading data from the folder containin
 
     ```sql
    %sql
-   USE AdventureWorks;
+   USE hive_metastore.AdventureWorks;
    SELECT * FROM Products;
     ```
 
