@@ -22,58 +22,39 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
 1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
-2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
+1. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
     > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, switch it to ***PowerShell***.
 
-3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#10530;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
+1. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#10530;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
-4. In the PowerShell pane, enter the following commands to clone this repo:
+1. In the PowerShell pane, enter the following commands to clone this repo:
 
     ```
     rm -r mslearn-databricks -f
     git clone https://github.com/MicrosoftLearning/mslearn-databricks
     ```
 
-5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
+1. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
     ```
     ./mslearn-databricks/setup.ps1
     ```
 
-6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Exploratory data analysis on Azure Databricks](https://learn.microsoft.com/azure/databricks/exploratory-data-analysis/) article in the Azure Databricks documentation.
+1. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+1. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Exploratory data analysis on Azure Databricks](https://learn.microsoft.com/azure/databricks/exploratory-data-analysis/) article in the Azure Databricks documentation.
 
-## Create a cluster
-
-Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. 
-
-In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
-
-> **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+## Open the Azure Databricks Workspace
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
+
 1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
+
 1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
-
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (You may need to look in the **More** submenu)
-1. In the **New Cluster** page, create a new cluster with the following settings:
-    - **Cluster name**: *User Name's* cluster (the default cluster name)
-    - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
-    - **Use Photon Acceleration**: Selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
-
-1. Wait for the cluster to be created. It may take a minute or two.
-
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
     
 ## Create a Notebook
 
@@ -83,15 +64,38 @@ In this exercise, you'll create a *single-node* cluster to minimize the compute 
 
 ## Ingest data
 
-1. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+1. In the first cell of the notebook, enter the following code to create a volume for storing some lab files.
+
+    ```sql
+    %sql
+    CREATE VOLUME IF NOT EXISTS spark_lab
+    ```
+
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+
+1. Add a new code cell and use it to run the following code, which uses *Python* to download data files from GitHub into the file system used by your cluster.
 
     ```python
-    %sh
-    rm -r /dbfs/spark_lab
-    mkdir /dbfs/spark_lab
-    wget -O /dbfs/spark_lab/2019.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2019.csv
-    wget -O /dbfs/spark_lab/2020.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2020.csv
-    wget -O /dbfs/spark_lab/2021.csv https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/2021.csv
+    import requests
+
+    # Define the current catalog
+    catalog_name = spark.sql("SELECT current_catalog()").collect()[0][0]
+
+    # Define the base path using the current catalog
+    volume_base = f"/Volumes/{catalog_name}/default/spark_lab"
+
+    # List of files to download
+    files = ["2019.csv", "2020.csv", "2021.csv"]
+
+    # Download each file
+    for file in files:
+        url = f"https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/{file}"
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # Write to Unity Catalog volume
+        with open(f"{volume_base}/{file}", "wb") as f:
+            f.write(response.content)
     ```
 
 1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
@@ -101,8 +105,8 @@ In this exercise, you'll create a *single-node* cluster to minimize the compute 
 1. Move the mouse under the existing code cell, and use the **+ Code** icon that appears to add a new code cell. Then in the new cell, enter and run the following code to load the data from the files and view the first 100 rows.
 
     ```python
-   df = spark.read.load('spark_lab/*.csv', format='csv')
-   display(df.limit(100))
+    df = spark.read.load(f'/Volumes/{catalog_name}/default/spark_lab/*.csv', format='csv')
+    display(df.limit(100))
     ```
 
 1. View the output and note that the data in the file relates to sales orders, but doesn't include the column headers or information about the data types. To make more sense of the data, you can define a *schema* for the dataframe.
@@ -123,7 +127,7 @@ In this exercise, you'll create a *single-node* cluster to minimize the compute 
         StructField("UnitPrice", FloatType()),
         StructField("Tax", FloatType())
    ])
-   df = spark.read.load('/spark_lab/*.csv', format='csv', schema=orderSchema)
+   df = spark.read.load(f'/Volumes/{catalog_name}/default/spark_lab/*.csv', format='csv', schema=orderSchema)
    display(df.limit(100))
     ```
 

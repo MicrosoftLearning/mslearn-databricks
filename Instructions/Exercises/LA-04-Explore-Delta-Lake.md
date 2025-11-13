@@ -18,38 +18,38 @@ This lab will take approximately **30** minutes to complete.
 This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a *Premium* tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to [create an Azure Databricks workspace interactively in the Azure portal](https://learn.microsoft.com/azure/databricks/getting-started/#--create-an-azure-databricks-workspace).
 
 1. In a web browser, sign into the [Azure portal](https://portal.azure.com) at `https://portal.azure.com`.
-2. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
+1. Use the **[\>_]** button to the right of the search bar at the top of the page to create a new Cloud Shell in the Azure portal, selecting a ***PowerShell*** environment. The cloud shell provides a command line interface in a pane at the bottom of the Azure portal, as shown here:
 
     ![Azure portal with a cloud shell pane](./images/cloud-shell.png)
 
     > **Note**: If you have previously created a cloud shell that uses a *Bash* environment, switch it to ***PowerShell***.
 
-3. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#10530;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
+1. Note that you can resize the cloud shell by dragging the separator bar at the top of the pane, or by using the **&#8212;**, **&#10530;**, and **X** icons at the top right of the pane to minimize, maximize, and close the pane. For more information about using the Azure Cloud Shell, see the [Azure Cloud Shell documentation](https://docs.microsoft.com/azure/cloud-shell/overview).
 
-4. In the PowerShell pane, enter the following commands to clone this repo:
+1. In the PowerShell pane, enter the following commands to clone this repo:
 
     ```powershell
     rm -r mslearn-databricks -f
     git clone https://github.com/MicrosoftLearning/mslearn-databricks
     ```
 
-5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
+1. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
     ```powershell
     ./mslearn-databricks/setup.ps1
     ```
 
-6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
+1. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
+1. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Introduction to Delta Lake](https://docs.microsoft.com/azure/databricks/delta/delta-intro) article in the Azure Databricks documentation.
 
 ## Open the Azure Databricks Workspace
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
 
-2. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
+1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
 
-3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
@@ -65,7 +65,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
 
      ```sql
     %sql
-    CREATE VOLUME product_data_volume
+    CREATE VOLUME IF NOT EXISTS product_data_volume
      ```
 
 1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
@@ -81,10 +81,10 @@ Now let's create a Spark notebook and import the data that we'll work with in th
     response.raise_for_status()
 
     # Get the current catalog
-    current_catalog = spark.sql("SELECT current_catalog()").collect()[0][0]
+    catalog_name = spark.sql("SELECT current_catalog()").collect()[0][0]
 
     # Write directly to Unity Catalog volume
-    volume_path = f"/Volumes/{current_catalog}/default/product_data_volume/products.csv"
+    volume_path = f"/Volumes/{catalog_name}/default/product_data_volume/products.csv"
     with open(volume_path, "wb") as f:
         f.write(response.content)
     ```
