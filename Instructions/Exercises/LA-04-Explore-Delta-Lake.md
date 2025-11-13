@@ -98,7 +98,7 @@ Now let's create a Spark notebook and import the data that we'll work with in th
    display(df.limit(10))
     ```
 
-## Load the file data into a delta table
+## Load the file data into a delta table and perform an update
 
 The data has been loaded into a dataframe. Let's persist it into a delta table.
 
@@ -129,13 +129,6 @@ The data has been loaded into a dataframe. Let's persist it into a delta table.
     ```
 
     The update is persisted to the data in the delta folder, and will be reflected in any new dataframe loaded from that location.
-
-1. Run the following code to create a new dataframe from the delta table data:
-
-    ```python
-   df = spark.read.load(volume_path, format='csv', header=True)
-   display(df.limit(10))
-    ```
 
 ## Explore logging and *time-travel*
 
