@@ -1,17 +1,17 @@
 ---
 lab:
-    title: 'Create a Lakeflow Declarative Pipelines'
+    title: 'Create a Lakeflow Spark Declarative Pipelines'
 ---
 
-# Create a Lakeflow Declarative Pipeline
+# Create a Lakeflow Spark Declarative Pipeline
 
-Lakeflow Declarative Pipelines is a framework within the Databricks Lakehouse Platform for building and running data pipelines in a **declarative** manner. This means you specify what data transformations you want to achieve, and the system automatically figures out how to execute them efficiently, handling many of the complexities of traditional data engineering.
+Lakeflow Spark Declarative Pipelines is a framework within the Databricks Lakehouse Platform for building and running data pipelines in a **declarative** manner. This means you specify what data transformations you want to achieve, and the system automatically figures out how to execute them efficiently, handling many of the complexities of traditional data engineering.
 
-Lakeflow Declarative Pipelines simplifies the development of ETL (Extract, Transform, Load) pipelines by abstracting away the complex, low-level details. Instead of writing procedural code that dictates every step, you use a simpler, declarative syntax in SQL or Python.
+Lakeflow Spark Declarative Pipelines simplifies the development of ETL (Extract, Transform, Load) pipelines by abstracting away the complex, low-level details. Instead of writing procedural code that dictates every step, you use a simpler, declarative syntax in SQL or Python.
 
 This lab will take approximately **40** minutes to complete.
 
-> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written. Lakeflow Declarative Pipelines is the evolution of Databricks' Delta Live Tables (DLT), offering a unified approach for both batch and streaming workloads.
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written. Lakeflow Spark Declarative Pipelines is the evolution of Databricks' Delta Live Tables (DLT), offering a unified approach for both batch and streaming workloads.
 
 ## Provision an Azure Databricks workspace
 
@@ -43,81 +43,99 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
 
-7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Lakeflow Declarative Pipelines](https://learn.microsoft.com/azure/databricks/dlt/) article in the Azure Databricks documentation.
+7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Lakeflow Spark Declarative Pipelines](https://learn.microsoft.com/azure/databricks/dlt/) article in the Azure Databricks documentation.
 
-## Create a cluster
-
-Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
-
-> **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+## Open the Azure Databricks Workspace
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
 
-1. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
+2. Select your Azure Databricks Service resource (named **databricks-*xxxxxxx*** if you used the setup script to create it).
 
-1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
-
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (You may need to look in the **More** submenu).
-
-1. In the **New Cluster** page, create a new cluster with the following settings:
-    - **Cluster name**: *User Name's* cluster (the default cluster name)
-    - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
-    - **Use Photon Acceleration**: Selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
-
-1. Wait for the cluster to be created. It may take a minute or two.
-
-    > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
 
 ## Create a notebook and ingest data
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-2. Change the default notebook name (**Untitled Notebook *[date]***) to `Data Ingestion and Exploration` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+2. Change the default notebook name (**Untitled Notebook *[date]***) to `Data Ingestion and Exploration` and in the **Connect** drop-down list, select the **Serverless cluster** if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
-3. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+3. In the first cell of the notebook, enter the following code, which creates a volume for storing covid data.
 
-     ```python
-    %sh
-    rm -r /dbfs/delta_lab
-    mkdir /dbfs/delta_lab
-    wget -O /dbfs/delta_lab/covid_data.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/covid_data.csv
+     ```sql
+    %sql
+    CREATE VOLUME covid_data_volume
      ```
 
 4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
 
+5. Create a second (Python) cell in the notebook and enter the following code.
+
+    ```python
+    import requests
+
+    # Download the CSV file
+    url = "https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/covid_data.csv"
+    response = requests.get(url)
+    response.raise_for_status()
+
+    # Get the current catalog
+    current_catalog = spark.sql("SELECT current_catalog()").collect()[0][0]
+
+    # Write directly to Unity Catalog volume
+    volume_path = f"/Volumes/{current_catalog}/default/covid_data_volume/covid_data.csv"
+    with open(volume_path, "wb") as f:
+        f.write(response.content)
+    ```
+
+    This code downloads a CSV file containing COVID-19 data from a GitHub URL and saves it into a Unity Catalog volume in Databricks using the current catalog context.
+
+6. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+
 ## Create Lakeflow Declarative Pipeline using SQL
 
-1. Create a new notebook and rename it to `Covid Pipeline Notebook`.
+1. Select **Jobs & Pipelines** in the left sidebar and then select **ETL pipeline**.
 
-1. Next to the notebook's name, select **Python** and change the default language to **SQL**.
+1. Select **Start with an empty file**.
 
-1. Enter the following code in the first cell *without running it*. All cells will be executed after the pipeline is created. This code defines a materialized view that will be populated by the raw data previously downloaded:
+1. In the dialog, select **SQL** as the language for the first file. You do not have to update the Folder path. Go ahead and select the **Select** button.
 
-     ```sql
-    CREATE OR REFRESH MATERIALIZED VIEW raw_covid_data
-    COMMENT "COVID sample dataset. This data was ingested from the COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University."
-    AS
-    SELECT
-      Last_Update,
-      Country_Region,
-      Confirmed,
-      Deaths,
-      Recovered
-    FROM read_files('dbfs:/delta_lab/covid_data.csv', format => 'csv', header => true)
-     ```
+    ![Screenshot of the dialog to Select a folder for your code.](./images/declarative-pipeline-folder.png)
 
-1. Under the first cell, use the **+ Code** icon to add a new cell, and enter the following code to query, filter, and format the data from the previous table before analysis.
+1. Rename the pipeline to `Covid-Pipeline`.
 
-     ```sql
-    CREATE OR REFRESH MATERIALIZED VIEW processed_covid_data(
-      CONSTRAINT valid_country_region EXPECT (Country_Region IS NOT NULL) ON VIOLATION FAIL UPDATE
+1. Enter the following code in the editor. Make sure to **replace the catalog name** with your catalog name.
+
+    ```sql
+    CREATE OR REFRESH STREAMING TABLE covid_bronze
+    COMMENT "New covid data incrementally ingested from cloud object storage landing zone";
+
+    CREATE FLOW covid_bronze_ingest_flow AS
+    INSERT INTO covid_bronze BY NAME
+    SELECT 
+        Last_Update,
+        Country_Region,
+        Confirmed,
+        Deaths,
+        Recovered
+    FROM STREAM read_files(
+        -- replace with the catalog/schema you are using:
+        "/Volumes/<catalog name>/default/covid_data_volume/",
+        format => "csv",
+        header => true
+    );
+    ```
+
+    This code sets up a streaming ingestion pipeline in Databricks that continuously reads new CSV files containing COVID-19 data from a Unity Catalog volume and inserts selected columns into a streaming table called covid_bronze, enabling incremental data processing and analysis.
+
+1. Select the **Run file** button and observe the output. If an error shows up, make sure you have the correct catalog name defined.
+
+1. In the same editor, enter the following code (below the previous code).
+
+    ```sql
+    CREATE OR REFRESH MATERIALIZED VIEW covid_silver(
+    CONSTRAINT valid_country_region EXPECT (Country_Region IS NOT NULL) ON VIOLATION FAIL UPDATE
     )
     COMMENT "Formatted and filtered data for analysis."
     AS
@@ -127,13 +145,23 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
         Confirmed,
         Deaths,
         Recovered
-    FROM live.raw_covid_data;
-     ```
+    FROM covid_bronze;
+    ```
+    This code creates or refreshes a **materialized view** named `covid_silver` that transforms and filters data from the `covid_bronze` streaming table by:
 
-1. In a third new code cell, enter the following code that will create an enriched data view for further analysis once the pipeline is successfully executed.
+    - ✅ Converting the `Last_Update` string into a proper `Report_Date` using the `MM/dd/yyyy` format.
+    - ✅ Selecting key columns (`Country_Region`, `Confirmed`, `Deaths`, `Recovered`) for downstream analysis.
+    - ✅ Enforcing a **data quality constraint** to ensure `Country_Region` is not null—if violated during updates, the operation fails.
+    - 📝 Adding a comment to describe the view's purpose: formatted and filtered COVID-19 data for analysis.
 
-     ```sql
-    CREATE OR REFRESH MATERIALIZED VIEW aggregated_covid_data
+    This setup helps ensure clean, structured data is available for analytics or reporting.
+
+1. Select the **Run file** button and observe the output. 
+
+1. In the same editor, enter the following code (below the previous code).
+
+    ```sql
+    CREATE OR REFRESH MATERIALIZED VIEW covid_gold
     COMMENT "Aggregated daily data for the US with total counts."
     AS
     SELECT
@@ -141,47 +169,34 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
         sum(Confirmed) as Total_Confirmed,
         sum(Deaths) as Total_Deaths,
         sum(Recovered) as Total_Recovered
-    FROM live.processed_covid_data
+    FROM covid_silver
     GROUP BY Report_Date;
-     ```
-     
-1. Select **Jobs & Pipelines** in the left sidebar and then select **ETL pipeline**.
+    ```
 
-1. In the **Create pipeline** page, create a new pipeline with the following settings:
-    - **Pipeline name**: `Covid Pipeline`
-    - **Product edition**: Advanced
-    - **Pipeline mode**: Triggered
-    - **Source code**: *Browse to your* Covid Pipeline Notebook *notebook in the* Users/user@name *folder*.
-    - **Storage options**: Hive Metastore
-    - **Storage location**: `dbfs:/pipelines/delta_lab`
-    - **Target schema**: *Enter* `default`
+    This SQL code creates or refreshes a **materialized view** named `covid_gold` that provides **daily aggregated COVID-19 statistics** for the U.S. by:
 
-1. Select **Create** and then **Start**. Then wait for the pipeline to run (which may take some time).
- 
-1. After the pipeline has successfully run, go back to the recent *Data Ingestion and Exploration* notebook you created first, and run the following code in a new cell to verify that the files for all 3 new tables have been created in the specified storage location:
+    - 🗓 Grouping data by `Report_Date`
+    - 📊 Summing up the `Confirmed`, `Deaths`, and `Recovered` case counts across all U.S. regions for each day
+    - 💬 Adding a comment to describe its purpose: a high-level summary of daily totals for analysis or reporting
 
-     ```python
-    display(dbutils.fs.ls("dbfs:/pipelines/delta_lab/schemas/default/tables"))
-     ```
+    This `covid_gold` view represents the **"gold layer"** in a medallion architecture—optimized for consumption by dashboards, reports, or data science models.
 
-1. Add another code cell and run the following code to verify that the tables have been created in the **default** database:
+1. Select the **Run file** button and observe the output. 
 
-     ```sql
-    %sql
+1. Switch back to the **Catalog Explorer**. Open your catalog, default schema and examine the different tables and volumes created.
 
-    SHOW TABLES
-     ```
+    ![Screenshot of the catalog explorer after loading data with lakeflow declarative pipeline.](./images/declarative-pipeline-catalog-explorer.png)
 
 ## View results as a visualization
 
 After creating the tables, it is possible to load them into dataframes and visualize the data.
 
-1. In the *Data Ingestion and Exploration* notebook, add a new code cell and run the following code to load the `aggregated_covid_data` into a dataframe:
+1. In the *Data Ingestion and Exploration* notebook, add a new code cell and run the following code to load the `covid_gold` into a dataframe:
 
     ```sql
     %sql
     
-    SELECT * FROM aggregated_covid_data
+    SELECT * FROM covid_gold
     ```
 
 1. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
