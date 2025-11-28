@@ -11,7 +11,7 @@ An Azure Databricks *workspace* provides a central point for managing Databricks
 
 In this exercise, you'll provision an Azure Databricks workspace and explore some of its core capabilities. 
 
-This exercise should take approximately **20** minutes to complete.
+This exercise should take approximately **30** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
@@ -98,6 +98,34 @@ While most data analysts are comfortable using SQL code as used in the previous 
     ```
 
 1. Run the new cell, which returns products in the *Road Bikes* category.
+
+## Use Databricks Assistant
+
+Databricks Assistant is an AI-powered tool that helps you write, understand, and debug code. It is available within notebooks and provides natural language assistance.
+
+1. In the notebook, select the **Assistant** icon (which looks like a chat bubble) in the upper-right area of the notebook to open the Assistant panel.
+
+    > **Note**: You may be asked to accept the terms and conditions before using the Databricks Assistant.
+
+1. In the Assistant panel, type the question `How do I create a notebook?` and submit it. The Assistant will provide a response explaining how to create a new notebook in Azure Databricks.
+
+1. Try asking the Assistant a data-related question. Type `Show me only products with a price over 100` and submit it. The Assistant will generate SQL or Python code to filter the data based on your request.
+
+1. To see how the Assistant can help fix code, add a new code cell with the following code that contains a deliberate error:
+
+    ```python
+    df = spark.sql("SELECT * FORM products")
+    display(df)
+    ```
+
+1. Run the cell and observe the error message. Then, select the **Diagnose error** button that appears or ask the Assistant `Fix this code` and include the code. The Assistant will identify the problem (the keyword `FORM` should be `FROM`) and suggest the corrected code.
+
+    ```python
+    df = spark.sql("SELECT * FROM products")
+    display(df)
+    ```
+
+1. Apply the fix and run the cell to verify it now works correctly.
 
 ## Clean up
 
