@@ -107,7 +107,7 @@ Databricks Assistant is an AI-powered tool that helps you write, understand, and
 
     > **Note**: You may be asked to accept the terms and conditions before using the Databricks Assistant.
 
-1. In the Assistant panel, type the question `How do I create a notebook?` and submit it. The Assistant will provide a response explaining how to create a new notebook in Azure Databricks.
+1. In the Assistant panel, type the question `What is a Spark dataframe?` and submit it. The Assistant will provide a response explaining what dataframes are and how they are used in Spark.
 
 1. Try asking the Assistant a data-related question. Type `Show me only products with a price over 100` and submit it. The Assistant will generate SQL or Python code to filter the data based on your request.
 
