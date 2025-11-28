@@ -11,7 +11,7 @@ An Azure Databricks *workspace* provides a central point for managing Databricks
 
 In this exercise, you'll provision an Azure Databricks workspace and explore some of its core capabilities. 
 
-This exercise should take approximately **20** minutes to complete.
+This exercise should take approximately **30** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
@@ -59,20 +59,20 @@ This exercise should take approximately **20** minutes to complete.
 As in many Spark environments, Databricks supports the use of notebooks to combine notes and interactive code cells that you can use to explore data.
 
 1. Download the [**products.csv**](https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv) file from `https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/products.csv` to your local computer, saving it as **products.csv**.
-1. In the sidebar, in the **(+) New** link menu, select **Add or upload data**.
-1. Select **Create or modify table** and upload the **products.csv** file you downloaded to your computer.
-2. In the **Create or modify table from file upload** page, ensure that your **Serverless Starter Warehouse** is selected at the top right of the page. Then choose your catalog and its default schema to create a new table named **products**.
-3. In the **Catalog Explorer** page when the **products** table has been created, in the **Create** button menu, select **Notebook** to create a notebook.
-4. In the notebook, ensure that the notebook is connected to your **Serverless Starter Warehouse** and then review the code that has been automatically been added to the first cell; which should look similar to this:
+2. In the sidebar, in the **(+) New** link menu, select **Add or upload data**.
+3. Select **Create or modify table** and upload the **products.csv** file you downloaded to your computer.
+4. In the **Create or modify table from file upload** page, ensure that your **Serverless Starter Warehouse** is selected at the top right of the page. Then choose your catalog and its default schema to create a new table named **products**.
+5. In the **Catalog Explorer** page when the **products** table has been created, in the **Create** button menu, select **Notebook** to create a notebook.
+6. In the notebook, ensure that the notebook is connected to your **Serverless Starter Warehouse** and then review the code that has been automatically been added to the first cell; which should look similar to this:
 
     ```python
     %sql
     SELECT * FROM `<your catalog>`.`default`.`products`;
     ```
 
-5. Use the **&#9656; Run Cell** menu option at the left of the cell to run it, starting and attaching the cluster if prompted.
-6. Wait for the Spark job run by the code to complete. The code retrieves data from the table that was created based on the file you uploaded.
-7. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
+7. Use the **&#9656; Run Cell** menu option at the left of the cell to run it, starting and attaching the cluster if prompted.
+8. Wait for the Spark job run by the code to complete. The code retrieves data from the table that was created based on the file you uploaded.
+9. Above the table of results, select **+** and then select **Visualization** to view the visualization editor, and then apply the following options:
     - **Visualization type**: Bar
     - **X Column**: Category
     - **Y Column**: *Add a new column and select* **ProductID**. *Apply the* **Count** *aggregation*.
@@ -98,6 +98,39 @@ While most data analysts are comfortable using SQL code as used in the previous 
     ```
 
 1. Run the new cell, which returns products in the *Road Bikes* category.
+
+## Use Databricks Assistant
+
+Databricks Assistant is an AI-powered tool that helps you write, understand, and debug code. It is available within notebooks and provides natural language assistance.
+
+1. In the notebook, select the **Assistant** icon (which looks like a chat bubble) in the upper-right area of the notebook to open the Assistant panel.
+
+    > **Note**: You may be asked to accept the terms and conditions before using the Databricks Assistant.
+
+1. In the Assistant panel, type the question `What is a Spark dataframe?` and submit it. The Assistant will provide a response explaining what dataframes are and how they are used in Spark.
+
+1. Try asking the Assistant a data-related question. Type `Show me only products with a price over 100` and submit it. The Assistant will generate SQL or Python code to filter the data based on your request.
+
+1. Create a new cell and insert the code it generated. Run the cell and observe the output. 
+
+    > [!NOTE]
+    > If and error message appears, try selecting the **Diagnose error** button.
+
+1. To see how the Assistant can help fix code, add a new code cell with the following code that contains a deliberate error:
+
+    ```python
+    df = spark.sql("SELECT * FORM products")
+    display(df)
+    ```
+
+1. Run the cell and observe the error message. Then, select the **Diagnose error** button that appears or ask the Assistant `Fix this code` and include the code. The Assistant will identify the problem (the keyword `FORM` should be `FROM`) and suggest the corrected code.
+
+    ```python
+    df = spark.sql("SELECT * FROM products")
+    display(df)
+    ```
+
+1. Apply the fix and run the cell to verify it now works correctly.
 
 ## Clean up
 
