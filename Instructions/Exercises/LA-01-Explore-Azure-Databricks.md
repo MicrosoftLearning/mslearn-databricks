@@ -63,7 +63,7 @@ As in many Spark environments, Databricks supports the use of notebooks to combi
 3. Select **Create or modify table** and upload the **products.csv** file you downloaded to your computer.
 4. In the **Create or modify table from file upload** page, ensure that your **Serverless Starter Warehouse** is selected at the top right of the page. Then choose your catalog and its default schema to create a new table named **products**.
 5. In the **Catalog Explorer** page when the **products** table has been created, in the **Create** button menu, select **Notebook** to create a notebook.
-6. In the notebook, ensure that the notebook is connected to your **Serverless Starter Warehouse** and then review the code that has been automatically been added to the first cell; which should look similar to this:
+6. In the notebook, ensure that the notebook is connected to the **Serverless** compute and then review the code that has been automatically been added to the first cell; which should look similar to this:
 
     ```python
     %sql

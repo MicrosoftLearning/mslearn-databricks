@@ -60,7 +60,7 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
    
-1. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore data with Spark` and in the **Connect** drop-down list, select the **Serverless SQL Warehouse** if it is not already selected. If the compute is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `Explore data with Spark` and in the **Connect** drop-down list, select **Serverless** compute if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
 ## Ingest data
 

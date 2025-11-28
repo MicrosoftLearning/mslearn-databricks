@@ -59,7 +59,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-1. Change the default notebook name (**Untitled Notebook *[date]***) to `Data Ingestion and Exploration` and in the **Connect** drop-down list, select the **Serverless SQL Warehouse** if it is not already selected. If the compute is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `Data Ingestion and Exploration` and in the **Connect** drop-down list, select  **Serverless** compute if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
 1. In the first cell of the notebook, enter the following code, which creates a volume for storing covid data.
 
