@@ -69,7 +69,7 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
    - **default** - A default schema for organizing data objects
    - **information_schema** - A system schema containing metadata
 
-5. Click the **Details** button in the catalog details panel and observe the **Storage location** and **Type** fields. The type **MANAGED_CATALOG** indicates that Databricks automatically manages the storage and lifecycle of data assets within this catalog.
+5. Click the **Details** button in the catalog details panel and observe the **Storage location** and **Type** fields. The type **MANAGED_CATALOG** indicates that Azure Databricks automatically manages the storage and lifecycle of data assets within this catalog.
 
 ## Create a new catalog
 
