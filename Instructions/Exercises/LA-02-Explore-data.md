@@ -40,7 +40,7 @@ If the script fails due to insufficient quota or permissions, you can try to [cr
 1. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
     ```
-    ./mslearn-databricks/setup.ps1
+    ./mslearn-databricks/setup-serverless.ps1
     ```
 
 1. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).

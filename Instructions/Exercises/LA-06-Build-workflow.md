@@ -36,7 +36,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
      ```powershell
-    ./mslearn-databricks/setup.ps1
+    ./mslearn-databricks/setup-serverless.ps1
      ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
