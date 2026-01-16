@@ -1,9 +1,17 @@
+param(
+    [string]$suffix
+)
 Clear-Host
 write-host "Starting script at $(Get-Date)"
 
-# Generate unique random suffix
-[string]$suffix =  -join ((48..57) + (97..122) | Get-Random -Count 7 | % {[char]$_})
+# If no suffix provided, generate a 7-character alphanumeric one
+if (-not $suffix) {
+    $suffix = -join ((48..57) + (97..122) | Get-Random -Count 7 | ForEach-Object {[char]$_})
+}
+
 $resourceGroupName = "msl-$suffix"
+
+Write-Output "Using resource group name: $resourceGroupName"
 
 # Handle cases where the user has multiple subscriptions
 $subs = Get-AzSubscription | Select-Object
