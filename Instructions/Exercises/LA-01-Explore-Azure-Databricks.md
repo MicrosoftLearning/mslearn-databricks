@@ -35,7 +35,7 @@ This exercise should take approximately **20** minutes to complete.
     git clone https://github.com/MicrosoftLearning/mslearn-databricks
     ```
 
-5. After the repo has been cloned, enter the following command to run the **setup.ps1** script, which provisions an Azure Databricks workspace in an available region:
+5. After the repo has been cloned, enter the following command to run the **setup-serverless.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
     ```
     ./mslearn-databricks/setup-serverless.ps1
