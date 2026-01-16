@@ -43,11 +43,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 7. Wait for the script to complete - this typically takes around 5 minutes, but in some cases may take longer. While you are waiting, review the [Lakeflow jobs](https://learn.microsoft.com/azure/databricks/jobs/) article in the Azure Databricks documentation.
 
-## Create a cluster
-
-Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
-
-> **Tip**: If you already have a cluster with a 13.3 LTS or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+## Open the Azure Databricks Workspace
 
 1. In the Azure portal, browse to the **msl-*xxxxxxx*** resource group that was created by the script (or the resource group containing your existing Azure Databricks workspace)
 
@@ -57,52 +53,48 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
     > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster** (You may need to look in the **More** submenu).
-
-1. In the **New Cluster** page, create a new cluster with the following settings:
-    - **Cluster name**: *User Name's* cluster (the default cluster name)
-    - **Policy**: Unrestricted
-    - **Cluster mode**: Single Node
-    - **Access mode**: Single user (*with your user account selected*)
-    - **Databricks runtime version**: 13.3 LTS (Spark 3.4.1, Scala 2.12) or later
-    - **Use Photon Acceleration**: Selected
-    - **Node type**: Standard_D4ds_v5
-    - **Terminate after** *20* **minutes of inactivity**
-
-1. Wait for the cluster to be created. It may take a minute or two.
-
-    > **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region. You can specify a region as a parameter for the setup script like this: `./mslearn-databricks/setup.ps1 eastus`
-        
-## Create a notebook and ingest data
+## Create a notebook
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**.
 
-2. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+1. Change the default notebook name (**Untitled Notebook *[date]***) to `ETL task` and in the **Connect** drop-down list, select **Serverless** compute if it is not already selected. If the compute is not running, it may take a minute or so to start.
 
-3. In the first cell of the notebook, enter the following code, which uses *shell* commands to download data files from GitHub into the file system used by your cluster.
+## Ingest data
 
-     ```python
-    %sh
-    rm -r /dbfs/workflow_lab
-    mkdir /dbfs/workflow_lab
-    wget -O /dbfs/workflow_lab/2019.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/2019_edited.csv
-    wget -O /dbfs/workflow_lab/2020.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/2020_edited.csv
-    wget -O /dbfs/workflow_lab/2021.csv https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/2021_edited.csv
-     ```
+1. In the first cell of the notebook, enter the following code to create a volume for storing some lab files.
 
-4. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+    ```sql
+    %sql
+    CREATE VOLUME IF NOT EXISTS spark_lab
+    ```
 
-## Create a job task
+1. Add a new code cell and use it to run the following code, which uses *Python* to download data files from GitHub into your volume.
 
-You implement your data processing and analysis workflow using tasks. A job is composed of one or more tasks. You can create job tasks that run notebooks, JARS, Delta Live Tables pipelines, or Python, Scala, Spark submit, and Java applications. In this exercise, you will create a task as a notebook that extracts, transforms, and loads data into visualization charts. 
+    ```python
+    import requests
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**.
+    # Define the current catalog
+    catalog_name = spark.sql("SELECT current_catalog()").collect()[0][0]
 
-2. Change the default notebook name (**Untitled Notebook *[date]***) to `ETL task` and in the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
+    # Define the base path using the current catalog
+    volume_base = f"/Volumes/{catalog_name}/default/spark_lab"
 
-    Ensure that the default language for the notebook is set to **Python**.
+    # List of files to download
+    files = ["2019.csv", "2020.csv", "2021.csv"]
 
-3. In the first cell of the notebook, enter and run the following code, which defines a schema for the data and loads the datasets in a dataframe:
+    # Download each file
+    for file in files:
+        url = f"https://raw.githubusercontent.com/MicrosoftLearning/mslearn-databricks/main/data/{file}"
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # Write to Unity Catalog volume
+        with open(f"{volume_base}/{file}", "wb") as f:
+            f.write(response.content)
+    ```
+
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. Under the output, use the **+ Code** icon to add a new code cell, and use it to run the following code, which defines a schema for the data:
 
     ```python
    from pyspark.sql.types import *
@@ -118,11 +110,13 @@ You implement your data processing and analysis workflow using tasks. A job is c
         StructField("UnitPrice", FloatType()),
         StructField("Tax", FloatType())
    ])
-   df = spark.read.load('/workflow_lab/*.csv', format='csv', schema=orderSchema)
+   df = spark.read.load(f'/Volumes/{catalog_name}/default/spark_lab/*.csv', format='csv', schema=orderSchema)
    display(df.limit(100))
     ```
 
-4. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following code to remove duplicate rows and to replace the `null` entries with the correct values:
+## Create a job task
+
+1. Under the existing code cell, use the **+ Code** icon to add a new code cell. Then in the new cell, enter and run the following code to remove duplicate rows and to replace the `null` entries with the correct values:
 
      ```python
     from pyspark.sql.functions import col
@@ -132,7 +126,7 @@ You implement your data processing and analysis workflow using tasks. A job is c
      ```
     > **Note**: After updating the values in the **Tax** column, its data type is set to `float` again. This is due to its data type changing to `double` after the calculation is performed. Since `double` has a higher memory usage than `float`, it is better for performance to type cast the column back to `float`.
 
-5. In a new code cell, run the following code to aggregate and group the order data:
+2. In a new code cell, run the following code to aggregate and group the order data:
 
     ```python
    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
@@ -154,7 +148,7 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
     - **Type**: Notebook
     - **Source**: Workspace
     - **Path**: *Select your* ETL task *notebook*
-    - **Cluster**: *Select your cluster*
+    - **Cluster**: *Select Serverless*
 
 5. Select **Create task**.
 
@@ -167,7 +161,5 @@ Azure Databricks manages the task orchestration, cluster management, monitoring,
 Additionally, you can run jobs on a triggered basis, for example, running a workflow on a schedule. To schedule a periodic job run, you can open the job task and add a trigger.
 
 ## Clean up
-
-In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Stop** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
