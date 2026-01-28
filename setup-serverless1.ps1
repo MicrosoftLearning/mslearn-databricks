@@ -84,9 +84,9 @@ else {
 # Create Azure Databricks workspace
 write-host "Using region: $Region"
 Write-Host "Creating $resourceGroupName resource group ..."
-New-AzResourceGroup -Name $resourceGroupName -Location $Region | Out-Null
+az group create --name $resourceGroupName --location $Region --output none
 $dbworkspace = "databricks-$suffix"
 Write-Host "Creating $dbworkspace Azure Databricks workspace in $resourceGroupName resource group..."
-New-AzDatabricksWorkspace -Name $dbworkspace -ResourceGroupName $resourceGroupName -Location $Region -Sku premium | Out-Null
+az databricks workspace create --name $dbworkspace --resource-group $resourceGroupName --location $Region --sku premium --output none
 
 write-host "Script completed at $(Get-Date)"
