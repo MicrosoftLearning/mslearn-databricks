@@ -9,7 +9,7 @@ With Azure Databricks, users can now leverage the power of LLMs for specialized 
 
 This lab will take approximately **60** minutes to complete.
 
-> **NOTE**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
+> **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
 ## Before you start
 
@@ -41,13 +41,13 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 6. Launch Cloud Shell and run `az account get-access-token` to get a temporary authorization token for API testing. Keep it together with the endpoint and key copied previously.
 
-    >**NOTE**: You only need to copy the `accessToken` field value and **not** the entire JSON output.
+    >**Note**: You only need to copy the `accessToken` field value and **not** the entire JSON output.
 
 ## Deploy the required model
 
 Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
 
-> **NOTE**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
 1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
    
@@ -75,44 +75,43 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 3. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
 
-## Create a cluster
-
-Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
-
-> **Tip**: If you already have a cluster with a 16.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
-
-1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
-2. Select your Azure Databricks Service resource.
-3. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
-
-> **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
-
-4. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
-5. In the **New Cluster** page, create a new cluster with the following settings:
-    - **Cluster name**: *User Name's* cluster (the default cluster name)
-    - **Policy**: Unrestricted
-    - **Machine learning**: Enabled
-    - **Databricks runtime**: 16.4 LTS
-    - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Worker type**: Standard_D4ds_v5
-    - **Single node**: Checked
-
-6. Wait for the cluster to be created. It may take a minute or two.
-
-> **NOTE**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
-
 ## Create a new notebook and ingest data
 
-1. In the sidebar, use the **(+) New** link to create a **Notebook**. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
-1. In a new browser tab, download the [training dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl` and the [validation dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl` that will be used in this exercise.
+1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
 
-> **Note**: Your device might default to saving the file as a .txt file. In the **Save as type** field, select **All files** and remove the .txt suffix to ensure you're saving the file as JSONL.
+1. Select your Azure Databricks Service resource.
 
-1. Back in the Databricks workspace tab, with your notebook open, select the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
-1. In the **Add data** page, select **Upload files to DBFS**.
-1. In the **DBFS** page, name the target directory `fine_tuning` and upload the .jsonl files you saved earlier.
-1. In the sidebar, select **Workspace** and open your notebook again.
-1. In the first cell of the notebook, enter the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
+1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
+
+    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
+
+1. In the sidebar, use the **(+) New** link to create a **Notebook**. Select **Serverless** as the default compute.
+
+1. In the first code cell, enter and run the following code to install the required libraries:
+
+    ```python
+    %pip install openai tiktoken numpy
+    dbutils.library.restartPython()
+    ```
+
+1. In a new cell, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
+
+    ```python
+   %sql 
+   CREATE VOLUME <catalog_name>.default.fine_tuning;
+    ```
+
+1. Replace `<catalog_name>` with the name of your default catalog. You can verify its name by selecting **Catalog** in the sidebar.
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
+
+    ```python
+   %sh
+   wget -O /Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl
+   wget -O /Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl
+    ```
+
+3. In a new cell, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
 
     ```python
    import os
@@ -121,8 +120,6 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
    os.environ["AZURE_OPENAI_ENDPOINT"] = "your_openai_endpoint"
    os.environ["TEMP_AUTH_TOKEN"] = "your_access_token"
     ```
-
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
      
 ## Validate token counts
 
@@ -161,7 +158,7 @@ Both `training_set.jsonl` and `validation_set.jsonl` are made of different conve
        print(f"min / max: {min(values)}, {max(values)}")
        print(f"mean / median: {np.mean(values)}, {np.median(values)}")
 
-   files = ['/dbfs/FileStore/tables/fine_tuning/training_set.jsonl', '/dbfs/FileStore/tables/fine_tuning/validation_set.jsonl']
+   files = ['/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl', '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl']
 
    for file in files:
        print(f"File: {file}")
@@ -199,8 +196,8 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
       api_version = "2024-05-01-preview"  # This API version or later is required to access seed/events/checkpoint features
     )
 
-    training_file_name = '/dbfs/FileStore/tables/fine_tuning/training_set.jsonl'
-    validation_file_name = '/dbfs/FileStore/tables/fine_tuning/validation_set.jsonl'
+    training_file_name = '/Volumes/<catalog_name>/default/fine_tuning/training_set.jsonl'
+    validation_file_name = '/Volumes/<catalog_name>/default/fine_tuning/validation_set.jsonl'
 
     training_response = client.files.create(
         file = open(training_file_name, "rb"), purpose="fine-tune"
@@ -242,7 +239,7 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    print("Status:", response.status)
     ```
 
-    >**NOTE**: You can also monitor the job status in AI Foundry by selecting **Fine-tuning** in the left sidebar.
+>**Note**: You can also monitor the job status in AI Foundry by selecting **Fine-tuning** in the left sidebar.
 
 3. Once the job status changes to `succeeded`, run the following code to get the final results:
 
@@ -252,16 +249,12 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    print(response.model_dump_json(indent=2))
    fine_tuned_model = response.fine_tuned_model
     ```
-
-4. Review the json response and note the unique name generated in the `"fine_tuned_model"` field. It will be used in the following optional task.
-
-    >**NOTE**: Fine-tuning a model can take over 60 minutes, so you can finish the exercise at this point and consider the model's deployment an optional task in case you have time to spare.
-
-## [OPTIONAL] Deploy fine-tuned model
+   
+## Deploy fine-tuned model
 
 Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Foundry, or via the chat completion API.
 
-1. In a new cell, run the following code to deploy your fine-tuned model, replacing the placeholders `<YOUR_SUBSCRIPTION_ID>`, `<YOUR_RESOURCE_GROUP_NAME>`, `<YOUR_AZURE_OPENAI_RESOURCE_NAME>`, and `<FINE_TUNED_MODEL>`:
+1. In a new cell, run the following code to deploy your fine-tuned model:
    
     ```python
    import json
@@ -281,7 +274,7 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
        "properties": {
            "model": {
                "format": "OpenAI",
-               "name": "<FINE_TUNED_MODEL>",
+               "name": "<YOUR_FINE_TUNED_MODEL>",
                "version": "1"
            }
        }
@@ -299,8 +292,6 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
    print(r.json())
     ```
 
-> **NOTE**: You can find your subscription ID in the Overview page of your Databricks workspace or OpenAI resource on Azure Portal.
-
 2. In a new cell, run the following code to use your customized model in a chat completion call:
    
     ```python
@@ -314,7 +305,7 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
    )
 
    response = client.chat.completions.create(
-       model = "gpt-4o-ft",
+       model = "gpt-4o-ft", # model = "Custom deployment name you chose for your fine-tuning model"
        messages = [
            {"role": "system", "content": "You are a helpful assistant."},
            {"role": "user", "content": "Does Azure OpenAI support customer managed keys?"},
@@ -325,9 +316,7 @@ Now that you have a fine-tuned model, you can deploy it as a customized model an
 
    print(response.choices[0].message.content)
     ```
-
->**NOTE**: It might take a few minutes before the fine-tuned model deployment is completed. You can verify it in the **Deployments** page in Azure AI Foundry.
-
+ 
 ## Clean up
 
 When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.

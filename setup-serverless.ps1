@@ -42,6 +42,8 @@ if($subs.GetType().IsArray -and $subs.length -gt 1){
     az account set --subscription $selectedSub
 }
 
+# Configure Azure CLI to allow preview extensions
+az config set extension.dynamic_install_allow_preview=true --only-show-errors
 
 # Register resource providers
 Write-Host "Registering resource providers...";
@@ -52,13 +54,9 @@ foreach ($provider in $provider_list){
     Write-Host "$provider : $status"
 }
 
-# Choose a region
-Write-Host "Preparing to deploy...";
-$delay = 0, 10, 20, 30 | Get-Random
-Start-Sleep -Seconds $delay # random delay to stagger requests from multi-student classes
+# Get a list of locations for Azure Databricks. These regions support Serverless compute for notebooks, jobs, pipelines, and SQL warehouses
+$supported_regions = "australiaeast","australiasoutheast","brazilsouth","canadacentral","canadaeast","centralindia","centralus","eastasia","eastus","eastus2","francecentral","japaneast","koreacentral","mexicocentral","northcentralus","northeurope","norwayeast","southafricanorth","southcentralus","southeastasia","swedencentral","switzerlandnorth","uaenorth","uksouth","westcentralus","westeurope","westus","westus2","westus3"
 
-# Get a list of locations for Azure Databricks
-$supported_regions = "centralus","eastus","eastus2","northcentralus","northeurope","westeurope","westus", "uksouth"
 $locations = Get-AzLocation | Where-Object {
     $_.Providers -contains "Microsoft.Databricks" -and
     $_.Location -in $supported_regions
@@ -78,9 +76,9 @@ else {
 # Create Azure Databricks workspace
 write-host "Using region: $Region"
 Write-Host "Creating $resourceGroupName resource group ..."
-New-AzResourceGroup -Name $resourceGroupName -Location $Region | Out-Null
+az group create --name $resourceGroupName --location $Region --output none
 $dbworkspace = "databricks-$suffix"
 Write-Host "Creating $dbworkspace Azure Databricks workspace in $resourceGroupName resource group..."
-New-AzDatabricksWorkspace -Name $dbworkspace -ResourceGroupName $resourceGroupName -Location $Region -Sku premium | Out-Null
+az databricks workspace create --name $dbworkspace --resource-group $resourceGroupName --location $Region --sku premium --output none
 
 write-host "Script completed at $(Get-Date)"

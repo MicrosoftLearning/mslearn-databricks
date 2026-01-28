@@ -85,37 +85,22 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 1. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
 
-## Create a cluster
-
-Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
-
-> **Tip**: If you already have a cluster with a 16.4 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+## Create a notebook and install required libraries
 
 1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
+
 1. Select your Azure Databricks Service resource.
+
 1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
 
-> **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
-
-1. In the sidebar on the left, select the **(+) New** task, and then select **Cluster**.
-1. In the **New Cluster** page, create a new cluster with the following settings:
-    - **Cluster name**: *User Name's* cluster (the default cluster name)
-    - **Policy**: Unrestricted
-    - **Machine learning**: Enabled
-    - **Databricks runtime**: 16.4 LTS
-    - **Use Photon Acceleration**: <u>Un</u>selected
-    - **Worker type**: Standard_D4ds_v5
-    - **Single node**: Checked
-
-1. Wait for the cluster to be created. It may take a minute or two.
-
-> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
-
-## Install required libraries
+    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
 
 1. In the Databricks workspace, go to the **Workspace** section.
+
 1. Select **Create** and then select **Notebook**.
-1. Name your notebook and select `Python` as the language.
+
+1. Name your notebook and select `Python` as the language. Select **Serverless** as the default compute.
+
 1. In the first code cell, enter and run the following code to install the necessary libraries:
    
     ```python
@@ -264,7 +249,5 @@ Langchain is a versatile tool that allows the combination of multiple chains int
 ## Clean up
 
 When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
-
-In Azure Databricks portal, on the **Compute** page, select your cluster and select **&#9632; Terminate** to shut it down.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
