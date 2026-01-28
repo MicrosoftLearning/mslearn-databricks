@@ -152,10 +152,15 @@ Databricks' Mosaic AI Vector Search is a vector database solution integrated wit
      embedding_model_endpoint_name="databricks-gte-large-en"
     )
     ```
+
+    > **Note**: Creating the vector search endpoint and index may take several minutes. Wait for the operation to complete before proceeding.
      
 If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, you will see the index created in your default Unity catalog.
 
-> **Note:** Before running the next code cell, verify that the index was successfully created. To do that, right-click the index in the Catalog pane and select **Open in Catalog Explorer**. Wait until the index status is **Online**.
+> **Note:** Before running the next code cell, verify that both the endpoint and index are online:
+> - In the left sidebar, select **Compute**, then select the **Vector Search** tab to verify the endpoint status is **Online**.
+> - Right-click the index in the Catalog pane and select **Open in Catalog Explorer**. Wait until the index status is **Online** (this may take 5-10 minutes).
+> - If you encounter errors, the index may need additional time to sync. You can manually trigger a sync by running: `index.sync()`
 
 3. In a new cell, run the following code to search for relevant documents based on a query vector.
 
@@ -186,8 +191,8 @@ Now we can enchance the capabilities of large language models by providing them 
    # Load the summarization model
    summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="pt")
 
-   # Extract the string values from the DataFrame column
-   text_data = results.select("_2").rdd.flatMap(lambda x: x).collect()
+   # Extract the string values from the DataFrame column (serverless-compatible)
+   text_data = [row["_2"] for row in results.select("_2").collect()]
 
    # Pass the extracted text data to the summarizer function
    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=True)

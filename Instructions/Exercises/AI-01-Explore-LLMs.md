@@ -64,10 +64,11 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 1. In the first code cell, enter and run the following code to install the required libraries:
 
     ```python
-    %pip install transformers==4.53.0
+    %pip install transformers==4.53.0 torch
+    dbutils.library.restartPython()
     ```
 
-1. Once the installation is complete, in a new cell, enter and run the following code to load the pre-trained models:
+1. In a new cell, enter and run the following code to load the pre-trained models:
 
     ```python
    from transformers import pipeline
