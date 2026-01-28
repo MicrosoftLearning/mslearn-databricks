@@ -37,10 +37,10 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
    git clone https://github.com/MicrosoftLearning/mslearn-databricks
     ```
 
-5. After the repo has been cloned, enter the following command to run the **setup-serverless1.ps1** script, which provisions an Azure Databricks workspace in an available region:
+5. After the repo has been cloned, enter the following command to run the **setup-serverless.ps1** script, which provisions an Azure Databricks workspace in an available region:
 
-    ```powershell
-   ./mslearn-databricks/setup-serverless1.ps1
+     ```powershell
+    ./mslearn-databricks/setup-serverless.ps1
     ```
 
 6. If prompted, choose which subscription you want to use (this will only happen if you have access to multiple Azure subscriptions).
@@ -59,21 +59,32 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. Select **Serverless** as the default compute.
 
-1. In the first code cell, enter and run the following code to install the necessary libraries:
-   
+1. In the first code cell, enter and run the following code to install the required libraries:
+
     ```python
-   %pip install faiss-cpu sentence-transformers transformers torch
+   %pip install transformers==4.53.0 databricks-vectorsearch==0.56 torch
    dbutils.library.restartPython()
     ```
    
 ## Ingest data
 
-1. In a new browser tab, download the [sample file](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml) that will be used as data in this exercise: `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml`
-1. Back in the Databricks workspace tab, with your notebook open, select the **Catalog (CTRL + Alt + C)** explorer and select the ➕ icon to **Add data**.
-1. In the **Add data** page, select **Upload files to DBFS**.
-1. In the **DBFS** page, name the target directory `RAG_lab` and upload the .xml file you saved earlier.
-1. In the sidebar, select **Workspace** and open your notebook again.
-1. In a new code cell, enter the following code to create a dataframe from the raw data:
+1. In a new cell of the notebook, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
+
+    ```python
+   %sql 
+   CREATE VOLUME <catalog_name>.default.RAG_lab;
+    ```
+
+1. Replace `<catalog_name>` with the name of your workspace, as Azure Databricks automatically creates a default catalog with that name.
+1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
+1. In a new cell, run the following code which uses a *shell* command to download data from GitHub into your Unity catalog.
+
+    ```python
+   %sh
+   wget -O /Volumes/<catalog_name>/default/RAG_lab/enwiki-latest-pages-articles.xml https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/enwiki-latest-pages-articles.xml
+    ```
+
+1. In a new cell, run the following code to create a dataframe from the raw data:
 
     ```python
    from pyspark.sql import SparkSession
@@ -86,7 +97,7 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
    # Read the XML file
    raw_df = spark.read.format("xml") \
        .option("rowTag", "page") \
-       .load("/FileStore/tables/RAG_lab/enwiki_latest_pages_articles.xml")
+       .load("/Volumes/<catalog_name>/default/RAG_lab/enwiki-latest-pages-articles.xml")
 
    # Show the DataFrame
    raw_df.show(5)
@@ -95,61 +106,72 @@ This exercise includes a script to provision a new Azure Databricks workspace. T
    raw_df.printSchema()
     ```
 
-1. Use the **&#9656; Run Cell** menu option at the left of the cell to run it. Then wait for the Spark job run by the code to complete.
-1. In a new cell, run the following code to clean and preprocess the data to extract the relevant text fields:
+1. In a new cell, run the following code, replacing `<catalog_name>` with your Unity catalog's name, to clean and preprocess the data to extract the relevant text fields:
 
     ```python
    from pyspark.sql.functions import col
 
    clean_df = raw_df.select(col("title"), col("revision.text._VALUE").alias("text"))
    clean_df = clean_df.na.drop()
+   clean_df.write.format("delta").mode("overwrite").saveAsTable("<catalog_name>.default.wiki_pages")
    clean_df.show(5)
     ```
 
+    If you open the **Catalog (CTRL + Alt + C)** explorer and refresh its pane, you will see the Delta table created in your default Unity catalog.
+
 ## Generate embeddings and implement vector search
 
-FAISS (Facebook AI Similarity Search) is an open-source vector database library developed by Meta AI, designed for efficient similarity search and clustering of dense vectors. FAISS enables fast and scalable nearest neighbor searches, and can be integrated with hybrid search systems to combine vector-based similarity with traditional keyword-based techniques, enhancing the relevance of search results.
+Databricks' Mosaic AI Vector Search is a vector database solution integrated within the Azure Databricks Platform. It optimizes the storage and retrieval of embeddings utilizing the Hierarchical Navigable Small World (HNSW) algorithm. It allows for efficient nearest neighbor searches, and its hybrid keyword-similarity search capability provides more relevant results by combining vector-based and keyword-based search techniques.
 
-1. In a new cell, run the following code to load the pre-trained `all-MiniLM-L6-v2` model and convert text to embeddings:
+1. In a new cell, run the following SQL query to enable the Change Data Feed feature in the source table before creating a delta sync index.
 
     ```python
-   from sentence_transformers import SentenceTransformer
-   import numpy as np
-    
-   # Load pre-trained model
-   model = SentenceTransformer('all-MiniLM-L6-v2')
-    
-   # Function to convert text to embeddings
-   def text_to_embedding(text):
-       embeddings = model.encode([text])
-       return embeddings[0]
-    
-   # Convert the DataFrame to a Pandas DataFrame
-   pandas_df = clean_df.toPandas()
-    
-   # Apply the function to get embeddings
-   pandas_df['embedding'] = pandas_df['text'].apply(text_to_embedding)
-   embeddings = np.vstack(pandas_df['embedding'].values)
+   %sql
+   ALTER TABLE <catalog_name>.default.wiki_pages SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
     ```
 
-1. In a new cell, run the following code to create and query the FAISS index:
+2. In a new cell, run the following code to create the vector search index.
 
     ```python
-   import faiss
-    
-   # Create a FAISS index
-   d = embeddings.shape[1]  # dimension
-   index = faiss.IndexFlatL2(d)  # L2 distance
-   index.add(embeddings)  # add vectors to the index
-    
-   # Perform a search
-   query_embedding = text_to_embedding("Anthropology fields")
-   k = 1  # number of nearest neighbors
-   distances, indices = index.search(np.array([query_embedding]), k)
-    
-   # Get the results
-   results = pandas_df.iloc[indices[0]]
-   display(results)
+   from databricks.vector_search.client import VectorSearchClient
+
+   client = VectorSearchClient()
+
+   client.create_endpoint(
+       name="vector_search_endpoint",
+       endpoint_type="STANDARD"
+   )
+
+   index = client.create_delta_sync_index(
+     endpoint_name="vector_search_endpoint",
+     source_table_name="<catalog_name>.default.wiki_pages",
+     index_name="<catalog_name>.default.wiki_index",
+     pipeline_type="TRIGGERED",
+     primary_key="title",
+     embedding_source_column="text",
+     embedding_model_endpoint_name="databricks-gte-large-en"
+    )
+    ```
+
+    > **Note**: Creating the vector search endpoint and index may take several minutes. Wait for the operation to complete before proceeding.
+     
+If you open the **Catalog (CTRL + Alt + C)** explorer and refresh the its pane, you will see the index created in your default Unity catalog.
+
+> **Note:** Before running the next code cell, verify that both the endpoint and index are online:
+> - In the left sidebar, select **Compute**, then select the **Vector Search** tab to verify the endpoint status is **Online**.
+> - Right-click the index in the Catalog pane and select **Open in Catalog Explorer**. Wait until the index status is **Online** (this may take 5-10 minutes).
+> - If you encounter errors, the index may need additional time to sync. You can manually trigger a sync by running: `index.sync()`
+
+3. In a new cell, run the following code to search for relevant documents based on a query vector.
+
+    ```python
+   results_dict=index.similarity_search(
+       query_text="Anthropology fields",
+       columns=["title", "text"],
+       num_results=1
+   )
+
+   display(results_dict)
     ```
 
 Verify that the output finds the corresponding Wiki page related to the query prompt.
@@ -161,26 +183,29 @@ Now we can enchance the capabilities of large language models by providing them 
 1. In a new cell, run the following code to combine the retrieved data with the user's query to create a rich prompt for the LLM.
 
     ```python
+   # Convert the dictionary to a DataFrame
+   results = spark.createDataFrame([results_dict['result']['data_array'][0]])
+
    from transformers import pipeline
-    
+
    # Load the summarization model
    summarizer = pipeline("summarization", model="facebook/bart-large-cnn", framework="pt")
-    
-   # Extract the string values from the DataFrame column
-   text_data = results["text"].tolist()
-    
+
+   # Extract the string values from the DataFrame column (serverless-compatible)
+   text_data = [row["_2"] for row in results.select("_2").collect()]
+
    # Pass the extracted text data to the summarizer function
    summary = summarizer(text_data, max_length=512, min_length=100, do_sample=True)
-    
+
    def augment_prompt(query_text):
        context = " ".join([item['summary_text'] for item in summary])
-       return f"{context}\n\nQuestion: {query_text}\nAnswer:"
-    
+       return f"Query: {query_text}\nContext: {context}"
+
    prompt = augment_prompt("Explain the significance of Anthropology")
    print(prompt)
     ```
 
-1. In a new cell, run the following code to use an LLM to generate responses.
+3. In a new cell, run the following code to use an LLM to generate responses.
 
     ```python
    from transformers import GPT2LMHeadModel, GPT2Tokenizer
