@@ -85,7 +85,14 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
    
 1. Name your notebook and in the **Connect** drop-down list, select **Serverless** as the default compute.
 
-1. In the first cell of the notebook, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
+1. In the first code cell, enter and run the following code to install the required libraries:
+
+    ```python
+    %pip install openai
+    dbutils.library.restartPython()
+    ```
+
+1. In a new cell, run the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
 
      ```python
     import os

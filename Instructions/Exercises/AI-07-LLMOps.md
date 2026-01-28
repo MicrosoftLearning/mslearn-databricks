@@ -83,6 +83,12 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. Select **Serverless** as the default compute.
 
+1. In the first code cell, enter and run the following code to install the required libraries:
+
+    ```python
+    %pip install openai mlflow
+    dbutils.library.restartPython()
+    ```
 ## Log the LLM using MLflow
 
 MLflow’s LLM tracking capabilities allow you to log parameters, metrics, predictions, and artifacts. Parameters include key-value pairs detailing input configurations, while metrics provide quantitative measures of performance. Predictions encompass both the input prompts and the model’s responses, stored as artifacts for easy retrieval. This structured logging helps in maintaining a detailed record of each interaction, facilitating better analysis and optimization of LLMs.

@@ -87,7 +87,14 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. Select **Serverless** as the default compute.
 
-1. In the first cell of the notebook, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
+1. In the first code cell, enter and run the following code to install the required libraries:
+
+    ```python
+    %pip install openai tiktoken numpy
+    dbutils.library.restartPython()
+    ```
+
+1. In a new cell, enter the following SQL query to create a new volume that will be used to store this exercise's data within your default catalog:
 
     ```python
    %sql 

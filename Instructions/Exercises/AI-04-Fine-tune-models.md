@@ -87,6 +87,13 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 
 1. In the sidebar, use the **(+) New** link to create a **Notebook**. Select **Serverless** as the default compute.
 
+1. In the first code cell, enter and run the following code to install the required libraries:
+
+    ```python
+    %pip install openai tiktoken numpy
+    dbutils.library.restartPython()
+    ```
+
 1. In a new browser tab, download the [training dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/training_set.jsonl` and the [validation dataset](https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl) at `https://github.com/MicrosoftLearning/mslearn-databricks/raw/main/data/validation_set.jsonl` that will be used in this exercise.
 
 > **Note**: Your device might default to saving the file as a .txt file. In the **Save as type** field, select **All files** and remove the .txt suffix to ensure you're saving the file as JSONL.
@@ -95,7 +102,7 @@ Azure provides a web-based portal named **Azure AI Foundry**, that you can use t
 1. In the **Add data** page, select **Upload files to DBFS**.
 1. In the **DBFS** page, name the target directory `fine_tuning` and upload the .jsonl files you saved earlier.
 1. In the sidebar, select **Workspace** and open your notebook again.
-1. In the first cell of the notebook, enter the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
+1. In a new cell, enter the following code with the access information you copied at the beginning of this exercise to assign persistent environment variables for authentication when using Azure OpenAI resources:
 
     ```python
    import os
