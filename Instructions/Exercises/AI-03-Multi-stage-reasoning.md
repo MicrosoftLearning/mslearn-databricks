@@ -147,6 +147,7 @@ A vector index is a specialized data structure that allows for efficient storage
        model="text-embedding-ada-002",
        azure_endpoint=endpoint,
        openai_api_key=key,
+       openai_api_version="2023-03-15-preview" 
        chunk_size=1
    )
     ```
@@ -166,17 +167,14 @@ A retriever component fetches relevant documents or data based on a query. This 
 1. In a new cell, run the following code to create a retriever that can search the vector index for the most similar texts.
 
     ```python
-   from langchain.vectorstores import FAISS
+   from langchain.community_vectorstores import FAISS
    from langchain_core.vectorstores import VectorStoreRetriever
-   from langchain_community.docstore.in_memory import InMemoryDocstore
 
-   vector_store = FAISS(
-       embedding_function=embedding_function,
-       index=index,
-       docstore=InMemoryDocstore(),
-       index_to_docstore_id={}
+   vector_store = FAISS.from_documents(
+       documents=documents,
+       embedding=embedding_function,
+       ids=ids,
    )
-   vector_store.add_documents(documents=documents, ids=ids)
    retriever = VectorStoreRetriever(vectorstore=vector_store)
     ```
 
@@ -185,8 +183,8 @@ A retriever component fetches relevant documents or data based on a query. This 
     ```python
    from langchain_openai import AzureChatOpenAI
    from langchain_core.prompts import ChatPromptTemplate
-   from langchain.chains.combine_documents import create_stuff_documents_chain
-   from langchain.chains import create_retrieval_chain
+   from langchain_classic.chains.combine_documents.stuff import create_stuff_documents_chain
+   from langchain_classic.chains import create_retrieval_chain
      
    llm = AzureChatOpenAI(
        deployment_name="gpt-4o",
