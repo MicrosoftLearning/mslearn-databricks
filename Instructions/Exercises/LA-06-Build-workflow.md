@@ -1,6 +1,16 @@
 ---
 lab:
-    title: 'Deploy workloads with Azure Databricks Lakeflow jobs'
+  title: Deploy workloads with Azure Databricks Lakeflow jobs
+  description: Azure Databricks Lakeflow jobs provide a robust platform for deploying
+    workloads efficiently. With features like Azure Databricks Jobs and Delta Live
+    Tables, users can orchestrate complex data processing, machine learning, and analytics
+    pipelines.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Deploy workloads with Azure Databricks Lakeflow jobs
