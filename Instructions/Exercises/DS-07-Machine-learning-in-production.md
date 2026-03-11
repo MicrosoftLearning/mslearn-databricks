@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Manage a machine learning model using Azure Databricks'
+  title: Manage a machine learning model using Azure Databricks
+  description: The scenario for this exercise is based on observations of penguins in Antarctica, with the goal of training a machine learning model to predict the species of an observed penguin based on its location and body measurements.
+  duration: 20 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Manage a machine learning model using Azure Databricks
