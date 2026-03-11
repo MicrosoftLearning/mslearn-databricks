@@ -1,6 +1,18 @@
 ---
 lab:
-    title: 'Real-time data processing with Spark Structured Streaming and Delta Lake with Azure Databricks'
+  title: Real-time data processing with Spark Structured Streaming and Delta Lake
+    with Azure Databricks
+  description: Spark Structured Streaming allows you to process data in real-time
+    with end-to-end fault tolerance. Delta Lake enhances this by providing a storage
+    layer with ACID transactions, ensuring data integrity and consistency. You can
+    ingest data from cloud storage into Delta Lake, and use Delta Live Tables to manage
+    and optimize your streaming data pipelines.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Real-time data processing with Spark Structured Streaming and Delta Lake with Azure Databricks
