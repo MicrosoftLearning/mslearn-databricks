@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Get started with machine learning in Azure Databricks'
+  title: Get started with machine learning in Azure Databricks
+  description: In this exercise, you'll explore techniques for preparing data and training machine learning models in Azure Databricks.
+  duration: 45 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Get started with machine learning in Azure Databricks
