@@ -1,6 +1,19 @@
 ---
 lab:
-    title: 'Optimize Data Pipelines for Better Performance in Azure Databricks'
+  title: Optimize Data Pipelines for Better Performance in Azure Databricks
+  description: Optimizing data pipelines in Azure Databricks can significantly enhance
+    performance and efficiency. Utilizing Auto Loader for incremental data ingestion,
+    coupled with the storage layer of Delta Lake, ensures reliability and ACID transactions.
+    Implementing salting can prevent data skew, while Z-order clustering optimizes
+    file reads by collocating related information. Azure Databricks' auto-tuning capabilities
+    and the cost-based optimizer can further enhance performance by adjusting settings
+    based on workload requirements.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Optimize Data Pipelines for Better Performance in Azure Databricks
