@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Explore Azure Databricks'
+  title: Explore Azure Databricks
+  description: In this exercise, you'll provision an Azure Databricks workspace and explore some of its core capabilities.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Explore Azure Databricks
