@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Explore Unity Catalog in Azure Databricks'
+  title: Explore Unity Catalog in Azure Databricks
+  description: In this exercise, you've enabled and configured Unity Catalog for an Azure Databricks workspace and used it to work with data in a metastore. To learn more about what you can do with Unity Catalog in Azure Databricks, see Data governance with Unity Catalog.
+  duration: 92 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Explore Unity Catalog in Azure Databricks
