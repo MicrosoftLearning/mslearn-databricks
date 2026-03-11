@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Train a model with AutoML'
+  title: Train a model with AutoML
+  description: To train a machine learning model using AutoML, you need to upload the training data. In this exercise, you'll train a model to classify a penguin as one of three species based on observations including its location and body measurements. You'll load training data that includes the species label into a table in an Azure Databricks data warehouse.
+  duration: 45 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Train a model with AutoML
