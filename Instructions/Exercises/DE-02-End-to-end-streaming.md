@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks'
+  title: End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks
+  description: Delta lake supports streaming data. Delta tables can be a sink or a source for data streams created using the Spark Structured Streaming API. In this example, you'll use a delta table as a sink for some streaming data in a simulated internet of things (IoT) scenario. In the next task, this delta table will work as a source for data transformation in real time.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks
