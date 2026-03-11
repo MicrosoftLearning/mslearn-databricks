@@ -1,6 +1,23 @@
 ---
 lab:
-    title: 'Implement CI/CD workflows with Azure Databricks'
+  title: Implement CI/CD workflows with Azure Databricks
+  description: Implementing CI/CD workflows with GitHub Actions and Azure Databricks
+    can streamline your development process and enhance automation. GitHub Actions
+    provide a powerful platform for automating software workflows, including continuous
+    integration (CI) and continuous delivery (CD). When integrated with Azure Databricks,
+    these workflows can execute complex data tasks, like running notebooks or deploying
+    updates to Databricks environments. For instance, you can use GitHub Actions to
+    automate the deployment of Databricks notebooks, manage Databricks file system
+    uploads, and set up the Databricks CLI within your workflows. This integration
+    facilitates a more efficient and error-resistant development cycle, especially
+    for data-driven applications.
+  duration: 5 minutes
+  level: 500
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
+  - GitHub
 ---
 
 # Implement CI/CD workflows with Azure Databricks
