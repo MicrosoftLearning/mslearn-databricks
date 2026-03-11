@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Optimize Hyperparameters for machine learning in Azure Databricks'
+  title: Optimize Hyperparameters for machine learning in Azure Databricks
+  description: In this exercise, you'll use the Optuna library to optimize hyperparameters for machine learning model training in Azure Databricks.
+  duration: 30 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Optimize Hyperparameters for machine learning in Azure Databricks
