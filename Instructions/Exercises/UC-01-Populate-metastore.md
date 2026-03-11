@@ -1,6 +1,10 @@
 ---
 lab:
-    title: 'Populate and navigate the Metastore in Unity Catalog'
+  title: Populate and navigate the Metastore in Unity Catalog
+  description: In this exercise, you'll create catalogs using Catalog Explorer, populate schemas and tables using SQL commands, then navigate the hierarchy using both SQL queries and the Catalog Explorer interface.
+  duration: 30 minutes
+  level: 200
+  islab: true
 ---
 
 # Populate and navigate the Metastore in Unity Catalog
