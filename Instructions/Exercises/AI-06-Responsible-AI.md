@@ -1,6 +1,18 @@
 ---
 lab:
-    title: 'Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Responsible AI with Large Language Models using Azure Databricks and Azure
+    OpenAI
+  description: Integrating Large Language Models (LLMs) into Azure Databricks and
+    Azure OpenAI offers a powerful platform for responsible AI development. These
+    sophisticated transformer-based models excel in natural language processing tasks,
+    enabling developers to innovate rapidly while adhering to principles of fairness,
+    reliability, safety, privacy, security, inclusiveness, transparency, and accountability.
+  duration: 64 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI
