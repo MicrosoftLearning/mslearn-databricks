@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Securing Data in Unity Catalog'
+  title: Securing Data in Unity Catalog
+  description: Data security is a critical concern for organizations managing sensitive
+    information in their data lakehouse. As data teams collaborate across different
+    roles and departments, ensuring that the right people have access to the right
+    data—while protecting sensitive information from unauthorized access—becomes increasingly
+    complex.
+  duration: 5 minutes
+  level: 300
+  islab: true
 ---
 
 # Securing Data in Unity Catalog
