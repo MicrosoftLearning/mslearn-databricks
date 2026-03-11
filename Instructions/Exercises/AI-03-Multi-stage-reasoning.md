@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI'
+  title: Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
+  description: Azure provides a web-based portal named Azure AI Foundry, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
+  duration: 84 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
