@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Train a model with AutoML'
+  title: Train a model with AutoML
+  description: AutoML is a feature of Azure Databricks that tries multiple algorithms
+    and parameters with your data to train an optimal machine learning model.
+  duration: 45 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Train a model with AutoML
