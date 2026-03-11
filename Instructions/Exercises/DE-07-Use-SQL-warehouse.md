@@ -1,6 +1,17 @@
 ---
 lab:
-    title: 'Use a SQL Warehouse in Azure Databricks'
+  title: Use a SQL Warehouse in Azure Databricks
+  description: SQL is an industry-standard language for querying and manipulating
+    data. Many data analysts perform data analytics by using SQL to query tables in
+    a relational database. Azure Databricks includes SQL functionality that builds
+    on Spark and Delta Lake technologies to provide a relational database layer over
+    files in a data lake.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Use a SQL Warehouse in Azure Databricks
