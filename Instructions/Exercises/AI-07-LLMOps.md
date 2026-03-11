@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Implement LLMOps with Azure Databricks'
+  title: Implement LLMOps with Azure Databricks
+  description: When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the Azure portal at https://portal.azure.com.
+  duration: 62 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Implement LLMOps with Azure Databricks
