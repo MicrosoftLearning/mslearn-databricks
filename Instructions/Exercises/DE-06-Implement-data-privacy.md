@@ -1,6 +1,16 @@
 ---
 lab:
-    title: 'Explore Unity Catalog in Azure Databricks'
+  title: Explore Unity Catalog in Azure Databricks
+  description: Unity Catalog offers a centralized governance solution for data and
+    AI, simplifying security by providing a single place to administer and audit data
+    access. In this exercise, you'll configure Unity Catalog for an Azure Databricks
+    workspace and use it to manage data.
+  duration: 92 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Explore Unity Catalog in Azure Databricks
