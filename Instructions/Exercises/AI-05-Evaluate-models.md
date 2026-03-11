@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Evaluate Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Evaluate Large Language Models using Azure Databricks and Azure OpenAI
+  description: After reviewing the results, you will notice that some of them are not appropriate for children. You can revise the system prompt in order to improve the outputs according to the evaluation criteria.
+  duration: 82 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Evaluate Large Language Models using Azure Databricks and Azure OpenAI
