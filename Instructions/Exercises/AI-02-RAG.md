@@ -1,6 +1,21 @@
 ---
 lab:
-    title: 'Retrieval Augmented Generation using Azure Databricks'
+  title: Retrieval Augmented Generation using Azure Databricks
+  description: Retrieval Augmented Generation (RAG) is a cutting-edge approach in
+    AI that enhances large language models by integrating external knowledge sources.
+    Azure Databricks offers a robust platform for developing RAG applications, allowing
+    for the transformation of unstructured data into a format suitable for retrieval
+    and response generation. This process involves a series of steps including understanding
+    the user's query, retrieving relevant data, and generating a response using a
+    language model. The framework provided by Azure Databricks supports rapid iteration
+    and deployment of RAG applications, ensuring high-quality, domain-specific responses
+    that can include up-to-date information and proprietary knowledge.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Retrieval Augmented Generation using Azure Databricks
