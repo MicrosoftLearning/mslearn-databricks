@@ -1,6 +1,16 @@
 ---
 lab:
-    title: 'Transform data with Apache Spark in Azure Databricks'
+  title: Transform data with Apache Spark in Azure Databricks
+  description: Azure Databricks is a Microsoft Azure-based version of the popular
+    open-source Databricks platform. Azure Databricks is built on Apache Spark, and
+    offers a highly scalable solution for data engineering and analysis tasks that
+    involve working with data in files.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Transform data with Apache Spark in Azure Databricks
