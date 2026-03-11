@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
+  description: As a reference, the model used in this exercise, GPT-4o, has the context limit (total number of tokens in the input prompt and the generated response combined) of 128K tokens.
+  duration: 86 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
