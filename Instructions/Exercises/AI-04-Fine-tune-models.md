@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
+  description: You'll gain hands-on experience fine-tuning a GPT-4o model with custom datasets using Azure Databricks and Azure OpenAI, including validating token counts, submitting fine-tuning jobs, and monitoring their progress. You'll learn how to deploy your customized fine-tuned model and use it via the chat completion API for domain-specific tasks that require specialized knowledge beyond what the base model provides.
+  duration: 60 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
+    - Microsoft Foundry
 ---
 
 # Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
@@ -45,13 +53,13 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 ## Deploy the required model
 
-Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
+Azure provides a web-based portal named **Microsoft Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Microsoft Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Microsoft Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Microsoft Foundry**.
    
-1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+1. In Microsoft Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
     - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
     - **Model version**: *Use default version*
@@ -215,7 +223,7 @@ Before you start to fine-tune the model, you need to initialize an OpenAI client
 
 ## Submit fine-tuning job
 
-Now that the fine-tuning files have been successfully uploaded you can submit your fine-tuning training job. It isn't unusual for training to take more than an hour to complete. Once training is completed, you can see the results in Azure AI Foundry by selecting the **Fine-tuning** option in the left pane.
+Now that the fine-tuning files have been successfully uploaded you can submit your fine-tuning training job. It isn't unusual for training to take more than an hour to complete. Once training is completed, you can see the results in Microsoft Foundry by selecting the **Fine-tuning** option in the left pane.
 
 1. In a new cell, run the following code to start the fine-tuning training job:
 
@@ -252,7 +260,7 @@ The `seed` parameter controls reproducibility of the fine-tuning job. Passing in
    
 ## Deploy fine-tuned model
 
-Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Azure AI Foundry, or via the chat completion API.
+Now that you have a fine-tuned model, you can deploy it as a customized model and use it like any other deployed model in either the **Chat** Playground of Microsoft Foundry, or via the chat completion API.
 
 1. In a new cell, run the following code to deploy your fine-tuned model:
    

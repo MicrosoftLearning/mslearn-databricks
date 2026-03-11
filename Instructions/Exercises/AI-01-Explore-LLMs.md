@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Explore Large Language Models with Azure Databricks'
+  title: Explore Large Language Models with Azure Databricks
+  description: You'll gain hands-on experience integrating pre-trained Large Language Models from Hugging Face into Azure Databricks for practical NLP tasks, including text summarization, sentiment analysis, translation, and zero-shot classification. You'll learn how to use the Transformers library's pipeline interface to quickly implement different NLP capabilities and configure model parameters for various use cases.
+  duration: 30 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Explore Large Language Models with Azure Databricks

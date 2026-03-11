@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Train a deep learning model'
+  title: Train a deep learning model
+  description: You'll gain hands-on experience building deep neural networks with PyTorch by defining multi-layer network architectures with forward propagation, activation functions, and training them using loss functions, optimizers, and backpropagation across multiple epochs. You'll learn how to create PyTorch data loaders for batch processing, monitor training and validation loss to prevent overfitting, visualize training metrics, and save/load trained models for inference on new observations.
+  duration: 45 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Train a deep learning model

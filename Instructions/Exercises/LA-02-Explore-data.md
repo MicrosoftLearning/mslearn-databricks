@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Explore data with Azure Databricks'
+  title: Explore data with Azure Databricks
+  description: You'll gain hands-on experience with exploratory data analysis by loading CSV data with defined schemas, querying it using both dataframe methods and Spark SQL, and creating various visualizations using the built-in chart editor. You'll learn how to use Python visualization libraries like matplotlib and seaborn to create customized bar charts, line charts, and pie charts with multiple subplots for analyzing sales data patterns.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Explore data with Azure Databricks

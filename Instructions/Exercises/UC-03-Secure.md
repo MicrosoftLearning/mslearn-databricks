@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Securing Data in Unity Catalog'
+  title: Securing Data in Unity Catalog
+  description: You learn how to implement fine-grained data security in Unity Catalog using row filters and column masks that control access to sensitive data based on user group membership. You practice creating SQL functions that redact column values and filter rows, applying them to tables, and building dynamic views that automatically adjust data visibility based on user permissions. You also explore granting access to secured views and validating that security policies work correctly for different user groups.
+  duration: 45 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Securing Data in Unity Catalog

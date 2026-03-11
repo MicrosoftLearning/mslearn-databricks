@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Retrieval Augmented Generation using Azure Databricks'
+  title: Retrieval Augmented Generation using Azure Databricks
+  description: You'll gain hands-on experience implementing Retrieval Augmented Generation (RAG) by ingesting and preprocessing data, creating vector embeddings with Databricks Mosaic AI Vector Search, and performing similarity searches to retrieve relevant context. You'll learn how to augment LLM prompts with retrieved data to generate more accurate and contextually relevant responses that incorporate external knowledge sources.
+  duration: 40 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Retrieval Augmented Generation using Azure Databricks

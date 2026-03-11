@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Automate an Azure Databricks Notebook with Azure Data Factory'
+  title: Automate an Azure Databricks Notebook with Azure Data Factory
+  description: You'll gain hands-on experience orchestrating Azure Databricks notebooks within Azure Data Factory pipelines by creating parameterized notebooks using dbutils.widgets, setting up linked services with access token authentication, and building Data Factory pipelines that dynamically provision job clusters to execute notebook activities. You'll learn how to pass parameters to notebook runs, monitor pipeline execution, and integrate Databricks data processing tasks into broader data engineering workflows.
+  duration: 40 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Data Factory
+    - Azure Portal
 ---
 
 # Automate an Azure Databricks Notebook with Azure Data Factory

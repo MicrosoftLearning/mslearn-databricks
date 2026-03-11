@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Explore Unity Catalog in Azure Databricks'
+  title: Explore Unity Catalog in Azure Databricks
+  description: You'll gain hands-on experience implementing centralized data governance with Unity Catalog by configuring external metastore storage using Azure Data Lake Storage Gen2 with managed identity access through an access connector. You'll learn how to create catalogs, schemas, and tables with fine-grained permission management to control data access, and use lineage tracking to understand how queries and transformations connect to source data for auditing and governance purposes.
+  duration: 45 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Explore Unity Catalog in Azure Databricks

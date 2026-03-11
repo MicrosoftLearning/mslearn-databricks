@@ -1,13 +1,20 @@
 ---
 lab:
-    title: 'Manage a machine learning model using Azure Databricks'
+  title: Manage a machine learning model using Azure Databricks
+  description: You'll gain hands-on experience managing the complete machine learning lifecycle by building ML pipelines that encapsulate feature engineering and model training stages, then registering trained models using MLflow's model registry. You'll learn how to deploy registered models as production-ready real-time serving endpoints and test them by sending JSON requests to generate predictions for new observations.
+  duration: 30 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Manage a machine learning model using Azure Databricks
 
 Training a machine learning model using Azure Databricks involves leveraging a unified analytics platform that provides a collaborative environment for data processing, model training, and deployment. Azure Databricks integrates with MLflow to manage the machine learning lifecycle, including experiment tracking and model serving.
 
-This exercise should take approximately **20** minutes to complete.
+This exercise should take approximately **30** minutes to complete.
 
 ## Before you start
 

@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Implement CI/CD workflows with Azure Databricks'
+  title: Implement CI/CD workflows with Azure Databricks
+  description: You'll gain hands-on experience implementing CI/CD workflows using GitHub Actions integrated with Azure Databricks by creating automated pipelines that trigger on code commits. You'll learn how to set up a CI pipeline to automatically deploy data files to DBFS and a CD pipeline to import notebooks and execute them as jobs, using GitHub repository secrets to securely manage authentication credentials and the Databricks CLI to automate deployment tasks.
+  duration: 30 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
+    - GitHub
 ---
 
 # Implement CI/CD workflows with Azure Databricks

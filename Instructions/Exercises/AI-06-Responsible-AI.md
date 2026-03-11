@@ -1,13 +1,21 @@
 ---
 lab:
-    title: 'Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI
+  description: You'll gain hands-on experience testing Large Language Models for bias by creating neutral and gender-loaded input prompts and comparing the outputs to detect potential biases inherited from training data. You'll learn practical techniques for identifying and analyzing bias in AI systems, and understand mitigation approaches like re-sampling, re-weighting, or modifying training data to ensure fairer and more responsible AI deployments.
+  duration: 20 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
+    - Microsoft Foundry
 ---
 
 # Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI
 
 Integrating Large Language Models (LLMs) into Azure Databricks and Azure OpenAI offers a powerful platform for responsible AI development. These sophisticated transformer-based models excel in natural language processing tasks, enabling developers to innovate rapidly while adhering to principles of fairness, reliability, safety, privacy, security, inclusiveness, transparency, and accountability. 
 
-This lab will take approximately **20** minutes to complete.
+This lab will take approximately **30** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
@@ -41,13 +49,13 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 ## Deploy the required model
 
-Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
+Azure provides a web-based portal named **Microsoft Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Microsoft Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Microsoft Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Microsoft Foundry**.
    
-1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+1. In Microsoft Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
     - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
     - **Model version**: *Use default version*

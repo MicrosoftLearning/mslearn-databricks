@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Use Delta Lake in Azure Databricks'
+  title: Use Delta Lake in Azure Databricks
+  description: You'll gain hands-on experience working with Delta Lake by creating Delta tables with ACID transaction support, performing updates using the DeltaTable API, and exploring transaction history to access previous versions of data through time-travel capabilities. You'll learn how to optimize Delta table storage and performance using OPTIMIZE and VACUUM commands to reorganize physical layout and clean up old data file versions.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Use Delta Lake in Azure Databricks

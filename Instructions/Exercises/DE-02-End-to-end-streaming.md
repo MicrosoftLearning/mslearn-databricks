@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks'
+  title: End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks
+  description: You'll gain hands-on experience building end-to-end streaming pipelines using Delta Live Tables to orchestrate continuous data ingestion and transformations on IoT device data. You'll learn how to create Delta Live Tables pipelines with declarative transformations, use Delta tables as both streaming sources and sinks, and visualize real-time streaming results to monitor data flow through your pipeline.
+  duration: 30 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks

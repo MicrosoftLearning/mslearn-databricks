@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Create a Lakeflow Spark Declarative Pipelines'
+  title: Create a Lakeflow Spark Declarative Pipelines
+  description: You'll gain hands-on experience building declarative ETL pipelines using Lakeflow by creating a medallion architecture with bronze, silver, and gold layers for COVID-19 data, where you define streaming tables and materialized views with SQL that automatically handle incremental ingestion and data quality constraints. You'll learn how to implement data quality expectations that enforce business rules (like non-null country regions), create aggregated views for analytics, and visualize the resulting data with line charts showing trends over time.
+  duration: 40 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Create a Lakeflow Spark Declarative Pipeline

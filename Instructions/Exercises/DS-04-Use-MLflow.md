@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Use MLflow in Azure Databricks'
+  title: Use MLflow in Azure Databricks
+  description: You'll gain hands-on experience using MLflow to track machine learning experiments by logging parameters, metrics, and trained models across multiple training runs, and organizing model training code into reusable functions for parameter experimentation. You'll learn how to register your best-performing models with MLflow's model registry and deploy them as real-time serving endpoints that can be queried via REST API for inference on new data.
+  duration: 45 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Use MLflow in Azure Databricks

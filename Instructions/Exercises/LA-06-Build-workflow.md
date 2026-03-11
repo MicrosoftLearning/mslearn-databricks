@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Deploy workloads with Azure Databricks Lakeflow jobs'
+  title: Deploy workloads with Azure Databricks Lakeflow jobs
+  description: You'll gain hands-on experience automating data workflows by creating Lakeflow jobs that orchestrate notebook tasks for ETL operations, including data ingestion, cleaning, and aggregation. You'll learn how to configure job tasks to run notebooks on serverless compute, monitor job execution through the Jobs & Pipelines interface, and understand how to schedule periodic job runs using triggers for production workloads.
+  duration: 40 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Deploy workloads with Azure Databricks Lakeflow jobs
