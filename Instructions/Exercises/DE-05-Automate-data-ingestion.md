@@ -1,6 +1,19 @@
 ---
 lab:
-    title: 'Automate data ingestion and processing using Azure Databricks'
+  title: Automate data ingestion and processing using Azure Databricks
+  description: Databricks Jobs is a powerful service that allows for the automation
+    of data ingestion and processing workflows. It enables the orchestration of complex
+    data pipelines, which can include tasks like ingesting raw data from various sources,
+    transforming this data using Delta Live Tables, and persisting it to Delta Lake
+    for further analysis. With Azure Databricks, users can schedule and run their
+    data processing tasks automatically, ensuring that data is always up-to-date and
+    available for decision-making processes.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Automate data ingestion and processing using Azure Databricks
