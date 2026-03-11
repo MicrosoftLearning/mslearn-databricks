@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Securing Data in Unity Catalog'
+  title: Securing Data in Unity Catalog
+  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource.
+  duration: 5 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Securing Data in Unity Catalog
