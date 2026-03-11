@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Train a deep learning model'
+  title: Train a deep learning model
+  description: In this exercise, you'll use the PyTorch library to train a deep learning model in Azure Databricks. Then you'll use the Horovod library to distribute deep learning training across multiple worker nodes in a cluster.
+  duration: 45 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Train a deep learning model
