@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Automate an Azure Databricks Notebook with Azure Data Factory'
+  title: Automate an Azure Databricks Notebook with Azure Data Factory
+  description: You can create notebooks in your Azure Databricks workspace to run code written in a range of programming languages. In this exercise, you'll create a simple notebook that ingests data from a file and saves it in a folder in Databricks File System (DBFS).
+  duration: 40 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Data Factory
+    - Azure Databricks
 ---
 
 # Automate an Azure Databricks Notebook with Azure Data Factory
