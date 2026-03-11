@@ -1,6 +1,18 @@
 ---
 lab:
-    title: 'Evaluate Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Evaluate Large Language Models using Azure Databricks and Azure OpenAI
+  description: Evaluating large language models (LLMs) involves a series of steps
+    to ensure the model's performance meets the required standards. MLflow LLM Evaluate,
+    a feature within Azure Databricks, provides a structured approach to this process,
+    including setting up the environment, defining evaluation metrics, and analyzing
+    results. This evaluation is crucial as LLMs often do not have a single ground
+    truth for comparison, making traditional evaluation methods inadequate.
+  duration: 82 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Evaluate Large Language Models using Azure Databricks and Azure OpenAI
