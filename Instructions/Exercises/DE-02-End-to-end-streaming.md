@@ -1,6 +1,18 @@
 ---
 lab:
-    title: 'End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks'
+  title: End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks
+  description: Creating an end-to-end streaming pipeline with Delta Live Tables in
+    Azure Databricks involves defining transformations on data, which Delta Live Tables
+    then manage through task orchestration, cluster management, and monitoring. This
+    framework supports streaming tables for handling data that is continuously updated,
+    materialized views for complex transformations, and views for intermediate transformations
+    and data quality checks.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # End-to-End Streaming Pipeline with Delta Live Tables in Azure Databricks
