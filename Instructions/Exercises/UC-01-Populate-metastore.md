@@ -1,6 +1,16 @@
 ---
 lab:
-    title: 'Populate and navigate the Metastore in Unity Catalog'
+  title: Populate and navigate the Metastore in Unity Catalog
+  description: Unity Catalog provides a centralized governance solution for data assets
+    in Azure Databricks. The metastore serves as the top-level container in Unity
+    Catalog, organizing data objects using a three-level namespace that provides boundaries
+    for data isolation and access control.
+  duration: 30 minutes
+  level: 200
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Populate and navigate the Metastore in Unity Catalog
