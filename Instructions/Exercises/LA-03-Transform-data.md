@@ -1,12 +1,11 @@
 ---
 lab:
   title: Transform data with Apache Spark in Azure Databricks
-  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to create an Azure Databricks workspace interactively in the Azure portal.
+  description: You'll gain hands-on experience performing essential data transformation tasks by cleaning data through removing duplicates and handling null values, filtering dataframes using select and where methods, and aggregating data with groupBy and sum functions. You'll learn how to work with both PySpark dataframe operations and Spark SQL to perform the same transformations, including calculating yearly summaries and grouping data by various dimensions.
   duration: 30 minutes
   level: 300
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
     - Azure Portal
 ---

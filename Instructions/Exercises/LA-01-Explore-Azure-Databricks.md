@@ -1,13 +1,13 @@
 ---
 lab:
   title: Explore Azure Databricks
-  description: In this exercise, you'll provision an Azure Databricks workspace and explore some of its core capabilities.
+  description: You'll gain hands-on experience with core Azure Databricks capabilities by creating tables from uploaded CSV files, writing SQL and PySpark code in notebooks to query and transform data, and creating visualizations from query results. You'll learn how to use Databricks Assistant, an AI-powered tool that helps write, debug, and fix code by providing natural language assistance and error diagnostics directly within notebooks.
   duration: 30 minutes
   level: 300
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
 ---
 
 # Explore Azure Databricks

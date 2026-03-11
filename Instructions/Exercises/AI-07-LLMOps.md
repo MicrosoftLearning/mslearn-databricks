@@ -1,21 +1,21 @@
 ---
 lab:
   title: Implement LLMOps with Azure Databricks
-  description: When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the Azure portal at https://portal.azure.com.
-  duration: 62 minutes
-  level: 300
+  description: You'll gain hands-on experience implementing LLMOps practices by using MLflow to track and log LLM interactions, including parameters, metrics, predictions, and artifacts for each model run. You'll learn how to use MLflow's autologging capabilities and the Trace UI to monitor model performance over time, compare traces across different runs, and detect data drift to ensure your LLM applications remain reliable and performant in production.
+  duration: 30 minutes
+  level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
     - Azure Portal
+    - Microsoft Foundry
 ---
 
 # Implement LLMOps with Azure Databricks
 
 Azure Databricks provides a unified platform that streamlines the AI lifecycle, from data preparation to model serving and monitoring, optimizing the performance and efficiency of machine learning systems. It supports the development of generative AI applications, leveraging features like Unity Catalog for data governance, MLflow for model tracking, and Mosaic AI Model Serving for deploying LLMs.
 
-This lab will take approximately **20** minutes to complete.
+This lab will take approximately **30** minutes to complete.
 
 > **Note**: The Azure Databricks user interface is subject to continual improvement. The user interface may have changed since the instructions in this exercise were written.
 
@@ -49,13 +49,13 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 ## Deploy the required model
 
-Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
+Azure provides a web-based portal named **Microsoft Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Microsoft Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Microsoft Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Microsoft Foundry**.
    
-1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+1. In Microsoft Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
     - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
     - **Model version**: *Use default version*

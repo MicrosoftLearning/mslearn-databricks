@@ -1,12 +1,11 @@
 ---
 lab:
   title: Explore Large Language Models with Azure Databricks
-  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to create an Azure Databricks workspace interactively in the Azure portal.
-  duration: 5 minutes
-  level: 300
+  description: You'll gain hands-on experience integrating pre-trained Large Language Models from Hugging Face into Azure Databricks for practical NLP tasks, including text summarization, sentiment analysis, translation, and zero-shot classification. You'll learn how to use the Transformers library's pipeline interface to quickly implement different NLP capabilities and configure model parameters for various use cases.
+  duration: 30 minutes
+  level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
     - Azure Portal
 ---

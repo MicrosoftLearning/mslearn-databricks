@@ -1,13 +1,13 @@
 ---
 lab:
   title: Optimize Data Pipelines for Better Performance in Azure Databricks
-  description: Azure Databricks is a distributed processing platform that uses Apache Spark clusters to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a single-node cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
-  duration: 5 minutes
+  description: You'll gain hands-on experience optimizing data pipelines using Auto Loader for efficient incremental data ingestion with automatic schema evolution and handling schema changes. You'll learn practical optimization techniques including salting to mitigate data skew by distributing data more evenly across partitions, and using Delta Lake's optimize command to improve query performance through file compaction and Z-Ordering clustering.
+  duration: 30 minutes
   level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
 ---
 
 # Optimize Data Pipelines for Better Performance in Azure Databricks

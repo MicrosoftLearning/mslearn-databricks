@@ -1,12 +1,11 @@
 ---
 lab:
   title: Deploy workloads with Azure Databricks Lakeflow jobs
-  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to create an Azure Databricks workspace interactively in the Azure portal.
-  duration: 5 minutes
+  description: You'll gain hands-on experience automating data workflows by creating Lakeflow jobs that orchestrate notebook tasks for ETL operations, including data ingestion, cleaning, and aggregation. You'll learn how to configure job tasks to run notebooks on serverless compute, monitor job execution through the Jobs & Pipelines interface, and understand how to schedule periodic job runs using triggers for production workloads.
+  duration: 40 minutes
   level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
     - Azure Portal
 ---

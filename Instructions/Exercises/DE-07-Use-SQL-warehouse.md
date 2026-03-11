@@ -1,12 +1,11 @@
 ---
 lab:
   title: Use a SQL Warehouse in Azure Databricks
-  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to create an Azure Databricks workspace interactively in the Azure portal.
+  description: You'll gain hands-on experience using SQL Warehouse to perform relational database operations on data lake files by creating custom database schemas and tables using standard SQL commands and CSV file uploads. You'll learn how to build interactive dashboards with SQL queries and bar chart visualizations that can be published and shared with business users for data exploration and reporting.
   duration: 30 minutes
   level: 300
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
     - Azure Portal
 ---

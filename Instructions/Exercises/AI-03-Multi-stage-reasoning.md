@@ -1,13 +1,14 @@
 ---
 lab:
   title: Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
-  description: Azure provides a web-based portal named Azure AI Foundry, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
-  duration: 84 minutes
-  level: 300
+  description: You'll gain hands-on experience building sophisticated AI applications with LangChain by creating vector indexes with embeddings, implementing retriever-based chains for question-answering systems, and combining multiple chains into a multi-stage reasoning system. You'll learn how to chain LangChain components together to handle complex text processing tasks, such as retrieving relevant context from documents and then transforming that output into different formats like social media posts.
+  duration: 30 minutes
+  level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
+    - Microsoft Foundry
 ---
 
 # Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
@@ -54,13 +55,13 @@ If you don't already have one, provision an Azure OpenAI resource in your Azure 
 
 ## Deploy the required models
 
-Azure provides a web-based portal named **Azure AI Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
+Azure provides a web-based portal named **Microsoft Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Microsoft Foundry to deploy a model.
 
-> **Note**: As you use Azure AI Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
+> **Note**: As you use Microsoft Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Azure AI Foundry**.
+1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Microsoft Foundry**.
    
-1. In Azure AI Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
+1. In Microsoft Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
     - **Deployment name**: *gpt-4o*
     - **Deployment type**: Standard
     - **Model version**: *Use default version*

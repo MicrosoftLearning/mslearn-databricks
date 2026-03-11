@@ -1,13 +1,13 @@
 ---
 lab:
   title: Get started with machine learning in Azure Databricks
-  description: In this exercise, you'll explore techniques for preparing data and training machine learning models in Azure Databricks.
+  description: You'll gain hands-on experience with the complete machine learning workflow in Azure Databricks, including data preparation and feature engineering techniques like encoding categorical variables and normalizing numeric features using Spark MLLib. You'll learn how to train and evaluate classification models using different algorithms (logistic regression and decision trees), encapsulate data transformations and model training in reusable ML pipelines, and save trained models for inference on new data.
   duration: 45 minutes
   level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
 ---
 
 # Get started with machine learning in Azure Databricks

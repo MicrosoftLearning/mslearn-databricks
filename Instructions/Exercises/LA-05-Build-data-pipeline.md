@@ -1,12 +1,11 @@
 ---
 lab:
   title: Create a Lakeflow Spark Declarative Pipelines
-  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to create an Azure Databricks workspace interactively in the Azure portal.
-  duration: 5 minutes
+  description: You'll gain hands-on experience building declarative ETL pipelines using Lakeflow by creating a medallion architecture with bronze, silver, and gold layers for COVID-19 data, where you define streaming tables and materialized views with SQL that automatically handle incremental ingestion and data quality constraints. You'll learn how to implement data quality expectations that enforce business rules (like non-null country regions), create aggregated views for analytics, and visualize the resulting data with line charts showing trends over time.
+  duration: 40 minutes
   level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
     - Azure Portal
 ---

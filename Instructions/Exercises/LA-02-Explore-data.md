@@ -1,13 +1,13 @@
 ---
 lab:
   title: Explore data with Azure Databricks
-  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource.
+  description: You'll gain hands-on experience with exploratory data analysis by loading CSV data with defined schemas, querying it using both dataframe methods and Spark SQL, and creating various visualizations using the built-in chart editor. You'll learn how to use Python visualization libraries like matplotlib and seaborn to create customized bar charts, line charts, and pie charts with multiple subplots for analyzing sales data patterns.
   duration: 30 minutes
   level: 300
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
 ---
 
 # Explore data with Azure Databricks

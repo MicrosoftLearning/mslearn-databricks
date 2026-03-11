@@ -1,13 +1,13 @@
 ---
 lab:
   title: Real-time data processing with Spark Structured Streaming and Delta Lake with Azure Databricks
-  description: You can create notebooks in your Azure Databricks workspace to run code written in a range of programming languages. In this exercise, you'll create a simple notebook that ingests data from a file and saves it in a folder in Databricks File System (DBFS).
-  duration: 5 minutes
+  description: You'll gain hands-on experience building real-time data pipelines using Spark Structured Streaming to ingest and process streaming JSON data from simulated IoT devices. You'll learn how to use Delta Lake as a streaming sink with ACID transactions, create tables based on streaming data, and query continuously updating data to verify that new information is being captured in real-time.
+  duration: 30 minutes
   level: 400
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
 ---
 
 # Real-time data processing with Spark Structured Streaming and Delta Lake with Azure Databricks

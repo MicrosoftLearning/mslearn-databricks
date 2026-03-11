@@ -1,13 +1,13 @@
 ---
 lab:
   title: Upgrade Tables to Unity Catalog
-  description: In this exercise, you'll learn how to upgrade existing tables from the Hive metastore to Unity Catalog. You'll use SQL commands and the Azure Databricks user interface to analyze existing data structures, apply migration techniques, evaluate transformation options, and upgrade metadata without moving data.
+  description: You learn how to upgrade tables from Hive metastore to Unity Catalog using different migration strategies based on your data storage requirements. You practice deep cloning Delta tables, using CTAS for universal table migration, and applying transformations during the upgrade process to restructure data. You also explore how to upgrade external tables without moving data using the SYNC command and the Catalog Explorer UI.
   duration: 30 minutes
   level: 300
   islab: true
   primarytopics:
-    - Azure
     - Azure Databricks
+    - Azure Portal
 ---
 
 # Upgrade Tables to Unity Catalog
