@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Use MLflow in Azure Databricks'
+  title: Use MLflow in Azure Databricks
+  description: In this exercise, you'll explore to use use MLflow to train and serve
+    machine learning models in Azure Databricks.
+  duration: 45 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Use MLflow in Azure Databricks
