@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Explore Azure Databricks'
+  title: Explore Azure Databricks
+  description: Azure Databricks is a Microsoft Azure-based version of the popular
+    open-source Databricks platform.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Explore Azure Databricks
