@@ -1,6 +1,18 @@
 ---
 lab:
-    title: 'Explore Large Language Models with Azure Databricks'
+  title: Explore Large Language Models with Azure Databricks
+  description: Large Language Models (LLMs) can be a powerful asset for Natural Language
+    Processing (NLP) tasks when integrated with Azure Databricks and Hugging Face
+    Transformers. Azure Databricks provides a seamless platform to access, fine-tune,
+    and deploy LLMs, including pre-trained models from Hugging Face's extensive library.
+    For model inference, Hugging Face's pipelines class simplifies the use of pre-trained
+    models, supporting a wide range of NLP tasks directly within the Databricks environment.
+  duration: 5 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Explore Large Language Models with Azure Databricks
