@@ -1,6 +1,19 @@
 ---
 lab:
-    title: 'Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
+  description: With Azure Databricks, users can now leverage the power of LLMs for
+    specialized tasks by fine-tuning them with their own data, enhancing domain-specific
+    performance. To fine-tune a language model using Azure Databricks, you can utilize
+    the Mosaic AI Model Training interface which simplifies the process of full model
+    fine-tuning. This feature allows you to fine-tune a model with your custom data,
+    with checkpoints saved to MLflow, ensuring you retain complete control over the
+    fine-tuned model.
+  duration: 86 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Fine-Tuning Large Language Models using Azure Databricks and Azure OpenAI
