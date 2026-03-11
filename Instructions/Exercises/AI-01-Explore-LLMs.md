@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Explore Large Language Models with Azure Databricks'
+  title: Explore Large Language Models with Azure Databricks
+  description: This exercise includes a script to provision a new Azure Databricks workspace. The script attempts to create a Premium tier Azure Databricks workspace resource in a region in which your Azure subscription has sufficient quota for the compute cores required in this exercise; and assumes your user account has sufficient permissions in the subscription to create an Azure Databricks workspace resource. If the script fails due to insufficient quota or permissions, you can try to create an Azure Databricks workspace interactively in the Azure portal.
+  duration: 5 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
+    - Azure Portal
 ---
 
 # Explore Large Language Models with Azure Databricks
