@@ -1,6 +1,14 @@
 ---
 lab:
-    title: 'Create a Lakeflow Spark Declarative Pipelines'
+  title: Create a Lakeflow Spark Declarative Pipelines
+  description: Lakeflow Spark Declarative Pipelines is a framework within the Databricks
+    Lakehouse Platform for building and running data pipelines in a **declarative**
+    manner. This means you specify what data transformations you want to achieve,
+    and the system automatically figures out how to execute them efficiently, handling
+    many of the complexities of traditional data engineering.
+  duration: 5 minutes
+  level: 400
+  islab: true
 ---
 
 # Create a Lakeflow Spark Declarative Pipeline
