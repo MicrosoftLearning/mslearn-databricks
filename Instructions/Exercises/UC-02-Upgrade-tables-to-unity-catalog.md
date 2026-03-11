@@ -1,6 +1,16 @@
 ---
 lab:
-    title: 'Upgrade Tables to Unity Catalog'
+  title: Upgrade Tables to Unity Catalog
+  description: Unity Catalog provides a centralized governance solution for data assets
+    in Azure Databricks. Unity Catalog delivers fine-grained access controls, automated
+    data lineage tracking, and cross-workspace data sharing capabilities that build
+    on the basic table management that the Hive metastore provides.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Upgrade Tables to Unity Catalog
