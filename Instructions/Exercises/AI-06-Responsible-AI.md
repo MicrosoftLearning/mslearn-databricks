@@ -1,6 +1,13 @@
 ---
 lab:
-    title: 'Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI'
+  title: Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI
+  description: Azure provides a web-based portal named Azure AI Foundry, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Azure AI Foundry to deploy a model.
+  duration: 64 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Databricks
 ---
 
 # Responsible AI with Large Language Models using Azure Databricks and Azure OpenAI
