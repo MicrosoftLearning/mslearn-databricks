@@ -1,6 +1,17 @@
 ---
 lab:
-    title: 'Manage a machine learning model using Azure Databricks'
+  title: Manage a machine learning model using Azure Databricks
+  description: Training a machine learning model using Azure Databricks involves leveraging
+    a unified analytics platform that provides a collaborative environment for data
+    processing, model training, and deployment. Azure Databricks integrates with MLflow
+    to manage the machine learning lifecycle, including experiment tracking and model
+    serving.
+  duration: 20 minutes
+  level: 400
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Manage a machine learning model using Azure Databricks
