@@ -1,6 +1,20 @@
 ---
 lab:
-    title: 'Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI'
+  title: Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
+  description: Multi-stage reasoning is a cutting-edge approach in AI that involves
+    breaking down complex problems into smaller, more manageable stages. LangChain,
+    a software framework, facilitates the creation of applications that leverage large
+    language models (LLMs). When integrated with Azure Databricks, LangChain allows
+    for seamless data loading, model wrapping, and the development of sophisticated
+    AI agents. This combination is particularly powerful for handling intricate tasks
+    that require a deep understanding of context and the ability to reason across
+    multiple steps.
+  duration: 84 minutes
+  level: 300
+  islab: true
+  primarytopics:
+  - Azure
+  - Azure Databricks
 ---
 
 # Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
