@@ -45,7 +45,7 @@ If you don't already have one, create a Microsoft Foundry resource and project i
 
 5. Once deployment completes, go to the deployed resource. In the left pane, under **Resource Management**, select **Keys and Endpoint**, then on the **Foundry** tab, copy the **Endpoint** — you will use it later in this exercise.
 
-6. In the **Overview** page, select **Go to Microsoft Foundry** to open your resource in the Foundry portal (or navigate directly to `https://ai.azure.com`).
+6. In the **Overview** page, select **Go to Foundry portal** to open your resource in the Foundry portal (or navigate directly to `https://ai.azure.com`).
 
 7. In **Microsoft Foundry**, select the project within your Foundry resource. A default project is created automatically — select it to open it. If no project exists, create one:
     - Select **+ New project** in the left navigation.
@@ -70,20 +70,17 @@ Microsoft Foundry allows you to deploy, manage, and explore models.
 
 1. Select **Deploy** > **Deploy a base model**, search for and select **gpt-4.1**, then select **Deploy** > **Custom settings** to configure the deployment with the following settings:
     - **Deployment name**: *gpt-4.1*
-    - **Deployment type**: Standard
-    - **Model version**: *2025-04-14*
-    - **Model version upgrade policy**: Upgrade once new default version becomes available
-    - **Enable dynamic quota**: Disabled
+    - **Deployment type**: Global Standard
+    - **Model version** *(under Model version settings)*: *2025-04-14*
+    - **Model version upgrade policy** *(under Model version settings)*: Upgrade once new default version becomes available
     - **Tokens per minute rate limit**: 10K\*
     - **Guardrails**: DefaultV2
 
 1. Return to the **Deployments** page and create a new deployment of the **text-embedding-ada-002** model with the following settings:
     - **Deployment name**: *text-embedding-ada-002*
-    - **Deployment type**: Standard
-    - **Model version**: *Use default version*
+    - **Deployment type**: Global Standard
     - **Tokens per minute rate limit**: 10K\*
-    - **Content filter**: Default
-    - **Enable dynamic quota**: Disabled
+    - **Guardrails**: DefaultV2
 
 > \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
