@@ -34,20 +34,21 @@ If you don't already have one, create a Microsoft Foundry resource and project i
 3. On the **Create** page, provide the following information on the **Basics** tab:
     - **Subscription**: *Select your Azure subscription*
     - **Resource group**: *Choose or create a resource group*
+    - **Name**: *A unique name of your choice*
     - **Region**: *Make a **random** choice from any of the following regions*\*
         - North Central US
         - Sweden Central
-    - **Name**: *A unique name of your choice*
+    - **Default project name**: *Leave the pre-filled default or enter a custom project name*
 4. Select **Review + create**, then select **Create** and wait for deployment to complete.
 
 > \* Foundry resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
-5. Once deployment completes, go to the deployed resource. In the left pane, under **Resource Management**, select **Keys and Endpoint**, then copy the **Endpoint** — you will use it later in this exercise.
+5. Once deployment completes, go to the deployed resource. In the left pane, under **Resource Management**, select **Keys and Endpoint**, then on the **Foundry** tab, copy the **Endpoint** — you will use it later in this exercise.
 
 6. In the **Overview** page, select **Go to Microsoft Foundry** to open your resource in the Foundry portal (or navigate directly to `https://ai.azure.com`).
 
-7. In **Microsoft Foundry**, create a new **project** within your Foundry resource:
-    - Select the project name in the upper-left corner, then select **Create new project**.
+7. In **Microsoft Foundry**, select the project within your Foundry resource. A default project is created automatically — select it to open it. If no project exists, create one:
+    - Select **+ New project** in the left navigation.
     - Enter a **Project name** and select **Create project**.
     - Wait for the project to be created.
 
