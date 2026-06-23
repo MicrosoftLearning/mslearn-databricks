@@ -1,6 +1,6 @@
 ---
 lab:
-  title: Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
+  title: Multi-stage Reasoning with LangChain using Azure Databricks and Microsoft Foundry
   description: You'll gain hands-on experience building sophisticated AI applications with LangChain by creating vector indexes with embeddings, implementing retriever-based chains for question-answering systems, and combining multiple chains into a multi-stage reasoning system. You'll learn how to chain LangChain components together to handle complex text processing tasks, such as retrieving relevant context from documents and then transforming that output into different formats like social media posts.
   duration: 30 minutes
   level: 400
@@ -11,7 +11,7 @@ lab:
     - Microsoft Foundry
 ---
 
-# Multi-stage Reasoning with LangChain using Azure Databricks and Azure OpenAI
+# Multi-stage Reasoning with LangChain using Azure Databricks and Microsoft Foundry
 
 Multi-stage reasoning is a cutting-edge approach in AI that involves breaking down complex problems into smaller, more manageable stages. LangChain, a software framework, facilitates the creation of applications that leverage large language models (LLMs). When integrated with Azure Databricks, LangChain allows for seamless data loading, model wrapping, and the development of sophisticated AI agents. This combination is particularly powerful for handling intricate tasks that require a deep understanding of context and the ability to reason across multiple steps.
 
@@ -23,53 +23,60 @@ This lab will take approximately **30** minutes to complete.
 
 You'll need an [Azure subscription](https://azure.microsoft.com/free) in which you have administrative-level access.
 
-## Provision an Azure OpenAI resource
+## Create a Microsoft Foundry resource and project
 
-If you don't already have one, provision an Azure OpenAI resource in your Azure subscription.
+If you don't already have one, create a Microsoft Foundry resource and project in your Azure subscription.
+
+> **Note**: Creating a Foundry resource only requires a subscription, resource group, region, and name. No Key Vault or Application Insights resources are needed.
 
 1. Sign into the **Azure portal** at `https://portal.azure.com`.
-1. Create an **Azure OpenAI** resource with the following settings:
-    - **Subscription**: *Select an Azure subscription that has been approved for access to the Azure OpenAI service*
+2. Use the following link to open the Foundry resource creation page: `https://portal.azure.com/#create/Microsoft.CognitiveServicesAIFoundry`
+3. On the **Create** page, provide the following information on the **Basics** tab:
+    - **Subscription**: *Select your Azure subscription*
     - **Resource group**: *Choose or create a resource group*
     - **Region**: *Make a **random** choice from any of the following regions*\*
-        - Australia East
-        - Canada East
-        - East US
-        - East US 2
-        - France Central
-        - Japan East
         - North Central US
         - Sweden Central
-        - Switzerland North
-        - UK South
     - **Name**: *A unique name of your choice*
-    - **Pricing tier**: Standard S0
+4. Select **Review + create**, then select **Create** and wait for deployment to complete.
 
-> \* Azure OpenAI resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
+> \* Foundry resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
-1. Wait for deployment to complete. Then go to the deployed Azure OpenAI resource in the Azure portal.
+5. Once deployment completes, go to the deployed resource. In the left pane, under **Resource Management**, select **Keys and Endpoint**, then copy the **Endpoint** — you will use it later in this exercise.
 
-1. In the left pane, under **Resource Management**, select **Keys and Endpoint**.
+6. In the **Overview** page, select **Go to Microsoft Foundry** to open your resource in the Foundry portal (or navigate directly to `https://ai.azure.com`).
 
-1. Copy the endpoint and one of the available keys as you will use it later in this exercise.
+7. In **Microsoft Foundry**, create a new **project** within your Foundry resource:
+    - Select the project name in the upper-left corner, then select **Create new project**.
+    - Enter a **Project name** and select **Create project**.
+    - Wait for the project to be created.
+
+8. Launch Cloud Shell and run the following command to get a temporary authorization token for API calls. Keep it together with the endpoint copied previously.
+
+    ```bash
+    az account get-access-token --resource https://cognitiveservices.azure.com
+    ```
+
+    >**Note**: You only need to copy the `accessToken` field value and **not** the entire JSON output.
 
 ## Deploy the required models
 
-Azure provides a web-based portal named **Microsoft Foundry**, that you can use to deploy, manage, and explore models. You'll start your exploration of Azure OpenAI by using Microsoft Foundry to deploy a model.
+Microsoft Foundry allows you to deploy, manage, and explore models.
 
 > **Note**: As you use Microsoft Foundry, message boxes suggesting tasks for you to perform may be displayed. You can close these and follow the steps in this exercise.
 
-1. In the Azure portal, on the **Overview** page for your Azure OpenAI resource, scroll down to the **Get Started** section and select the button to go to **Microsoft Foundry**.
-   
-1. In Microsoft Foundry, in the pane on the left, select the **Deployments** page and view your existing model deployments. If you don't already have one, create a new deployment of the **gpt-4o** model with the following settings:
-    - **Deployment name**: *gpt-4o*
+1. In **Microsoft Foundry**, on the home page select **View deployments** (or select **Build** in the top navigation bar, then select **Deployments**).
+
+1. Select **Deploy** > **Deploy a base model**, search for and select **gpt-4.1**, then select **Deploy** > **Custom settings** to configure the deployment with the following settings:
+    - **Deployment name**: *gpt-4.1*
     - **Deployment type**: Standard
-    - **Model version**: *Use default version*
-    - **Tokens per minute rate limit**: 10K\*
-    - **Content filter**: Default
+    - **Model version**: *2025-04-14*
+    - **Model version upgrade policy**: Upgrade once new default version becomes available
     - **Enable dynamic quota**: Disabled
-    
-1. Go back to the **Deployments** page and create a new deployment of the **text-embedding-ada-002** model with the following settings:
+    - **Tokens per minute rate limit**: 10K\*
+    - **Guardrails**: DefaultV2
+
+1. Return to the **Deployments** page and create a new deployment of the **text-embedding-ada-002** model with the following settings:
     - **Deployment name**: *text-embedding-ada-002*
     - **Deployment type**: Standard
     - **Model version**: *Use default version*
@@ -79,17 +86,20 @@ Azure provides a web-based portal named **Microsoft Foundry**, that you can use 
 
 > \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
+2. Wait for the deployments to complete.
+
 ## Provision an Azure Databricks workspace
 
 > **Tip**: If you already have an Azure Databricks workspace, you can skip this procedure and use your existing workspace.
 
 1. Sign into the **Azure portal** at `https://portal.azure.com`.
 1. Create an **Azure Databricks** resource with the following settings:
-    - **Subscription**: *Select the same Azure subscription that you used to create your Azure OpenAI resource*
-    - **Resource group**: *The same resource group where you created your Azure OpenAI resource*
-    - **Region**: *The same region where you created your Azure OpenAI resource*
-    - **Name**: *A unique name of your choice*
-    - **Pricing tier**: *Premium* or *Trial*
+    - **Subscription**: *Select the same Azure subscription that you used to create your Foundry resource*
+    - **Resource group**: *The same resource group where you created your Foundry resource*
+    - **Workspace name**: *A unique name of your choice*
+    - **Region**: *Select any available region*
+    - **Pricing tier**: Premium
+    - **Workspace type**: Serverless
 
 1. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
 
@@ -121,12 +131,16 @@ Azure provides a web-based portal named **Microsoft Foundry**, that you can use 
    %restart_python
     ```
 
-1. In a new cell, define the authentication parameters that will be used to initialize the OpenAI models, replacing `your_openai_endpoint` and `your_openai_api_key` with the endpoint and key copied earlier from your OpenAI resource:
+1. In a new cell, run the following code with the access information you copied earlier to assign persistent environment variables for authentication:
 
     ```python
-   endpoint = "your_openai_endpoint"
-   key = "your_openai_api_key"
+   import os
+
+   os.environ["AZURE_OPENAI_ENDPOINT"] = "your_foundry_endpoint"
+   os.environ["COGNITIVE_SERVICES_TOKEN"] = "your_cognitiveservices_access_token"  # from: az account get-access-token --resource https://cognitiveservices.azure.com
     ```
+
+    > **Note**: The access token expires after approximately 60 minutes. If you encounter authentication errors during the lab, re-run the Cloud Shell command and update this cell.
     
 ## Create a Vector Index and Store Embeddings
 
@@ -153,9 +167,9 @@ A vector index is a specialized data structure that allows for efficient storage
    embedding_function = AzureOpenAIEmbeddings(
        deployment="text-embedding-ada-002",
        model="text-embedding-ada-002",
-       azure_endpoint=endpoint,
-       openai_api_key=key,
-       openai_api_version="2023-03-15-preview" 
+       azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+       azure_ad_token=os.getenv("COGNITIVE_SERVICES_TOKEN"),
+       openai_api_version="2024-08-01-preview",
        chunk_size=1
    )
     ```
@@ -186,7 +200,7 @@ A retriever component fetches relevant documents or data based on a query. This 
    retriever = VectorStoreRetriever(vectorstore=vector_store)
     ```
 
-1. In a new cell, run the following code to create a QA system using the retriever and the `gpt-4o` model:
+1. In a new cell, run the following code to create a QA system using the retriever and the `gpt-4.1` model:
     
     ```python
    from langchain_openai import AzureChatOpenAI
@@ -195,11 +209,11 @@ A retriever component fetches relevant documents or data based on a query. This 
    from langchain_classic.chains import create_retrieval_chain
      
    llm = AzureChatOpenAI(
-       deployment_name="gpt-4o",
-       model_name="gpt-4o",
-       azure_endpoint=endpoint,
-       api_version="2023-03-15-preview",
-       openai_api_key=key,
+       deployment_name="gpt-4.1",
+       model_name="gpt-4.1",
+       azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+       api_version="2024-08-01-preview",
+       azure_ad_token=os.getenv("COGNITIVE_SERVICES_TOKEN"),
    )
 
    system_prompt = (
@@ -254,6 +268,6 @@ Langchain is a versatile tool that allows the combination of multiple chains int
 
 ## Clean up
 
-When you're done with your Azure OpenAI resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
+When you're done with your Microsoft Foundry resource, remember to delete the deployment or the entire resource in the **Azure portal** at `https://portal.azure.com`.
 
 If you've finished exploring Azure Databricks, you can delete the resources you've created to avoid unnecessary Azure costs and free up capacity in your subscription.
