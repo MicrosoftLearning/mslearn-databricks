@@ -78,6 +78,8 @@ Microsoft Foundry allows you to deploy, manage, and explore models.
     - **Tokens per minute rate limit**: 10K\*
     - **Guardrails**: DefaultV2
 
+    Then select **Deploy** at the bottom of the page.
+
 > \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
 2. Wait for the deployment to complete.
