@@ -53,7 +53,7 @@ If you don't already have one, create a Microsoft Foundry resource and project i
     - Enter a **Project name** and select **Create project**.
     - Wait for the project to be created.
 
-8. Launch Cloud Shell and run the following command to get a temporary authorization token for API calls. Keep it together with the endpoint copied previously.
+8. In a new browser tab, return to the **Azure portal** at `https://portal.azure.com` and launch Cloud Shell. Run the following command to get a temporary authorization token for API calls. Copy the `accessToken` value and save it alongside the endpoint you copied in step 5.
 
     ```bash
     az account get-access-token --resource https://cognitiveservices.azure.com
@@ -215,7 +215,7 @@ In MLflow 3 and above, `mlflow.genai.evaluate()` supports evaluating a Python fu
        },
        {
            "inputs": {
-               "template": "The ____ (adjective) ____ (job) shouted, "____ (exclamation)!" and ran toward the ____ (place)"
+               "template": "The ____ (adjective) ____ (job) shouted, \"____ (exclamation)!\" and ran toward the ____ (place)"
            }
        },
        {
