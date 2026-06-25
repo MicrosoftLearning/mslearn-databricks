@@ -13,7 +13,7 @@ lab:
 
 # Responsible AI with Large Language Models using Azure Databricks and Microsoft Foundry
 
-Integrating Large Language Models (LLMs) into Azure Databricks and Microsoft Foundry offers a powerful platform for responsible AI development. These sophisticated transformer-based models excel in natural language processing tasks, enabling developers to innovate rapidly while adhering to principles of fairness, reliability, safety, privacy, security, inclusiveness, transparency, and accountability. 
+Responsible AI development requires actively testing language models for potential biases that can emerge from training data. In this lab, you use Azure Databricks and Microsoft Foundry to probe a large language model for gender bias by crafting and comparing neutral and gender-loaded prompts. By sending both types of prompts to a `gpt-4.1` model and analyzing the responses side by side in a PySpark DataFrame, you can see firsthand how a model's output language shifts based on subtle input differences — a practical technique for identifying bias before deploying AI systems at scale.
 
 This lab will take approximately **30** minutes to complete.
 
@@ -178,7 +178,7 @@ These samples will be used to verify if the model has a gender bias inherited fr
 
 ## Implement Responsible AI Practices
 
-Responsible AI refers to the ethical and sustainable development, deployment, and use of artificial intelligence systems. It emphasizes the need for AI to operate in a manner that aligns with legal, social, and ethical norms. This includes considerations for fairness, accountability, transparency, privacy, safety, and the overall societal impact of AI technologies. Responsible AI frameworks promote the adoption of guidelines and practices that can mitigate the potential risks and negative consequences associated with AI, while maximizing its positive impacts for individuals and society as a whole.
+You now have two sets of prompts — one neutral, one gender-loaded. In this section, you send both sets to `gpt-4.1` and collect the responses. You then load both sets of answers into PySpark DataFrames and display them side by side. By comparing how the model describes, for example, 'a nurse' versus 'a male nurse', you can see whether specifying a gender changes the model's word choice, tone, or assumptions — a direct way to surface bias before it reaches production.
 
 1. In a new cell, run the following code to generate outputs for your sample inputs:
 

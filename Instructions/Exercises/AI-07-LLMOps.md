@@ -13,7 +13,7 @@ lab:
 
 # Implement LLMOps with Azure Databricks
 
-Azure Databricks provides a unified platform that streamlines the AI lifecycle, from data preparation to model serving and monitoring, optimizing the performance and efficiency of machine learning systems. It supports the development of generative AI applications, leveraging features like Unity Catalog for data governance, MLflow for model tracking, and Mosaic AI Model Serving for deploying LLMs.
+LLMOps (Large Language Model Operations) brings structured observability to AI applications by tracking every interaction a model has in production. In this lab, you use Azure Databricks and Microsoft Foundry to connect a `gpt-4.1` model to MLflow's autologging capabilities, capturing inputs, outputs, token usage, and metadata for each run. After executing a prompt, you explore the MLflow Trace UI to see how individual requests are recorded — giving you the foundation to compare runs over time, detect data drift, and keep your LLM applications reliable at scale.
 
 This lab will take approximately **30** minutes to complete.
 
@@ -146,7 +146,7 @@ Azure Databricks is a distributed processing platform that uses Apache Spark *cl
 
 ## Log the LLM using MLflow
 
-MLflow’s LLM tracking capabilities allow you to log parameters, metrics, predictions, and artifacts. Parameters include key-value pairs detailing input configurations, while metrics provide quantitative measures of performance. Predictions encompass both the input prompts and the model’s responses, stored as artifacts for easy retrieval. This structured logging helps in maintaining a detailed record of each interaction, facilitating better analysis and optimization of LLMs.
+In this section, you wire up MLflow's autologging before making any API calls. Calling `mlflow.openai.autolog()` tells MLflow to intercept every OpenAI SDK call and automatically record the prompt, response, model name, and token counts as a trace. You then wrap a test prompt inside `mlflow.start_run()` so it belongs to a named experiment run, and manually log one extra parameter — the number of completion tokens — to show how you can attach custom metrics alongside the automatic trace data.
 
 1. In a new cell, run the following code with the access information you copied earlier to assign persistent environment variables for authentication:
 
@@ -200,11 +200,15 @@ The cell above will start an experiment in your workspace and register the trace
 
 ## Monitor the model
 
-After running the last cell, MLflow Trace UI will automatically be displayed together with the cell's output. You can also see it by selecting **Experiments** in the left sidebar, and then opening your notebook's experiment run:
+After running the last cell, the trace is recorded automatically. To view it:
 
-   ![MLFlow Trace UI](./images/trace-ui.png)  
+1. In the left sidebar, select **Experiments**.
+1. In the list of experiments, select the name of your notebook experiment (for example, *New Notebook 2026-06-25 17:27:57*).
+1. In the left panel of the experiment view, under **Observability**, select **Traces**.
 
-The command `mlflow.openai.autolog()` will log the traces of each run by default, but you can also log additional parameters with `mlflow.log_param()` that can later be used to monitor the model. Once you start monitoring the model, you can compare the traces from different runs to detect data drift. Look for significant changes in the input data distributions, model predictions, or performance metrics over time. You can also use statistical tests or visualization tools to aid in this analysis.
+You'll see a table listing each recorded trace with columns for the **Request** (the prompt you sent), **Response** (the model's reply), **Tokens** used, **Execution time**, and **State**. Select any trace to expand it and see the full input/output detail.
+
+With autologging active, every run you add builds a history you can compare. Look at how the prompt, response content, and token counts vary across runs. You can also attach custom metrics using `mlflow.log_param()`. Over time, drift shows up as systematic shifts — responses getting longer or shorter, token usage climbing, or output quality changing — and spotting these trends early lets you retune the model or adjust the prompt before users notice a difference.
 
 ## Clean up
 
