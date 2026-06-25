@@ -43,7 +43,7 @@ If you don't already have one, create a Microsoft Foundry resource and project i
 
 > \* Foundry resources are constrained by regional quotas. The listed regions include default quota for the model type(s) used in this exercise. Randomly choosing a region reduces the risk of a single region reaching its quota limit in scenarios where you are sharing a subscription with other users. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another resource in a different region.
 
-5. Once deployment completes, go to the deployed resource. In the left pane, under **Resource Management**, select **Keys and Endpoint**, then on the **Foundry** tab, copy the **Endpoint** — you will use it later in this exercise.
+5. Once deployment completes, go to the deployed resource. In the left pane, under **Resource Management**, select **Keys and Endpoint**, then on the **Foundry** tab, copy the **API endpoint** — you will use it later in this exercise.
 
 6. In the **Overview** page, select **Go to Foundry portal** to open your resource in the Foundry portal (or navigate directly to `https://ai.azure.com`).
 
@@ -52,7 +52,7 @@ If you don't already have one, create a Microsoft Foundry resource and project i
     - Enter a **Project name** and select **Create project**.
     - Wait for the project to be created.
 
-8. Launch Cloud Shell and run the following command to get a temporary authorization token for API calls. Keep it together with the endpoint copied previously.
+8. In a new browser tab, return to the **Azure portal** at `https://portal.azure.com` and launch Cloud Shell. Run the following command to get a temporary authorization token for API calls. Copy the `accessToken` value and save it alongside the endpoint you copied in step 5.
 
     ```bash
     az account get-access-token --resource https://cognitiveservices.azure.com
@@ -76,11 +76,15 @@ Microsoft Foundry allows you to deploy, manage, and explore models.
     - **Tokens per minute rate limit**: 10K\*
     - **Guardrails**: DefaultV2
 
+    Then select **Deploy** at the bottom of the page.
+
 1. Return to the **Deployments** page and create a new deployment of the **text-embedding-ada-002** model with the following settings:
     - **Deployment name**: *text-embedding-ada-002*
     - **Deployment type**: Global Standard
     - **Tokens per minute rate limit**: 10K\*
     - **Guardrails**: DefaultV2
+
+    Then select **Deploy** at the bottom of the page.
 
 > \* A rate limit of 10,000 tokens per minute is more than adequate to complete this exercise while leaving capacity for other people using the same subscription.
 
@@ -96,32 +100,51 @@ Microsoft Foundry allows you to deploy, manage, and explore models.
     - **Resource group**: *The same resource group where you created your Foundry resource*
     - **Workspace name**: *A unique name of your choice*
     - **Region**: *Select any available region*
-    - **Pricing tier**: Premium
-    - **Workspace type**: Serverless
+    - **Pricing tier**: Premium (+ Role-based access controls)
+    - **Workspace type**: Hybrid
+    - **Managed Resource Group name**: *Leave blank*
 
-1. Select **Review + create** and wait for deployment to complete. Then go to the resource and launch the workspace.
+> **Note**: Azure Databricks does not need to be in the same region as your Foundry resource. If cluster creation fails due to quota limits in your chosen region, try deleting the workspace and creating a new one in a different region.
+
+1. Select **Review + create**, and once validation succeeds, select **Create**.
+
+1. When deployment is complete, select **Go to resource**, then select **Launch Workspace** to open your Azure Databricks workspace in a new browser tab.
+
+## Create a cluster
+
+Azure Databricks is a distributed processing platform that uses Apache Spark *clusters* to process data in parallel on multiple nodes. Each cluster consists of a driver node to coordinate the work, and worker nodes to perform processing tasks. In this exercise, you'll create a *single-node* cluster to minimize the compute resources used in the lab environment (in which resources may be constrained). In a production environment, you'd typically create a cluster with multiple worker nodes.
+
+> **Tip**: If you already have a cluster with a 17.3 LTS **<u>ML</u>** or higher runtime version in your Azure Databricks workspace, you can use it to complete this exercise and skip this procedure.
+
+1. In the sidebar on the left, select the **(+) New** task, select **More**, and then select **Cluster**.
+1. In the **New Cluster** page, create a new cluster with the following settings:
+    - **Cluster name**: *User Name's* cluster (the default cluster name)
+    - **Policy**: Unrestricted
+    - **Machine learning**: Enabled
+    - **Databricks runtime**: 17.3 LTS
+    - **Use Photon Acceleration**: <u>Un</u>selected
+    - **Worker type**: Standard_D4ds_v5
+    - **Single node**: Checked
+    - **Terminate after**: 30 minutes of inactivity
+1. Select **Create**
+
+1. Wait for the cluster to be created. It may take a minute or two.
+
+> **Note**: If your cluster fails to start, your subscription may have insufficient quota in the region where your Azure Databricks workspace is provisioned. See [CPU core limit prevents cluster creation](https://docs.microsoft.com/azure/databricks/kb/clusters/azure-core-limit) for details. If this happens, you can try deleting your workspace and creating a new one in a different region.
 
 ## Create a notebook and install required libraries
 
-1. In the Azure portal, browse to the resource group where the Azure Databricks workspace was created.
+1. In the sidebar on the left, use the **(+) New** link to create a **Notebook**.
 
-1. Select your Azure Databricks Service resource.
-
-1. In the **Overview** page for your workspace, use the **Launch Workspace** button to open your Azure Databricks workspace in a new browser tab; signing in if prompted.
-
-    > **Tip**: As you use the Databricks Workspace portal, various tips and notifications may be displayed. Dismiss these and follow the instructions provided to complete the tasks in this exercise.
-
-1. In the Databricks workspace, go to the **Workspace** section.
-
-1. Select **Create** and then select **Notebook**.
-
-1. Name your notebook and select `Python` as the language. Select **Serverless** as the default compute.
+1. Name your notebook and select `Python` as the language. In the **Connect** drop-down list, select your cluster if it is not already selected. If the cluster is not running, it may take a minute or so to start.
 
 1. In the first code cell, enter and run the following code to install the necessary libraries:
    
     ```python
    %pip install langchain openai langchain_openai langchain-community faiss-cpu
     ```
+
+    > **Note**: You may see warnings that package versions are not pinned, or that core Python package versions changed. These are advisory only and won't affect the lab — the `%restart_python` command in the next step restarts the Python environment to apply the updates.
 
 1. After the installation is complete, restart the kernel in a new cell:
 
@@ -133,8 +156,7 @@ Microsoft Foundry allows you to deploy, manage, and explore models.
 
     ```python
    import os
-
-   os.environ["AZURE_OPENAI_ENDPOINT"] = "your_foundry_endpoint"
+   os.environ["AZURE_OPENAI_ENDPOINT"] = "your_endpoint"  # e.g. https://yourresource.services.ai.azure.com/
    os.environ["COGNITIVE_SERVICES_TOKEN"] = "your_cognitiveservices_access_token"  # from: az account get-access-token --resource https://cognitiveservices.azure.com
     ```
 
@@ -142,7 +164,7 @@ Microsoft Foundry allows you to deploy, manage, and explore models.
     
 ## Create a Vector Index and Store Embeddings
 
-A vector index is a specialized data structure that allows for efficient storage and retrieval of high-dimensional vector data, which is crucial for performing fast similarity searches and nearest neighbor queries. Embeddings, on the other hand, are numerical representations of objects that capture their meaning in a vector form, enabling machines to process and understand various types of data, including text and images.
+In this lab, you're building a retrieval-augmented generation (RAG) pipeline using LangChain. Before the language model can answer questions, it needs a knowledge base to search. In this section, you convert sample documents into vector embeddings and store them in a FAISS index. Later, the retriever uses this index to find the most relevant documents for a given query, and passes them to the model as context.
 
 1. In a new cell, run the following code to load a sample dataset:
 
@@ -167,17 +189,17 @@ A vector index is a specialized data structure that allows for efficient storage
        model="text-embedding-ada-002",
        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
        azure_ad_token=os.getenv("COGNITIVE_SERVICES_TOKEN"),
-       openai_api_version="2024-08-01-preview",
+       openai_api_version="2025-04-01-preview",
        chunk_size=1
    )
     ```
      
-1. In a new cell, run the following code to create a vector index using the first text sample as a reference for the vector dimension:
+1. In a new cell, run the following code to create a vector index using the known dimension for `text-embedding-ada-002` embeddings:
 
     ```python
    import faiss
       
-   index = faiss.IndexFlatL2(len(embedding_function.embed_query("Azure Databricks is a fast, easy, and collaborative Apache Spark-based analytics platform.")))
+   index = faiss.IndexFlatL2(1536)  # text-embedding-ada-002 always produces 1536-dimensional vectors
     ```
 
 ## Build a Retriever-based Chain
@@ -187,7 +209,7 @@ A retriever component fetches relevant documents or data based on a query. This 
 1. In a new cell, run the following code to create a retriever that can search the vector index for the most similar texts.
 
     ```python
-   from langchain.community_vectorstores import FAISS
+   from langchain_community.vectorstores import FAISS
    from langchain_core.vectorstores import VectorStoreRetriever
 
    vector_store = FAISS.from_documents(
@@ -203,14 +225,14 @@ A retriever component fetches relevant documents or data based on a query. This 
     ```python
    from langchain_openai import AzureChatOpenAI
    from langchain_core.prompts import ChatPromptTemplate
-   from langchain_classic.chains.combine_documents.stuff import create_stuff_documents_chain
-   from langchain_classic.chains import create_retrieval_chain
+   from langchain_core.output_parsers import StrOutputParser
+   from operator import itemgetter
      
    llm = AzureChatOpenAI(
        deployment_name="gpt-4.1",
        model_name="gpt-4.1",
        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-       api_version="2024-08-01-preview",
+       api_version="2025-04-01-preview",
        azure_ad_token=os.getenv("COGNITIVE_SERVICES_TOKEN"),
    )
 
@@ -226,9 +248,18 @@ A retriever component fetches relevant documents or data based on a query. This 
        ("human", "{input}")
    ])
 
-   chain = create_stuff_documents_chain(llm, prompt1)
+   def format_docs(docs):
+       return "\n\n".join(doc.page_content for doc in docs)
 
-   qa_chain1 = create_retrieval_chain(retriever, chain)
+   qa_chain1 = (
+       {
+           "context": itemgetter("input") | retriever | format_docs,
+           "input": itemgetter("input")
+       }
+       | prompt1
+       | llm
+       | StrOutputParser()
+   )
     ```
 
 1. In a new cell, run the following code to test the QA system:
