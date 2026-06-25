@@ -174,7 +174,7 @@ In MLflow 3 and above, `mlflow.genai.evaluate()` supports evaluating a Python fu
    client = AzureOpenAI(
       azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
       azure_ad_token = os.getenv("COGNITIVE_SERVICES_TOKEN"),
-      api_version = "2024-08-01-preview"
+      api_version = "2025-04-01-preview"
    )
     
    # Basic system prompt
@@ -217,7 +217,7 @@ In MLflow 3 and above, `mlflow.genai.evaluate()` supports evaluating a Python fu
        },
        {
            "inputs": {
-               "template": "The ____ (adjective) ____ (job) shouted, \"____ (exclamation)!\" and ran toward the ____ (place)"
+               "template": 'The ____ (adjective) ____ (job) shouted, "____ (exclamation)!" and ran toward the ____ (place)'
            }
        },
        {
